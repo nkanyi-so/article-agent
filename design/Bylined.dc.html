@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: #0b0c0e; }
+  :root, [data-theme="dark"] {
+    --bg:#0b0c0e; --bgSub:#101216; --surface:#14161b; --surface2:#191c22; --inset:#0c0e12;
+    --border:#23262e; --border2:#2e323c; --text:#ededf0; --text2:#a3a8b3; --text3:#686d77;
+    --accent:#5685ff; --accentText:#ffffff; --run:#5b9dff; --pass:#2bd49f; --fail:#ff6464; --err:#ffb454;
+    --shadow: 0 1px 0 rgba(255,255,255,.02), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  [data-theme="light"] {
+    --bg:#fbfbfc; --bgSub:#f3f4f6; --surface:#ffffff; --surface2:#f6f7f9; --inset:#f4f5f7;
+    --border:#e6e8ec; --border2:#d7dae0; --text:#15171c; --text2:#565b64; --text3:#888e98;
+    --accent:#345ff0; --accentText:#ffffff; --run:#2f6fe0; --pass:#0f9b6a; --fail:#dd3a3a; --err:#b06f00;
+    --shadow: 0 1px 2px rgba(16,18,22,.04), 0 10px 28px -16px rgba(16,18,22,.18);
+  }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius:999px; border:2px solid var(--bg); }
+  ::-webkit-scrollbar-track { background: transparent; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(220%); } }
+  @keyframes rowIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform:none; } }
+</style>
+</helmet>
+
+<div data-theme="{{ theme }}" style="height:100%; display:flex; flex-direction:column; background:var(--bg); color:var(--text); font-family:Geist, system-ui, sans-serif; font-size:14px; -webkit-font-smoothing:antialiased; overflow:hidden;">
+
+  <!-- ===================== TOP BAR ===================== -->
+  <header style="flex:0 0 auto; display:flex; align-items:center; gap:18px; height:56px; padding:0 20px; border-bottom:1px solid var(--border); background:var(--bgSub);">
+    <div style="display:flex; align-items:center; gap:11px;">
+      <div style="width:26px; height:26px; border-radius:7px; background:var(--accent); position:relative; box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent), 0 6px 16px -6px var(--accent);">
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font:700 14px 'Geist Mono',monospace;">B</div>
+      </div>
+      <div style="display:flex; flex-direction:column; line-height:1.1;">
+        <span style="font-weight:600; letter-spacing:-.01em;">Bylined</span>
+        <span style="font:500 10px/1 'Geist Mono',monospace; color:var(--text3); letter-spacing:.04em; margin-top:2px;">RUN INSPECTOR</span>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:4px;">
+      <button onClick="{{ goNew }}" style="{{ newTabStyle }}">New article</button>
+      <button onClick="{{ goPipeline }}" style="{{ pipelineTabStyle }}">Pipeline</button>
+      <button onClick="{{ goTrace }}" style="{{ traceTabStyle }}">Trace</button>
+      <button onClick="{{ goSystem }}" style="{{ systemTabStyle }}">Design system</button>
+    </div>
+
+    <div style="flex:1;"></div>
+
+    <div style="{{ runBadgeStyle }}">
+      <span style="color:var(--text3);">run</span><span style="color:var(--text);">art_3d91</span>
+    </div>
+
+    <button onClick="{{ rerun }}" style="{{ headerRerunStyle }}">
+      <span style="display:inline-block; transform:scaleX(-1); font-size:14px;">↻</span>Re-run
+    </button>
+
+    <div style="display:flex; align-items:center; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:3px;">
+      <button onClick="{{ setDark }}" style="{{ darkBtnStyle }}">Dark</button>
+      <button onClick="{{ setLight }}" style="{{ lightBtnStyle }}">Light</button>
+    </div>
+  </header>
+
+  <main style="flex:1; min-height:0; overflow:auto;">
+
+    <!-- ======================================================= -->
+    <!-- ================= NEW ARTICLE (ENTRY) ================= -->
+    <!-- ======================================================= -->
+    <sc-if value="{{ isNew }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:680px; margin:0 auto; padding:36px 24px 72px;">
+      <input type="file" accept=".txt,.vtt,.srt" ref="{{ fileRef }}" onChange="{{ onFile }}" style="display:none;">
+
+      <div style="margin-bottom:22px;">
+        <div style="font:600 11px/1 'Geist Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:10px;">New article</div>
+        <h1 style="margin:0 0 7px; font-size:24px; font-weight:600; letter-spacing:-.02em;">Start from a transcript or a name</h1>
+        <p style="margin:0; color:var(--text2); line-height:1.5; font-size:14px;">Bylined turns either one into a grounded, fully-cited draft. Every claim in the result traces back to a real source.</p>
+      </div>
+
+      <!-- entry tabs -->
+      <div style="display:flex; gap:6px; background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:5px; margin-bottom:18px;">
+        <button onClick="{{ tabTranscriptClick }}" style="{{ entryTabT }}">Paste a transcript</button>
+        <button onClick="{{ tabNameClick }}" style="{{ entryTabN }}">From a name</button>
+      </div>
+
+      <!-- =============== TAB 1 — TRANSCRIPT =============== -->
+      <sc-if value="{{ tabTranscript }}" hint-placeholder-val="{{ true }}">
+      <div style="border:1px solid var(--border); border-radius:14px; background:var(--surface); padding:18px; box-shadow:var(--shadow);">
+
+        <!-- dropzone -->
+        <div onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" style="{{ dropzoneStyle }}">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 10px 9px 14px; border-bottom:1px solid var(--border);">
+            <span style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.07em; text-transform:uppercase; color:var(--text3);">Transcript</span>
+            <button onClick="{{ onUploadClick }}" style="display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:8px; font:600 12px Geist,sans-serif; color:var(--text); background:var(--surface2); border:1px solid var(--border2); cursor:pointer;">↑ Upload file</button>
+          </div>
+
+          <div style="position:relative;">
+            <textarea value="{{ t1text }}" onInput="{{ onTranscriptInput }}" placeholder="" spellcheck="false" style="width:100%; min-height:192px; resize:vertical; display:block; background:transparent; border:none; outline:none; color:var(--text); font:500 13px/1.65 'Geist Mono',monospace; padding:16px;"></textarea>
+
+            <!-- empty overlay -->
+            <sc-if value="{{ t1isEmpty }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; pointer-events:none; padding:24px; text-align:center;">
+              <div style="width:38px; height:38px; border-radius:10px; background:var(--surface2); border:1px solid var(--border2); display:flex; align-items:center; justify-content:center; color:var(--text3); font-size:17px;">⤓</div>
+              <div style="font-weight:600; font-size:14px; color:var(--text2); white-space:nowrap;">Drop a transcript or paste it here</div>
+              <div style="font:500 11px 'Geist Mono',monospace; color:var(--text3); letter-spacing:.04em; white-space:nowrap;">.txt &nbsp;·&nbsp; .vtt &nbsp;·&nbsp; .srt</div>
+            </div>
+            </sc-if>
+          </div>
+
+          <!-- loading overlay -->
+          <sc-if value="{{ t1loading }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; inset:0; z-index:4; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:color-mix(in srgb, var(--surface) 78%, transparent); backdrop-filter:blur(2px);">
+            <div style="width:22px; height:22px; border-radius:999px; border:2px solid var(--border2); border-top-color:var(--accent); animation:spin .7s linear infinite;"></div>
+            <div style="font:600 12px 'Geist Mono',monospace; color:var(--text2);">{{ t1loadLabel }}</div>
+          </div>
+          </sc-if>
+        </div>
+
+        <!-- file error -->
+        <sc-if value="{{ t1hasError }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; gap:10px; margin-top:11px; padding:10px 13px; border-radius:9px; background:color-mix(in srgb, var(--fail) 8%, var(--surface2)); border:1px solid color-mix(in srgb, var(--fail) 26%, transparent);">
+          <span style="color:var(--fail); font-size:14px;">⚠</span>
+          <span style="flex:1; font-size:13px; color:var(--text);">{{ t1error }}</span>
+          <button onClick="{{ clearError }}" style="background:transparent; border:none; color:var(--text3); cursor:pointer; font-size:13px;">Dismiss</button>
+        </div>
+        </sc-if>
+
+        <!-- meta line -->
+        <sc-if value="{{ t1showMeta }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; gap:8px; margin-top:12px; font:500 12px 'Geist Mono',monospace;">
+          <span style="{{ t1metaDotStyle }}"></span>
+          <span style="color:var(--text2);">{{ t1metaText }}</span>
+        </div>
+        </sc-if>
+
+        <!-- too short -->
+        <sc-if value="{{ t1tooShort }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; gap:8px; margin-top:12px; font:500 13px Geist,sans-serif; color:var(--text2);">
+          <span style="width:7px; height:7px; border-radius:999px; background:var(--err); flex:0 0 auto;"></span>
+          <span>A bit more, please — paste the rest of the conversation so there's enough to ground. <span style="font:500 12px 'Geist Mono',monospace; color:var(--text3);">{{ t1wordStr }}</span></span>
+        </div>
+        </sc-if>
+
+        <!-- shortcuts -->
+        <div style="margin-top:18px; padding-top:18px; border-top:1px solid var(--border);">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span style="font:600 11px 'Geist Mono',monospace; color:var(--text3); letter-spacing:.03em;">Try a sample:</span>
+            <sc-for list="{{ t1samples }}" as="s" hint-placeholder-count="3">
+              <button onClick="{{ s.onClick }}" style="display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px; font:600 12px Geist,sans-serif; color:var(--text2); background:var(--surface2); border:1px solid var(--border2); cursor:pointer;">{{ s.label }} <span style="font:500 10px 'Geist Mono',monospace; color:var(--text3);">{{ s.hint }}</span></button>
+            </sc-for>
+            <span style="flex:1;"></span>
+            <button onClick="{{ toggleGen }}" style="{{ genToggleStyle }}">＋ Generate one</button>
+          </div>
+
+          <!-- generate-one picker -->
+          <sc-if value="{{ genOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:14px; padding:15px; border-radius:11px; background:var(--surface2); border:1px solid var(--border);">
+            <div style="display:flex; gap:22px; flex-wrap:wrap;">
+              <div>
+                <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:8px;">Scenario</div>
+                <div style="display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:3px;">
+                  <sc-for list="{{ scenarioOpts }}" as="o" hint-placeholder-count="3">
+                    <button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:8px;">Length</div>
+                <div style="display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:3px;">
+                  <sc-for list="{{ lengthOpts }}" as="o" hint-placeholder-count="3">
+                    <button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-end;">
+                <button onClick="{{ createSample }}" style="display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:9px; font:600 13px Geist,sans-serif; color:var(--text); background:var(--surface); border:1px solid var(--border2); cursor:pointer;">Create sample</button>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+        </div>
+
+        <!-- primary -->
+        <button onClick="{{ entryGenerate }}" style="{{ t1GenStyle }}">Generate article →</button>
+      </div>
+      </sc-if>
+
+      <!-- =============== TAB 2 — FROM A NAME =============== -->
+      <sc-if value="{{ tabName }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px solid var(--border); border-radius:14px; background:var(--surface); padding:18px; box-shadow:var(--shadow);">
+
+        <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:8px;">Person</div>
+        <div style="position:relative; margin-bottom:12px;">
+          <input value="{{ t2q }}" onInput="{{ onNameInput }}" placeholder="Name or LinkedIn URL" spellcheck="false" style="width:100%; padding:13px 92px 13px 14px; border-radius:10px; background:var(--inset); border:1px solid var(--border2); outline:none; color:var(--text); font:500 14px Geist,sans-serif;">
+          <sc-if value="{{ t2hasTag }}" hint-placeholder-val="{{ false }}">
+          <span style="position:absolute; top:50%; right:12px; transform:translateY(-50%); font:600 10px 'Geist Mono',monospace; padding:3px 8px; border-radius:6px; color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); border:1px solid color-mix(in srgb, var(--accent) 26%, transparent);">{{ t2tag }}</span>
+          </sc-if>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+          <input value="{{ t2company }}" onInput="{{ onCompanyInput }}" placeholder="Company (optional — helps when names collide)" spellcheck="false" style="width:100%; padding:11px 14px; border-radius:10px; background:var(--inset); border:1px solid var(--border); outline:none; color:var(--text); font:500 13px Geist,sans-serif;">
+        </div>
+
+        <!-- result area -->
+        <div style="margin-top:14px;">
+          <!-- loading -->
+          <sc-if value="{{ t2loading }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; align-items:center; gap:11px; padding:15px 16px; border-radius:11px; background:var(--surface2); border:1px solid var(--border);">
+            <div style="width:18px; height:18px; border-radius:999px; border:2px solid var(--border2); border-top-color:var(--accent); animation:spin .7s linear infinite;"></div>
+            <span style="font:600 13px Geist,sans-serif; color:var(--text2);">Resolving…</span>
+          </div>
+          </sc-if>
+
+          <!-- resolved -->
+          <sc-if value="{{ t2resolved }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; align-items:center; gap:13px; padding:14px 15px; border-radius:11px; background:color-mix(in srgb, var(--pass) 7%, var(--surface2)); border:1px solid color-mix(in srgb, var(--pass) 24%, var(--border));">
+            <div style="{{ t2match.avatarStyle }}">{{ t2match.initials }}</div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:9px;"><span style="font-weight:600; font-size:15px; color:var(--text);">{{ t2match.name }}</span><span style="display:inline-flex; align-items:center; gap:5px; font:600 10px Geist,sans-serif; padding:2px 8px; border-radius:999px; color:var(--pass); background:color-mix(in srgb, var(--pass) 13%, transparent); border:1px solid color-mix(in srgb, var(--pass) 28%, transparent);">✓ matched</span></div>
+              <div style="font-size:13px; color:var(--text2); margin-top:2px;">{{ t2match.title }}</div>
+              <div style="font:500 11px 'Geist Mono',monospace; color:var(--text3); margin-top:3px;">{{ t2match.meta }}</div>
+            </div>
+            <button onClick="{{ editMatch }}" style="background:transparent; border:none; color:var(--text3); cursor:pointer; font:600 12px Geist,sans-serif; white-space:nowrap;">Not them?</button>
+          </div>
+          </sc-if>
+
+          <!-- ambiguous -->
+          <sc-if value="{{ t2ambiguous }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="margin-bottom:11px; font-size:14px; line-height:1.4;">
+              <span style="font-weight:600; color:var(--text);">More than one match</span><span style="font:500 12px 'Geist Mono',monospace; color:var(--text3); margin-left:7px;">— pick the right one</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:9px;">
+              <sc-for list="{{ t2candidates }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.onPick }}" style="display:flex; align-items:center; gap:13px; width:100%; text-align:left; padding:13px 14px; border-radius:11px; background:var(--surface2); border:1px solid var(--border2); cursor:pointer;">
+                  <span style="{{ c.avatarStyle }}">{{ c.initials }}</span>
+                  <span style="flex:1; min-width:0;">
+                    <span style="display:block; font-weight:600; font-size:14px; color:var(--text);">{{ c.name }}</span>
+                    <span style="display:block; font-size:13px; color:var(--text2); margin-top:1px;">{{ c.title }}</span>
+                    <span style="display:block; font:500 11px 'Geist Mono',monospace; color:var(--text3); margin-top:3px;">{{ c.meta }}</span>
+                  </span>
+                  <span style="font-size:16px; color:var(--text3);">→</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- not found -->
+          <sc-if value="{{ t2notfound }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; align-items:flex-start; gap:12px; padding:15px 16px; border-radius:11px; background:var(--surface2); border:1px solid var(--border);">
+            <div style="width:34px; height:34px; border-radius:9px; background:var(--surface); border:1px solid var(--border2); display:flex; align-items:center; justify-content:center; color:var(--text3); font-size:16px; flex:0 0 auto;">?</div>
+            <div>
+              <div style="font-weight:600; font-size:14px; color:var(--text); margin-bottom:3px;">Couldn't find anyone by that name</div>
+              <div style="font-size:13px; line-height:1.5; color:var(--text2);">Try pasting their LinkedIn URL, or add a company above to narrow it down.</div>
+            </div>
+          </div>
+          </sc-if>
+        </div>
+
+        <!-- primary -->
+        <button onClick="{{ entryGenerate }}" style="{{ t2GenStyle }}">Generate article →</button>
+      </div>
+      </sc-if>
+
+      <!-- preview-states strip (concept review aid) -->
+      <div style="margin-top:18px; display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding-top:14px; border-top:1px dashed var(--border);">
+        <span style="font:600 9px/1 'Geist Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--text3);">Preview states</span>
+        <sc-for list="{{ previewStates }}" as="p" hint-placeholder-count="6">
+          <button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ======================================================= -->
+    <!-- ===================== SYSTEM DOC ====================== -->
+    <!-- ======================================================= -->
+    <sc-if value="{{ isSystem }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1080px; margin:0 auto; padding:40px 28px 80px;">
+      <div style="margin-bottom:36px;">
+        <div style="font:600 11px/1 'Geist Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:10px;">Design system</div>
+        <h1 style="margin:0 0 8px; font-size:28px; font-weight:600; letter-spacing:-.02em;">Tokens &amp; components</h1>
+        <p style="margin:0; max-width:560px; color:var(--text2); line-height:1.55;">The primitives behind the inspector. Dark is the default surface; every status reads from a single semantic color and a mono type ramp carries all trace data.</p>
+      </div>
+
+      <!-- COLOR -->
+      <section style="margin-bottom:44px;">
+        <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px;">
+          <h2 style="margin:0; font-size:14px; font-weight:600;">Color</h2>
+          <span style="font:500 11px 'Geist Mono',monospace; color:var(--text3);">semantic · theme-aware</span>
+        </div>
+
+        <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin:0 0 11px;">Surfaces</div>
+        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:22px;">
+          <sc-for list="{{ surfaceSwatches }}" as="sw" hint-placeholder-count="5">
+            <div style="border:1px solid var(--border); border-radius:10px; overflow:hidden; background:var(--surface);">
+              <div style="{{ sw.boxStyle }}"></div>
+              <div style="padding:9px 11px;">
+                <div style="font:600 12px 'Geist Mono',monospace; color:var(--text);">{{ sw.token }}</div>
+                <div style="font-size:11px; color:var(--text3); margin-top:2px;">{{ sw.role }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+          <div>
+            <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin:0 0 11px;">Text</div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+              <sc-for list="{{ textSwatches }}" as="sw" hint-placeholder-count="3">
+                <div style="border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+                  <div style="{{ sw.boxStyle }}"></div>
+                  <div style="padding:9px 11px;">
+                    <div style="font:600 12px 'Geist Mono',monospace; color:var(--text);">{{ sw.token }}</div>
+                    <div style="font-size:11px; color:var(--text3); margin-top:2px;">{{ sw.role }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin:0 0 11px;">Brand &amp; status</div>
+            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px;">
+              <sc-for list="{{ statusSwatches }}" as="sw" hint-placeholder-count="5">
+                <div style="border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+                  <div style="{{ sw.boxStyle }}"></div>
+                  <div style="padding:9px 8px;">
+                    <div style="font:600 11px 'Geist Mono',monospace; color:var(--text);">{{ sw.token }}</div>
+                    <div style="font-size:10px; color:var(--text3); margin-top:2px;">{{ sw.role }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TYPE -->
+      <section style="margin-bottom:44px;">
+        <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px;">
+          <h2 style="margin:0; font-size:14px; font-weight:600;">Typography</h2>
+          <span style="font:500 11px 'Geist Mono',monospace; color:var(--text3);">Geist · Geist Mono</span>
+        </div>
+        <div style="border:1px solid var(--border); border-radius:12px; background:var(--surface); overflow:hidden;">
+          <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="7">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; padding:13px 18px; border-bottom:1px solid var(--border);">
+              <div style="{{ t.sampleStyle }}">{{ t.sample }}</div>
+              <div style="display:flex; gap:18px; flex:0 0 auto; font:500 11px 'Geist Mono',monospace; color:var(--text3);">
+                <span style="color:var(--text2); width:120px; text-align:right;">{{ t.name }}</span>
+                <span style="width:70px; text-align:right;">{{ t.size }}</span>
+                <span style="width:64px; text-align:right;">{{ t.weight }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- SPACING + RADIUS -->
+      <section style="margin-bottom:44px; display:grid; grid-template-columns:1.3fr 1fr; gap:24px;">
+        <div>
+          <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px;">
+            <h2 style="margin:0; font-size:14px; font-weight:600;">Spacing</h2>
+            <span style="font:500 11px 'Geist Mono',monospace; color:var(--text3);">4px base</span>
+          </div>
+          <div style="border:1px solid var(--border); border-radius:12px; background:var(--surface); padding:18px;">
+            <sc-for list="{{ spacingScale }}" as="s" hint-placeholder-count="7">
+              <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+                <span style="width:34px; font:600 11px 'Geist Mono',monospace; color:var(--text2);">{{ s.px }}</span>
+                <div style="{{ s.barStyle }}"></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px;">
+            <h2 style="margin:0; font-size:14px; font-weight:600;">Radius</h2>
+          </div>
+          <div style="border:1px solid var(--border); border-radius:12px; background:var(--surface); padding:18px; display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap;">
+            <sc-for list="{{ radiusScale }}" as="r" hint-placeholder-count="5">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <div style="{{ r.boxStyle }}"></div>
+                <span style="font:600 10px 'Geist Mono',monospace; color:var(--text3);">{{ r.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPONENTS -->
+      <section>
+        <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:16px;">
+          <h2 style="margin:0; font-size:14px; font-weight:600;">Components</h2>
+          <span style="font:500 11px 'Geist Mono',monospace; color:var(--text3);">buttons · pills · badges · table · mono</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+          <!-- buttons -->
+          <div style="border:1px solid var(--border); border-radius:12px; background:var(--surface); padding:18px;">
+            <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:14px;">Buttons</div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+              <button style="display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:9px; font:600 13px Geist,sans-serif; color:var(--accentText); background:var(--accent); border:1px solid color-mix(in srgb,var(--accent) 65%,#000); cursor:pointer;">Primary</button>
+              <button style="display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:9px; font:600 13px Geist,sans-serif; color:var(--text); background:var(--surface2); border:1px solid var(--border2); cursor:pointer;">Secondary</button>
+              <button style="display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:9px; font:600 13px Geist,sans-serif; color:var(--text2); background:transparent; border:1px solid var(--border); cursor:pointer;">Ghost</button>
+              <button style="display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:9px; font:600 13px Geist,sans-serif; color:var(--fail); background:color-mix(in srgb,var(--fail) 10%,transparent); border:1px solid color-mix(in srgb,var(--fail) 30%,transparent); cursor:pointer;">Danger</button>
+              <button style="display:inline-flex; align-items:center; gap:7px; padding:8px 12px; border-radius:9px; font:600 13px Geist,sans-serif; color:var(--text); background:var(--surface2); border:1px solid var(--border2); cursor:pointer;"><span style="display:inline-block; transform:scaleX(-1);">↻</span>With icon</button>
+            </div>
+          </div>
+          <!-- badges -->
+          <div style="border:1px solid var(--border); border-radius:12px; background:var(--surface); padding:18px;">
+            <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:14px;">Badges</div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+              <span style="font:600 11px 'Geist Mono',monospace; padding:3px 8px; border-radius:6px; background:var(--surface2); border:1px solid var(--border2); color:var(--text2);">v2.4.0</span>
+              <span style="font:600 11px 'Geist Mono',monospace; padding:3px 8px; border-radius:6px; background:color-mix(in srgb,var(--accent) 12%,transparent); border:1px solid color-mix(in srgb,var(--accent) 28%,transparent); color:var(--accent);">claude-sonnet</span>
+              <span style="font:600 11px 'Geist Mono',monospace; padding:3px 8px; border-radius:6px; background:var(--surface2); border:1px solid var(--border2); color:var(--text2);">22 cites</span>
+              <span style="display:inline-flex; align-items:center; gap:5px; font:600 11px Geist,sans-serif; padding:3px 9px; border-radius:999px; background:var(--surface2); border:1px solid var(--border2); color:var(--text2);"><span style="width:6px;height:6px;border-radius:999px;background:var(--text3);"></span>idle</span>
+            </div>
+            <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin:18px 0 12px;">Status pills</div>
+            <div style="display:flex; flex-wrap:wrap; gap:9px;">
+              <sc-for list="{{ pillSamples }}" as="p" hint-placeholder-count="5">
+                <span style="{{ p.style }}"><span style="{{ p.dotStyle }}"></span>{{ p.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- table + mono -->
+        <div style="display:grid; grid-template-columns:1.15fr 1fr; gap:16px;">
+          <div style="border:1px solid var(--border); border-radius:12px; background:var(--surface); overflow:hidden;">
+            <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); padding:14px 16px 0;">Table</div>
+            <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:13px;">
+              <thead>
+                <tr style="text-align:left; color:var(--text3);">
+                  <th style="font:600 11px 'Geist Mono',monospace; font-weight:600; padding:8px 16px; border-bottom:1px solid var(--border); letter-spacing:.04em;">stage</th>
+                  <th style="font:600 11px 'Geist Mono',monospace; font-weight:600; padding:8px 8px; border-bottom:1px solid var(--border);">eval</th>
+                  <th style="font:600 11px 'Geist Mono',monospace; font-weight:600; padding:8px 16px; border-bottom:1px solid var(--border); text-align:right;">tokens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:9px 16px; border-bottom:1px solid var(--border); color:var(--text); font-family:'Geist Mono',monospace; font-size:12px;">resolve</td><td style="padding:9px 8px; border-bottom:1px solid var(--border);"><span style="font:600 10px 'Geist Mono',monospace; color:var(--pass);">PASS</span></td><td style="padding:9px 16px; border-bottom:1px solid var(--border); text-align:right; font-family:'Geist Mono',monospace; font-size:12px; color:var(--text2);">1,203</td></tr>
+                <tr><td style="padding:9px 16px; border-bottom:1px solid var(--border); color:var(--text); font-family:'Geist Mono',monospace; font-size:12px;">retrieve</td><td style="padding:9px 8px; border-bottom:1px solid var(--border);"><span style="font:600 10px 'Geist Mono',monospace; color:var(--pass);">PASS</span></td><td style="padding:9px 16px; border-bottom:1px solid var(--border); text-align:right; font-family:'Geist Mono',monospace; font-size:12px; color:var(--text2);">2,410</td></tr>
+                <tr><td style="padding:9px 16px; color:var(--text); font-family:'Geist Mono',monospace; font-size:12px;">ground</td><td style="padding:9px 8px;"><span style="font:600 10px 'Geist Mono',monospace; color:var(--fail);">FAIL</span></td><td style="padding:9px 16px; text-align:right; font-family:'Geist Mono',monospace; font-size:12px; color:var(--text2);">3,120</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="border:1px solid var(--border); border-radius:12px; background:var(--surface); padding:14px 16px;">
+            <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:12px;">Mono block · citation</div>
+            <div style="background:var(--inset); border:1px solid var(--border); border-radius:9px; padding:12px; font:500 12px/1.65 'Geist Mono',monospace; color:var(--text2); white-space:pre; overflow:auto;">{
+  "claim": "shipping 40+ times a day",
+  "source": "techcrunch.com/acme-cd",
+  "support": <span style="color:var(--pass);">0.96</span>
+}</div>
+            <div style="display:flex; align-items:center; gap:8px; margin-top:12px; font:500 12px 'Geist Mono',monospace; color:var(--text2);">
+              <span style="display:inline-flex; width:18px; height:18px; align-items:center; justify-content:center; border-radius:5px; background:color-mix(in srgb,var(--accent) 14%,transparent); color:var(--accent); font-weight:600; font-size:10px;">2</span>
+              <span style="color:var(--accent); text-decoration:underline; text-underline-offset:2px;">techcrunch.com/acme-cd</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <!-- ======================================================= -->
+    <!-- ================= INSPECTOR · PIPELINE ================= -->
+    <!-- ======================================================= -->
+    <sc-if value="{{ isPipeline }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1040px; margin:0 auto; padding:28px 24px 80px;">
+      <!-- run header -->
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:18px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:7px;">
+            <h1 style="margin:0; font-size:20px; font-weight:600; letter-spacing:-.01em;">Article run</h1>
+            <span style="font:500 12px 'Geist Mono',monospace; color:var(--text3);">standup_2026-06-10.vtt</span>
+          </div>
+          <p style="margin:0; color:var(--text2); font-size:13px;">Jane Doe · VP Engineering, Acme — transcript → grounded draft</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+          <sc-for list="{{ summaryChips }}" as="c" hint-placeholder-count="5">
+            <div style="display:flex; flex-direction:column; gap:3px; padding:7px 12px; border:1px solid var(--border); border-radius:9px; background:var(--surface); min-width:74px;">
+              <span style="font:600 14px 'Geist Mono',monospace; color:{{ c.color }};">{{ c.value }}</span>
+              <span style="font-size:10px; color:var(--text3); letter-spacing:.02em;">{{ c.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- progress -->
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:22px;">
+        <div style="flex:1; height:5px; border-radius:999px; background:var(--surface2); overflow:hidden;">
+          <div style="{{ progressBarStyle }}"></div>
+        </div>
+        <span style="font:500 11px 'Geist Mono',monospace; color:var(--text3); white-space:nowrap;">{{ progressLabel }}</span>
+      </div>
+
+      <!-- stage rows -->
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ stages }}" as="st" hint-placeholder-count="7">
+          <div style="{{ st.cardStyle }}">
+            <!-- collapsed header -->
+            <button onClick="{{ st.onToggle }}" style="{{ st.headStyle }}">
+              <span style="font:600 12px 'Geist Mono',monospace; color:var(--text3); text-align:left;">{{ st.idxStr }}</span>
+              <span style="display:flex; flex-direction:column; gap:2px; min-width:0; text-align:left;">
+                <span style="font-weight:600; font-size:14px; color:var(--text);">{{ st.name }}</span>
+                <span style="font-size:12px; color:var(--text3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ st.sub }}</span>
+              </span>
+              <span style="{{ st.statusPillStyle }}"><span style="{{ st.statusDotStyle }}"></span>{{ st.statusLabel }}</span>
+              <span style="font:500 11px 'Geist Mono',monospace; color:var(--text3); text-align:right; white-space:nowrap;">{{ st.metricStr }}</span>
+              <span style="{{ st.evalMiniStyle }}">{{ st.evalMiniLabel }}</span>
+              <span style="{{ st.chevronStyle }}">⌄</span>
+            </button>
+
+            <!-- expanded body -->
+            <sc-if value="{{ st.isOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:4px 16px 16px; border-top:1px solid var(--border);">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+                <div>
+                  <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:7px;">Input</div>
+                  <pre style="margin:0; background:var(--inset); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font:500 12px/1.6 'Geist Mono',monospace; color:var(--text2); overflow:auto; max-height:180px;">{{ st.inputStr }}</pre>
+                </div>
+                <div>
+                  <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:7px;">Output</div>
+                  <pre style="margin:0; background:var(--inset); border:1px solid var(--border); border-radius:9px; padding:11px 13px; font:500 12px/1.6 'Geist Mono',monospace; color:var(--text2); overflow:auto; max-height:180px;">{{ st.outputStr }}</pre>
+                </div>
+              </div>
+
+              <!-- meta strip -->
+              <div style="display:flex; gap:24px; margin:14px 2px; flex-wrap:wrap;">
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="font:600 13px 'Geist Mono',monospace; color:var(--text);">{{ st.durStr }}</span><span style="font-size:10px; color:var(--text3);">duration</span></div>
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="font:600 13px 'Geist Mono',monospace; color:var(--text);">{{ st.tokStr }}</span><span style="font-size:10px; color:var(--text3);">tokens</span></div>
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="{{ st.retryValStyle }}">{{ st.retryStr }}</span><span style="font-size:10px; color:var(--text3);">retries</span></div>
+              </div>
+
+              <!-- eval card -->
+              <div style="{{ st.evalCardStyle }}">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                  <span style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text3);">Judge</span>
+                  <span style="font:600 12px 'Geist Mono',monospace; color:var(--text2);">{{ st.evalName }}</span>
+                  <span style="{{ st.evalPillStyle }}">{{ st.evalVerdict }}</span>
+                  <span style="font:600 12px 'Geist Mono',monospace; color:var(--text3);">{{ st.evalScoreStr }}</span>
+                </div>
+                <p style="margin:0; font-size:13px; line-height:1.55; color:var(--text2);">{{ st.evalReason }}</p>
+              </div>
+
+              <div style="display:flex; gap:9px; margin-top:14px;">
+                <button onClick="{{ rerun }}" style="display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border-radius:8px; font:600 12px Geist,sans-serif; color:var(--text); background:var(--surface2); border:1px solid var(--border2); cursor:pointer;"><span style="display:inline-block; transform:scaleX(-1);">↻</span>Re-run stage</button>
+                <button onClick="{{ st.onViewTrace }}" style="display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border-radius:8px; font:600 12px Geist,sans-serif; color:var(--text2); background:transparent; border:1px solid var(--border); cursor:pointer;">Open in trace →</button>
+              </div>
+            </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- ARTICLE OUTPUT -->
+      <div style="margin-top:26px; border:1px solid var(--border); border-radius:14px; background:var(--surface); overflow:hidden; box-shadow:var(--shadow);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); background:var(--bgSub);">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--accent);">Final output</span>
+            <span style="font:500 12px 'Geist Mono',monospace; color:var(--text3);">art_3d91 · 1,180 words · 22 citations</span>
+          </div>
+          <span style="display:inline-flex; align-items:center; gap:6px; font:600 11px Geist,sans-serif; padding:4px 10px; border-radius:999px; color:var(--err); background:color-mix(in srgb,var(--err) 12%,transparent); border:1px solid color-mix(in srgb,var(--err) 28%,transparent);">⚑ 1 claim flagged</span>
+        </div>
+        <div style="padding:24px 28px 28px; max-width:660px;">
+          <h2 style="margin:0 0 6px; font-size:22px; font-weight:600; letter-spacing:-.01em;">How Acme rebuilt its deploy pipeline</h2>
+          <p style="margin:0 0 18px; font-size:12px; color:var(--text3); font-family:'Geist Mono',monospace;">From a 32-minute standup with Jane Doe, VP Engineering · 7 grounded sources</p>
+          <p style="margin:0 0 14px; line-height:1.7; color:var(--text);">When Jane Doe joined Acme in 2023, deploys were a weekly event the whole team scheduled around.<span style="vertical-align:super; font-size:10px; color:var(--accent); font-family:'Geist Mono',monospace; margin-left:1px;">[1]</span> Within eighteen months her group moved the company to continuous delivery, shipping to production more than forty times a day.<span style="vertical-align:super; font-size:10px; color:var(--accent); font-family:'Geist Mono',monospace; margin-left:1px;">[2]</span></p>
+          <p style="margin:0 0 14px; line-height:1.7; color:var(--text);">The rebuild started with the test suite. By parallelizing integration tests across ephemeral environments, the team cut median CI time from 41 minutes to under nine.<span style="vertical-align:super; font-size:10px; color:var(--accent); font-family:'Geist Mono',monospace; margin-left:1px;">[3]</span> That single change, Doe noted in the standup, “unblocked everything downstream.”</p>
+          <p style="margin:0 0 18px; line-height:1.7; color:var(--text);">The investment paid off in reliability, too: the platform team reports it <span style="background:color-mix(in srgb,var(--err) 16%,transparent); border-bottom:1.5px dashed var(--err); padding:1px 4px; border-radius:3px;">cut incidents by roughly 40%</span> over the same period.<span style="display:inline-flex; align-items:center; gap:4px; vertical-align:middle; margin-left:6px; font:600 10px 'Geist Mono',monospace; color:var(--err);">⚑ no source</span></p>
+          <div style="border-top:1px solid var(--border); padding-top:14px; display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; gap:9px; font:500 12px 'Geist Mono',monospace; color:var(--text2);"><span style="color:var(--accent);">[1]</span><span style="color:var(--accent); text-decoration:underline; text-underline-offset:2px;">acme.com/about</span><span style="color:var(--text3);">— support 0.94</span></div>
+            <div style="display:flex; gap:9px; font:500 12px 'Geist Mono',monospace; color:var(--text2);"><span style="color:var(--accent);">[2]</span><span style="color:var(--accent); text-decoration:underline; text-underline-offset:2px;">techcrunch.com/acme-cd</span><span style="color:var(--text3);">— support 0.96</span></div>
+            <div style="display:flex; gap:9px; font:500 12px 'Geist Mono',monospace; color:var(--text2);"><span style="color:var(--accent);">[3]</span><span style="color:var(--accent); text-decoration:underline; text-underline-offset:2px;">github.com/acme/ci-runner</span><span style="color:var(--text3);">— support 0.91</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ======================================================= -->
+    <!-- ================== INSPECTOR · TRACE =================== -->
+    <!-- ======================================================= -->
+    <sc-if value="{{ isTrace }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; height:100%; min-height:0;">
+      <!-- left rail -->
+      <div style="flex:0 0 318px; border-right:1px solid var(--border); background:var(--bgSub); overflow:auto; padding:18px 14px;">
+        <div style="padding:0 6px 12px;">
+          <div style="font-weight:600; font-size:14px; margin-bottom:3px;">Article run</div>
+          <div style="font:500 11px 'Geist Mono',monospace; color:var(--text3);">{{ progressLabel }} · 18.8s</div>
+          <div style="margin-top:10px; height:4px; border-radius:999px; background:var(--surface2); overflow:hidden;">
+            <div style="{{ progressBarStyle }}"></div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px; margin-top:6px;">
+          <sc-for list="{{ stages }}" as="st" hint-placeholder-count="7">
+            <button onClick="{{ st.onSelect }}" style="{{ st.railStyle }}">
+              <span style="{{ st.railDotStyle }}"></span>
+              <span style="display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; text-align:left;">
+                <span style="font-weight:600; font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ st.name }}</span>
+                <span style="font:500 10px 'Geist Mono',monospace; color:var(--text3);">{{ st.durStr }} · {{ st.tokStr }} tok</span>
+              </span>
+              <span style="{{ st.evalMiniStyle }}">{{ st.evalMiniLabel }}</span>
+            </button>
+          </sc-for>
+          <button onClick="{{ selectArticle }}" style="{{ articleRailStyle }}">
+            <span style="width:7px; height:7px; border-radius:2px; background:var(--accent);"></span>
+            <span style="flex:1; text-align:left; font-weight:600; font-size:13px; color:var(--text);">Article output</span>
+            <span style="font:600 10px 'Geist Mono',monospace; color:var(--err);">⚑ 1</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- detail panel -->
+      <div style="flex:1; min-width:0; overflow:auto; padding:28px 32px 60px;">
+        <!-- stage detail -->
+        <sc-if value="{{ showStageDetail }}" hint-placeholder-val="{{ true }}">
+        <div style="max-width:680px;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+            <span style="font:600 12px 'Geist Mono',monospace; color:var(--text3);">{{ detail.idxStr }}</span>
+            <h1 style="margin:0; font-size:22px; font-weight:600; letter-spacing:-.01em;">{{ detail.name }}</h1>
+            <span style="{{ detail.statusPillStyle }}"><span style="{{ detail.statusDotStyle }}"></span>{{ detail.statusLabel }}</span>
+          </div>
+          <p style="margin:0 0 22px; color:var(--text2);">{{ detail.sub }}</p>
+
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px;">
+            <div style="border:1px solid var(--border); border-radius:10px; background:var(--surface); padding:13px 14px;"><div style="font:600 16px 'Geist Mono',monospace; color:var(--text);">{{ detail.durStr }}</div><div style="font-size:10px; color:var(--text3); margin-top:3px;">duration</div></div>
+            <div style="border:1px solid var(--border); border-radius:10px; background:var(--surface); padding:13px 14px;"><div style="font:600 16px 'Geist Mono',monospace; color:var(--text);">{{ detail.tokStr }}</div><div style="font-size:10px; color:var(--text3); margin-top:3px;">tokens</div></div>
+            <div style="border:1px solid var(--border); border-radius:10px; background:var(--surface); padding:13px 14px;"><div style="{{ detail.retryValStyle }}">{{ detail.retryStr }}</div><div style="font-size:10px; color:var(--text3); margin-top:3px;">retries</div></div>
+            <div style="border:1px solid var(--border); border-radius:10px; background:var(--surface); padding:13px 14px;"><div style="font:600 16px 'Geist Mono',monospace; color:{{ detail.evalColor }};">{{ detail.evalScoreStr }}</div><div style="font-size:10px; color:var(--text3); margin-top:3px;">eval score</div></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:22px;">
+            <div>
+              <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:8px;">Input</div>
+              <pre style="margin:0; background:var(--inset); border:1px solid var(--border); border-radius:10px; padding:13px; font:500 12px/1.65 'Geist Mono',monospace; color:var(--text2); overflow:auto;">{{ detail.inputStr }}</pre>
+            </div>
+            <div>
+              <div style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:8px;">Output</div>
+              <pre style="margin:0; background:var(--inset); border:1px solid var(--border); border-radius:10px; padding:13px; font:500 12px/1.65 'Geist Mono',monospace; color:var(--text2); overflow:auto;">{{ detail.outputStr }}</pre>
+            </div>
+          </div>
+
+          <div style="{{ detail.evalCardStyle }}">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:9px;">
+              <span style="font:600 10px/1 'Geist Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text3);">Judge</span>
+              <span style="font:600 12px 'Geist Mono',monospace; color:var(--text2);">{{ detail.evalName }}</span>
+              <span style="{{ detail.evalPillStyle }}">{{ detail.evalVerdict }}</span>
+            </div>
+            <p style="margin:0; font-size:14px; line-height:1.6; color:var(--text);">{{ detail.evalReason }}</p>
+          </div>
+
+          <div style="display:flex; gap:9px; margin-top:18px;">
+            <button onClick="{{ rerun }}" style="display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:9px; font:600 13px Geist,sans-serif; color:var(--accentText); background:var(--accent); border:1px solid color-mix(in srgb,var(--accent) 65%,#000); cursor:pointer;"><span style="display:inline-block; transform:scaleX(-1);">↻</span>Re-run stage</button>
+          </div>
+        </div>
+        </sc-if>
+
+        <!-- article detail -->
+        <sc-if value="{{ showArticleDetail }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:680px;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+            <h1 style="margin:0; font-size:22px; font-weight:600; letter-spacing:-.01em;">Article output</h1>
+            <span style="display:inline-flex; align-items:center; gap:6px; font:600 11px Geist,sans-serif; padding:4px 10px; border-radius:999px; color:var(--err); background:color-mix(in srgb,var(--err) 12%,transparent); border:1px solid color-mix(in srgb,var(--err) 28%,transparent);">⚑ 1 claim flagged</span>
+          </div>
+          <h2 style="margin:0 0 6px; font-size:20px; font-weight:600;">How Acme rebuilt its deploy pipeline</h2>
+          <p style="margin:0 0 18px; font-size:12px; color:var(--text3); font-family:'Geist Mono',monospace;">From a 32-minute standup with Jane Doe · 7 grounded sources</p>
+          <p style="margin:0 0 14px; line-height:1.7; color:var(--text);">When Jane Doe joined Acme in 2023, deploys were a weekly event the whole team scheduled around.<span style="vertical-align:super; font-size:10px; color:var(--accent); font-family:'Geist Mono',monospace;">[1]</span> Within eighteen months her group moved to continuous delivery, shipping more than forty times a day.<span style="vertical-align:super; font-size:10px; color:var(--accent); font-family:'Geist Mono',monospace;">[2]</span></p>
+          <p style="margin:0 0 18px; line-height:1.7; color:var(--text);">The platform team reports it <span style="background:color-mix(in srgb,var(--err) 16%,transparent); border-bottom:1.5px dashed var(--err); padding:1px 4px; border-radius:3px;">cut incidents by roughly 40%</span> over the same period.<span style="margin-left:6px; font:600 10px 'Geist Mono',monospace; color:var(--err);">⚑ no source — flagged by citation_coverage</span></p>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;startTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'dark'|'light'&quot;},&quot;startView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;new&quot;,&quot;pipeline&quot;,&quot;trace&quot;,&quot;system&quot;],&quot;default&quot;:&quot;new&quot;,&quot;tsType&quot;:&quot;'new'|'pipeline'|'trace'|'system'&quot;},&quot;autorun&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: props.startTheme || 'dark',
+      view: props.startView || 'new',
+      expanded: 'ground',
+      selected: 'faithful',
+      run: {},
+      // entry screen
+      tab: 'transcript',
+      t1text: '', t1words: 0, t1loading: false, t1loadLabel: '', t1error: '', t1drag: false,
+      genOpen: false, genScenario: 'sales', genLength: 'medium',
+      t2q: '', t2company: '', t2state: 'empty', t2match: null
+    };
+    this._timers = [];
+    this.setFileRef = (el) => { this._fileInput = el; };
+  }
+
+  componentDidMount() {
+    if (this.props.autorun === false) {
+      const r = {};
+      this.stagesRaw().forEach(s => { r[s.id] = s.status; });
+      this.setState({ run: r });
+    } else {
+      this.startRun();
+    }
+  }
+  componentWillUnmount() { this._timers.forEach(clearTimeout); }
+
+  stagesRaw() {
+    return [
+      { id:'ingest', name:'Ingest transcript', sub:'Parse and diarize the meeting recording',
+        input:{ source:'standup_2026-06-10.vtt', duration:'32:14', speakers:3 },
+        output:{ segments:184, words:5240, primary_speaker:'Jane Doe' },
+        duration_ms:920, tokens:0, retries:0, status:'passed',
+        eval:{ name:'transcript_quality', verdict:'pass', score:0.99, reason:'Clean diarization across 3 speakers; under 1% low-confidence tokens. No segments dropped.' } },
+      { id:'resolve', name:'Resolve entity', sub:'Identify the subject and verify their role',
+        input:{ person:'Jane Doe', org_hint:'Acme' },
+        output:{ name:'Jane Doe', title:'VP Engineering, Acme', linkedin:'/in/jane-doe', confidence:0.97 },
+        duration_ms:1840, tokens:1203, retries:0, status:'passed',
+        eval:{ name:'entity_resolution', verdict:'pass', score:0.97, reason:'Resolved to the correct person; title matches both LinkedIn and her self-introduction in the transcript.' } },
+      { id:'retrieve', name:'Retrieve sources', sub:'Gather grounding documents for every angle',
+        input:{ subject:'Jane Doe', topics:['deploy pipeline','incident reduction','team scaling'] },
+        output:{ found:9, kept:8, domains:['acme.com','techcrunch.com','github.com'] },
+        duration_ms:3120, tokens:2410, retries:1, status:'passed',
+        eval:{ name:'source_relevance', verdict:'pass', score:0.91, reason:'8 of 9 sources directly on-topic; one borderline result dropped before drafting. One transient timeout retried.' } },
+      { id:'outline', name:'Plan outline', sub:'Choose the angle and map claims to evidence',
+        input:{ angle:'How Acme rebuilt its deploy pipeline' },
+        output:{ sections:5, claims_planned:14 },
+        duration_ms:1450, tokens:1890, retries:0, status:'passed',
+        eval:{ name:'structure_coherence', verdict:'pass', score:0.95, reason:'Logical progression; every section maps to at least two retrieved sources.' } },
+      { id:'draft', name:'Draft article', sub:'Generate the article from the grounded outline',
+        input:{ outline_id:'otl_8f2c', tone:'technical / editorial', target_words:1200 },
+        output:{ words:1180, claims:16, citations:22 },
+        duration_ms:6240, tokens:8940, retries:0, status:'passed',
+        eval:{ name:'draft_fluency', verdict:'pass', score:0.93, reason:'Reads cleanly, matches the requested tone, no orphaned sections or repetition.' } },
+      { id:'ground', name:'Ground claims', sub:'Attach a real source to every factual claim',
+        input:{ claims:16 },
+        output:{ grounded:15, unsupported:1, flagged:['cut incidents by 40%'] },
+        duration_ms:2980, tokens:3120, retries:2, status:'passed',
+        eval:{ name:'citation_coverage', verdict:'fail', score:0.94, reason:'1 of 16 claims — "cut incidents by 40%" — has no supporting source after 2 retrieval retries. Flagged for human review rather than dropped.' } },
+      { id:'faithful', name:'Faithfulness eval', sub:'Judge the draft for invented or unsupported facts',
+        input:{ article_id:'art_3d91', claims:16 },
+        output:{ hallucinations:0, unsupported:1, score:0.94 },
+        duration_ms:2210, tokens:2660, retries:0, status:'passed',
+        eval:{ name:'faithfulness', verdict:'pass', score:0.94, reason:'No invented facts. The single unsupported claim is correctly flagged upstream; all other claims trace to a cited source.' } }
+    ];
+  }
+
+  startRun() {
+    this._timers.forEach(clearTimeout);
+    this._timers = [];
+    const raw = this.stagesRaw();
+    const r = {};
+    raw.forEach(s => { r[s.id] = 'pending'; });
+    this.setState({ run: r });
+    let t = 450;
+    raw.forEach(s => {
+      const id = s.id;
+      this._timers.push(setTimeout(() => this.setState(st => ({ run: { ...st.run, [id]: 'running' } })), t));
+      const dur = Math.min(1500, 480 + s.duration_ms / 8);
+      t += dur;
+      this._timers.push(setTimeout(() => this.setState(st => ({ run: { ...st.run, [id]: s.status } })), t));
+      t += 180;
+    });
+  }
+
+  // ---- style helpers (theme-independent: use CSS vars) ----
+  statusMeta(s) {
+    const m = {
+      pending: { label:'Queued',  v:'--text3' },
+      running: { label:'Running', v:'--run' },
+      passed:  { label:'Passed',  v:'--pass' },
+      failed:  { label:'Failed',  v:'--fail' },
+      error:   { label:'Errored', v:'--err' }
+    };
+    return m[s] || m.pending;
+  }
+  pillStyle(varName, anim) {
+    return { display:'inline-flex', alignItems:'center', gap:'6px', padding:'3px 10px 3px 8px',
+      borderRadius:'999px', fontSize:'11px', fontWeight:600, lineHeight:1, letterSpacing:'.02em',
+      whiteSpace:'nowrap', color:`var(${varName})`, fontFamily:'Geist, sans-serif',
+      background:`color-mix(in srgb, var(${varName}) 12%, transparent)`,
+      border:`1px solid color-mix(in srgb, var(${varName}) 26%, transparent)` };
+  }
+  dotStyle(varName, anim) {
+    return { width:'7px', height:'7px', borderRadius:'999px', flex:'0 0 auto',
+      background:`var(${varName})`, boxShadow:`0 0 0 3px color-mix(in srgb, var(${varName}) 16%, transparent)`,
+      animation: anim ? 'pulseDot 1.1s ease-in-out infinite' : 'none' };
+  }
+  evalMeta(v) {
+    const m = { pass:{ label:'PASS', vv:'--pass' }, fail:{ label:'FAIL', vv:'--fail' }, warn:{ label:'WARN', vv:'--err' } };
+    return m[v] || m.pass;
+  }
+
+  buildStage(s, i) {
+    const eff = this.state.run[s.id] || 'pending';
+    const sm = this.statusMeta(eff);
+    const running = eff === 'running';
+    const isOpen = this.state.expanded === s.id && this.state.view === 'pipeline';
+    const isSel = this.state.selected === s.id;
+    const em = this.evalMeta(s.eval.verdict);
+    const settled = eff === 'passed' || eff === 'failed' || eff === 'error';
+
+    const borderCol = isOpen ? 'var(--border2)'
+      : running ? 'color-mix(in srgb, var(--run) 55%, var(--border))'
+      : 'var(--border)';
+
+    return {
+      id: s.id,
+      idx: i + 1,
+      idxStr: String(i + 1).padStart(2, '0'),
+      name: s.name,
+      sub: s.sub,
+      durStr: (s.duration_ms / 1000).toFixed(2) + 's',
+      tokStr: s.tokens.toLocaleString(),
+      retryStr: String(s.retries),
+      metricStr: (s.duration_ms / 1000).toFixed(2) + 's · ' + s.tokens.toLocaleString() + ' tok' + (s.retries ? ' · ' + s.retries + ' retr' : ''),
+      inputStr: JSON.stringify(s.input, null, 2),
+      outputStr: JSON.stringify(s.output, null, 2),
+      statusLabel: sm.label,
+      statusPillStyle: this.pillStyle(sm.v),
+      statusDotStyle: this.dotStyle(sm.v, running),
+      retryValStyle: { font:"600 13px 'Geist Mono',monospace", color: s.retries ? 'var(--err)' : 'var(--text)' },
+      // eval mini (shown only once settled)
+      evalMiniLabel: settled ? em.label : '·',
+      evalMiniStyle: { font:"600 10px 'Geist Mono',monospace", textAlign:'right', whiteSpace:'nowrap',
+        color: settled ? `var(${em.vv})` : 'var(--text3)' },
+      evalName: s.eval.name,
+      evalVerdict: em.label,
+      evalScoreStr: s.eval.score.toFixed(2),
+      evalColor: `var(${em.vv})`,
+      evalReason: s.eval.reason,
+      evalPillStyle: { display:'inline-flex', alignItems:'center', padding:'2px 8px', borderRadius:'5px',
+        font:"600 10px 'Geist Mono',monospace", letterSpacing:'.04em', color:`var(${em.vv})`,
+        background:`color-mix(in srgb, var(${em.vv}) 14%, transparent)`,
+        border:`1px solid color-mix(in srgb, var(${em.vv}) 28%, transparent)` },
+      evalCardStyle: { borderRadius:'10px', padding:'13px 15px',
+        background:`color-mix(in srgb, var(${em.vv}) 6%, var(--surface2))`,
+        borderLeft:`2px solid var(${em.vv})`, border:`1px solid color-mix(in srgb, var(${em.vv}) 22%, var(--border))` },
+      cardStyle: { background:'var(--surface)', border:'1px solid ' + borderCol, borderRadius:'12px',
+        overflow:'hidden', boxShadow: isOpen ? 'var(--shadow)' : 'none', transition:'border-color .2s' },
+      headStyle: { display:'grid', gridTemplateColumns:'26px minmax(0,1fr) 104px 168px 52px 18px',
+        alignItems:'center', gap:'14px', width:'100%', padding:'14px 16px', background:'transparent',
+        border:'none', cursor:'pointer', fontFamily:'inherit', textAlign:'left' },
+      chevronStyle: { fontSize:'14px', color:'var(--text3)', textAlign:'center',
+        transition:'transform .2s', transform: isOpen ? 'rotate(180deg)' : 'none' },
+      // trace rail
+      railStyle: { display:'flex', alignItems:'center', gap:'10px', width:'100%', padding:'9px 10px',
+        borderRadius:'9px', cursor:'pointer', fontFamily:'inherit',
+        background: isSel ? 'var(--surface)' : 'transparent',
+        border:'1px solid ' + (isSel ? 'var(--border2)' : 'transparent') },
+      railDotStyle: this.dotStyle(sm.v, running),
+      onToggle: () => this.setState(st => ({ expanded: st.expanded === s.id ? null : s.id })),
+      onSelect: () => this.setState({ selected: s.id }),
+      onViewTrace: () => this.setState({ view: 'trace', selected: s.id })
+    };
+  }
+
+  tabStyle(active) {
+    return { padding:'6px 13px', borderRadius:'8px', fontSize:'13px', fontWeight: active ? 600 : 500,
+      color: active ? 'var(--text)' : 'var(--text2)', background: active ? 'var(--surface2)' : 'transparent',
+      border:'1px solid ' + (active ? 'var(--border)' : 'transparent'), cursor:'pointer', fontFamily:'inherit' };
+  }
+  segStyle(active) {
+    return { padding:'5px 11px', borderRadius:'7px', fontSize:'12px', fontWeight:600,
+      color: active ? 'var(--text)' : 'var(--text3)', background: active ? 'var(--surface2)' : 'transparent',
+      border:'none', cursor:'pointer', fontFamily:'inherit' };
+  }
+
+  // ---------- ENTRY SCREEN ----------
+  countWords(t) { const m = (t || '').trim().match(/\S+/g); return m ? m.length : 0; }
+
+  setTranscript(text, words, opts) {
+    this.setState({ t1text: text, t1words: (words != null ? words : this.countWords(text)), t1error: '', t1loading: false, ...(opts || {}) });
+  }
+
+  entrySamples() {
+    return {
+      sales:   { label: 'Sales call',       hint: '14m', words: 1180, dur: '14 min',
+        text: '[00:02] Rep: Thanks for hopping on, Dana. Last time you mentioned the renewal was up in Q3 — has anything changed on your side?\n[00:14] Dana: We added two regions, so usage is up about 40%. Finance wants to understand the per-seat math before we commit.\n[00:31] Rep: Totally fair. Let me walk through the volume tiers and where you would land today, then we can talk about locking in a rate...' },
+      support: { label: 'Support call',     hint: '11m', words: 860,  dur: '11 min',
+        text: '[00:00] Agent: I can see the failed deploys on your account — they started right after the 2.4 upgrade.\n[00:09] Customer: Right, every build times out at the integration step now.\n[00:18] Agent: Got it. Let us roll the runner back to 2.3 and re-trigger one build to confirm the regression, then I will file it...' },
+      interview: { label: 'Founder interview', hint: '26m', words: 2240, dur: '26 min',
+        text: '[00:00] Host: Take me back to the first version of the product. What did it actually do?\n[00:11] Founder: Honestly? It was a spreadsheet with a login. We were embarrassed by it, but three teams paid for it the first week.\n[00:27] Host: What changed between that and the platform you have now?\n[00:34] Founder: We stopped guessing and started instrumenting everything...' }
+    };
+  }
+
+  loadSample(id) {
+    const s = this.entrySamples()[id];
+    if (s) this.setTranscript(s.text, s.words, { genOpen: false });
+  }
+
+  triggerUpload() { if (this._fileInput) this._fileInput.click(); }
+
+  handleFile(file) {
+    if (!file) return;
+    const okExt = /\.(txt|vtt|srt)$/i.test(file.name);
+    if (!okExt) { this.setState({ t1error: 'That is a .' + (file.name.split('.').pop() || '?') + ' file — Bylined reads .txt, .vtt or .srt transcripts.', t1loading: false }); return; }
+    this.setState({ t1loading: true, t1loadLabel: 'Parsing ' + file.name + '…', t1error: '' });
+    this._timers.push(setTimeout(() => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const txt = (reader.result || '').toString();
+        if (!txt.trim()) { this.setState({ t1loading: false, t1error: 'That file looks empty — nothing to read in ' + file.name + '.' }); return; }
+        this.setTranscript(txt.slice(0, 4000), this.countWords(txt));
+      };
+      reader.onerror = () => this.setState({ t1loading: false, t1error: 'Could not read ' + file.name + ' — it may be corrupt.' });
+      reader.readAsText(file);
+    }, 1100));
+  }
+
+  createSample() {
+    const lenMap = { short: 150, medium: 920, long: 6200 };
+    const sc = this.state.genScenario, ln = this.state.genLength;
+    const words = lenMap[ln] || 920;
+    this.setState({ t1loading: true, t1loadLabel: 'Writing a sample…', t1error: '', genOpen: false });
+    this._timers.push(setTimeout(() => {
+      const head = '[synthetic · ' + sc + ' · ' + ln + ']\n';
+      const body = '[00:00] A: ' + (sc === 'sales' ? 'Appreciate you making time — wanted to revisit the rollout plan we sketched last quarter.' : sc === 'support' ? 'Walking through the incident from this morning so we have it on record.' : 'Let us start at the beginning — what was the first thing you built?') + '\n[00:12] B: Sure. Here is roughly how it went, and where things stand now...';
+      this.setTranscript(head + body, words);
+    }, 1300));
+  }
+
+  resolveName() {
+    clearTimeout(this._nameTimer);
+    const q = this.state.t2q.trim();
+    if (!q) { this.setState({ t2state: 'empty', t2match: null }); return; }
+    this.setState({ t2state: 'loading' });
+    this._nameTimer = setTimeout(() => {
+      const lc = q.toLowerCase();
+      if (/linkedin\.com|https?:\/\//.test(lc)) {
+        this.setState({ t2state: 'resolved', t2match: { initials: 'JD', name: 'Jane Doe', title: 'VP Engineering, Acme', meta: q.replace(/^https?:\/\//, '') + ' · 97% match', avatarStyle: this.avatarStyle('--accent') } });
+      } else if (lc.includes('jane')) {
+        this.setState({ t2state: 'resolved', t2match: { initials: 'JD', name: 'Jane Doe', title: 'VP Engineering, Acme', meta: 'linkedin.com/in/jane-doe · 97% match', avatarStyle: this.avatarStyle('--accent') } });
+      } else if (lc.includes('alex') || lc.includes('chen') || lc.includes('sam')) {
+        this.setState({ t2state: 'ambiguous', t2match: null });
+      } else {
+        this.setState({ t2state: 'notfound', t2match: null });
+      }
+    }, 750);
+  }
+
+  avatarStyle(varName) {
+    return { width: '42px', height: '42px', borderRadius: '10px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      font: "600 14px 'Geist Mono',monospace", color: `var(${varName})`,
+      background: `color-mix(in srgb, var(${varName}) 14%, var(--surface))`, border: `1px solid color-mix(in srgb, var(${varName}) 28%, transparent)` };
+  }
+
+  segOptStyle(active) {
+    return { padding: '6px 12px', borderRadius: '7px', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer', border: 'none',
+      color: active ? 'var(--text)' : 'var(--text3)', background: active ? 'var(--surface2)' : 'transparent' };
+  }
+
+  primaryBtnStyle(enabled) {
+    return enabled
+      ? { display: 'block', width: '100%', marginTop: '18px', padding: '13px', borderRadius: '11px', font: '600 14px Geist,sans-serif', color: 'var(--accentText)', background: 'var(--accent)', border: '1px solid color-mix(in srgb,var(--accent) 65%,#000)', cursor: 'pointer', boxShadow: '0 8px 20px -12px var(--accent)' }
+      : { display: 'block', width: '100%', marginTop: '18px', padding: '13px', borderRadius: '11px', font: '600 14px Geist,sans-serif', color: 'var(--text3)', background: 'var(--surface2)', border: '1px solid var(--border)', cursor: 'not-allowed' };
+  }
+
+  buildEntry() {
+    const st = this.state;
+    const w = st.t1words;
+    const t1state = st.t1loading ? 'loading' : st.t1error ? 'error' : w === 0 ? 'empty' : w < 120 ? 'tooshort' : w > 5000 ? 'large' : 'ready';
+    const mins = Math.max(1, Math.round(w / 130));
+    const t1metaText = t1state === 'large'
+      ? w.toLocaleString() + ' words — retrieving the relevant parts'
+      : w.toLocaleString() + ' words · ~' + mins + ' min read';
+    const t1ready = t1state === 'ready' || t1state === 'large';
+
+    const samples = this.entrySamples();
+    const t1samples = ['sales', 'support', 'interview'].map(id => ({ label: samples[id].label, hint: samples[id].hint, onClick: () => this.loadSample(id) }));
+
+    const scenarioOpts = [['sales', 'Sales'], ['support', 'Support'], ['interview', 'Interview']].map(([v, l]) => ({ label: l, style: this.segOptStyle(st.genScenario === v), onClick: () => this.setState({ genScenario: v }) }));
+    const lengthOpts = [['short', 'Short'], ['medium', 'Medium'], ['long', 'Long']].map(([v, l]) => ({ label: l, style: this.segOptStyle(st.genLength === v), onClick: () => this.setState({ genLength: v }) }));
+
+    // tab 2
+    const tag = /linkedin\.com|https?:\/\//i.test(st.t2q) ? 'LinkedIn URL' : (st.t2q.trim() ? 'Name' : '');
+    const candidates = [
+      { initials: 'AC', name: 'Alex Chen', title: 'VP Engineering, Northwind', meta: 'San Francisco · ex-Datadog · 12y' },
+      { initials: 'AC', name: 'Alex Chen', title: 'Co-founder, Parallel Labs', meta: 'Austin · ex-Stripe' },
+      { initials: 'AC', name: 'Alexandra Chen', title: 'Staff ML Engineer, Cohere', meta: 'Toronto' }
+    ].map(c => ({ ...c, avatarStyle: this.avatarStyle('--accent'), onPick: () => this.setState({ t2state: 'resolved', t2match: { ...c, meta: c.meta + ' · selected', avatarStyle: this.avatarStyle('--accent') } }) }));
+
+    const t2resolved = st.t2state === 'resolved';
+    const entryReady = st.tab === 'transcript' ? t1ready : t2resolved;
+
+    // preview-states strip
+    const tStates = [
+      ['empty', () => this.setTranscript('', 0, { t1error: '', genOpen: false })],
+      ['ready', () => this.loadSample('sales')],
+      ['too short', () => this.setTranscript('[00:00] A: Quick note before we wrap — ship it Friday.', 11)],
+      ['large', () => this.setTranscript(samples.interview.text, 8200)],
+      ['file error', () => this.setState({ t1error: 'That file looks empty — nothing to read in notes.pdf.', t1loading: false })],
+      ['loading', () => this.setState({ t1loading: true, t1loadLabel: 'Parsing notes.vtt…' })]
+    ];
+    const nStates = [
+      ['empty', () => this.setState({ t2q: '', t2state: 'empty', t2match: null })],
+      ['resolved', () => this.setState({ t2q: 'Jane Doe', t2state: 'resolved', t2match: { initials: 'JD', name: 'Jane Doe', title: 'VP Engineering, Acme', meta: 'linkedin.com/in/jane-doe · 97% match', avatarStyle: this.avatarStyle('--accent') } })],
+      ['ambiguous', () => this.setState({ t2q: 'Alex Chen', t2state: 'ambiguous', t2match: null })],
+      ['not found', () => this.setState({ t2q: 'Zinnia Quillfeather', t2state: 'notfound', t2match: null })],
+      ['loading', () => this.setState({ t2q: 'Jane Doe', t2state: 'loading' })]
+    ];
+    const pvStyle = (active) => ({ padding: '4px 10px', borderRadius: '7px', font: "600 11px 'Geist Mono',monospace", cursor: 'pointer',
+      color: active ? 'var(--text)' : 'var(--text3)', background: active ? 'var(--surface2)' : 'transparent', border: '1px solid ' + (active ? 'var(--border2)' : 'var(--border)') });
+    const previewStates = (st.tab === 'transcript' ? tStates : nStates).map(([label, fn]) => ({
+      label, onClick: fn,
+      style: pvStyle(st.tab === 'transcript' ? (t1state === label.replace(' ', '') || (label === 'too short' && t1state === 'tooshort') || (label === 'file error' && t1state === 'error')) : (st.t2state === label.replace(' ', '')))
+    }));
+
+    return {
+      tabTranscript: st.tab === 'transcript',
+      tabName: st.tab === 'name',
+      entryTabT: this.segStyle(st.tab === 'transcript'),
+      entryTabN: this.segStyle(st.tab === 'name'),
+      tabTranscriptClick: () => this.setState({ tab: 'transcript' }),
+      tabNameClick: () => this.setState({ tab: 'name' }),
+      // t1
+      t1text: st.t1text,
+      t1isEmpty: t1state === 'empty',
+      t1loading: st.t1loading,
+      t1loadLabel: st.t1loadLabel,
+      t1hasError: !!st.t1error && !st.t1loading,
+      t1error: st.t1error,
+      t1showMeta: t1ready,
+      t1metaText,
+      t1metaDotStyle: { width: '7px', height: '7px', borderRadius: '999px', flex: '0 0 auto', background: t1state === 'large' ? 'var(--accent)' : 'var(--pass)' },
+      t1tooShort: t1state === 'tooshort',
+      t1wordStr: w + (w === 1 ? ' word' : ' words') + ' so far',
+      t1samples,
+      genOpen: st.genOpen,
+      genToggleStyle: { display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '999px', font: '600 12px Geist,sans-serif', cursor: 'pointer',
+        color: st.genOpen ? 'var(--text)' : 'var(--text2)', background: st.genOpen ? 'var(--surface2)' : 'transparent', border: '1px solid ' + (st.genOpen ? 'var(--border2)' : 'var(--border)') },
+      scenarioOpts, lengthOpts,
+      dropzoneStyle: { position: 'relative', borderRadius: '12px', background: 'var(--inset)', transition: 'border-color .15s',
+        border: '1.5px ' + (t1state === 'empty' || st.t1drag ? 'dashed' : 'solid') + ' ' + (st.t1drag ? 'var(--accent)' : 'var(--border2)') },
+      onTranscriptInput: (e) => this.setTranscript(e.target.value),
+      onUploadClick: () => this.triggerUpload(),
+      onFile: (e) => { const f = e.target.files && e.target.files[0]; this.handleFile(f); e.target.value = ''; },
+      onDragOver: (e) => { e.preventDefault(); if (!this.state.t1drag) this.setState({ t1drag: true }); },
+      onDragLeave: (e) => { e.preventDefault(); this.setState({ t1drag: false }); },
+      onDrop: (e) => { e.preventDefault(); this.setState({ t1drag: false }); const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; this.handleFile(f); },
+      fileRef: this.setFileRef,
+      clearError: () => this.setState({ t1error: '' }),
+      toggleGen: () => this.setState(s => ({ genOpen: !s.genOpen })),
+      createSample: () => this.createSample(),
+      t1GenStyle: this.primaryBtnStyle(t1ready),
+      // t2
+      t2q: st.t2q,
+      t2company: st.t2company,
+      t2hasTag: !!tag,
+      t2tag: tag,
+      t2loading: st.t2state === 'loading',
+      t2resolved,
+      t2ambiguous: st.t2state === 'ambiguous',
+      t2notfound: st.t2state === 'notfound',
+      t2match: st.t2match,
+      t2candidates: candidates,
+      onNameInput: (e) => this.setState({ t2q: e.target.value }, () => this.resolveName()),
+      onCompanyInput: (e) => this.setState({ t2company: e.target.value }),
+      editMatch: () => this.setState({ t2state: 'empty', t2match: null }),
+      t2GenStyle: this.primaryBtnStyle(t2resolved),
+      // shared
+      previewStates,
+      entryGenerate: () => { if (!entryReady) return; this.setState({ view: 'trace', selected: 'faithful' }, () => this.startRun()); }
+    };
+  }
+
+  renderVals() {
+    const raw = this.stagesRaw();
+    const stages = raw.map((s, i) => this.buildStage(s, i));
+    const view = this.state.view;
+
+    // progress
+    const done = raw.filter(s => { const e = this.state.run[s.id]; return e === 'passed' || e === 'failed' || e === 'error'; }).length;
+    const anyRunning = raw.some(s => this.state.run[s.id] === 'running');
+    const pct = Math.round((done / raw.length) * 100);
+    const progressBarStyle = { height:'100%', width: pct + '%', borderRadius:'999px',
+      background: done === raw.length ? 'var(--pass)' : 'var(--accent)', transition:'width .4s ease' };
+    const progressLabel = done === raw.length ? 'Complete' : (anyRunning ? done + '/' + raw.length + ' · running' : done + '/' + raw.length + ' stages');
+
+    // detail for trace
+    const detailStage = raw.find(s => s.id === this.state.selected);
+    const detail = detailStage ? this.buildStage(detailStage, raw.indexOf(detailStage)) : null;
+    const showArticleDetail = this.state.selected === 'article';
+    const showStageDetail = !showArticleDetail && !!detail;
+
+    // swatches
+    const surfaceSwatches = [
+      ['--bg','base canvas'], ['--surface','cards'], ['--surface2','elevated'], ['--inset','code wells'], ['--border','hairlines']
+    ].map(([t, r]) => ({ token:t.replace('--',''), role:r,
+      boxStyle:{ height:'48px', background:`var(${t})`, borderBottom:'1px solid var(--border)' } }));
+    const textSwatches = [
+      ['--text','primary'], ['--text2','secondary'], ['--text3','muted']
+    ].map(([t, r]) => ({ token:t.replace('--',''), role:r,
+      boxStyle:{ height:'48px', background:`var(${t})` } }));
+    const statusSwatches = [
+      ['--accent','brand'], ['--run','running'], ['--pass','passed'], ['--fail','failed'], ['--err','errored']
+    ].map(([t, r]) => ({ token:t.replace('--',''), role:r,
+      boxStyle:{ height:'48px', background:`var(${t})` } }));
+
+    const typeScale = [
+      { name:'Display', size:'28 / -2%', weight:'600', sample:'Article run', sampleStyle:{ font:'600 28px Geist,sans-serif', letterSpacing:'-.02em', color:'var(--text)' } },
+      { name:'Title',   size:'20 / -1%', weight:'600', sample:'Resolve entity', sampleStyle:{ font:'600 20px Geist,sans-serif', letterSpacing:'-.01em', color:'var(--text)' } },
+      { name:'Heading', size:'16',       weight:'600', sample:'Faithfulness eval', sampleStyle:{ font:'600 16px Geist,sans-serif', color:'var(--text)' } },
+      { name:'Body',    size:'14',       weight:'400', sample:'Every claim traces to a real retrieved source.', sampleStyle:{ font:'400 14px Geist,sans-serif', color:'var(--text)' } },
+      { name:'Small',   size:'13',       weight:'500', sample:'8 of 9 sources directly on-topic', sampleStyle:{ font:'500 13px Geist,sans-serif', color:'var(--text2)' } },
+      { name:'Mono',    size:'12',       weight:'500', sample:'art_3d91 · 1,203 tok · 0.94', sampleStyle:{ font:"500 12px 'Geist Mono',monospace", color:'var(--text2)' } },
+      { name:'Micro',   size:'11',       weight:'600', sample:'CITATION_COVERAGE', sampleStyle:{ font:"600 11px 'Geist Mono',monospace", letterSpacing:'.06em', color:'var(--text3)' } }
+    ];
+    const spacingScale = [4,8,12,16,24,32,48].map(px => ({ px: px + '', barStyle:{ height:'14px', width: px + 'px', borderRadius:'3px', background:'color-mix(in srgb, var(--accent) 65%, var(--surface2))' } }));
+    const radiusScale = [['4','sm'],['6','md'],['8','lg'],['12','xl'],['999','full']].map(([r, l]) => ({ label: r === '999' ? 'full' : r, boxStyle:{ width:'46px', height:'46px', background:'var(--surface2)', border:'1px solid var(--border2)', borderRadius:(r==='999'?'999px':r+'px') } }));
+
+    const pillSamples = [
+      { st:'queued',  v:'--text3', label:'Queued',  anim:false },
+      { st:'running', v:'--run',   label:'Running', anim:true },
+      { st:'passed',  v:'--pass',  label:'Passed',  anim:false },
+      { st:'failed',  v:'--fail',  label:'Failed',  anim:false },
+      { st:'error',   v:'--err',   label:'Errored', anim:false }
+    ].map(p => ({ label:p.label, style:this.pillStyle(p.v), dotStyle:this.dotStyle(p.v, p.anim) }));
+
+    const summaryChips = [
+      { value:'7', label:'stages', color:'var(--text)' },
+      { value:'18.8s', label:'duration', color:'var(--text)' },
+      { value:'20.2k', label:'tokens', color:'var(--text)' },
+      { value:'6/7', label:'evals pass', color:'var(--pass)' },
+      { value:'0.94', label:'faithfulness', color:'var(--pass)' }
+    ];
+
+    return {
+      ...this.buildEntry(),
+      theme: this.state.theme,
+      isNew: view === 'new',
+      isSystem: view === 'system',
+      isPipeline: view === 'pipeline',
+      isTrace: view === 'trace',
+      newTabStyle: this.tabStyle(view === 'new'),
+      headerRerunStyle: { display: view === 'new' ? 'none' : 'inline-flex', alignItems: 'center', gap: '7px', padding: '8px 13px', borderRadius: '9px', font: '600 13px Geist,sans-serif', color: 'var(--accentText)', background: 'var(--accent)', border: '1px solid color-mix(in srgb, var(--accent) 65%, #000)', cursor: 'pointer', boxShadow: '0 6px 16px -10px var(--accent)' },
+      runBadgeStyle: { display: view === 'new' ? 'none' : 'flex', alignItems: 'center', gap: '7px', font: "500 11px 'Geist Mono',monospace", color: 'var(--text2)', padding: '5px 10px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)' },
+      goNew: () => this.setState({ view: 'new' }),
+      stages,
+      detail,
+      showStageDetail,
+      showArticleDetail,
+      progressBarStyle,
+      progressLabel,
+      surfaceSwatches, textSwatches, statusSwatches,
+      typeScale, spacingScale, radiusScale, pillSamples, summaryChips,
+      systemTabStyle: this.tabStyle(view === 'system'),
+      pipelineTabStyle: this.tabStyle(view === 'pipeline'),
+      traceTabStyle: this.tabStyle(view === 'trace'),
+      darkBtnStyle: this.segStyle(this.state.theme === 'dark'),
+      lightBtnStyle: this.segStyle(this.state.theme === 'light'),
+      articleRailStyle: { display:'flex', alignItems:'center', gap:'10px', width:'100%', padding:'9px 10px',
+        marginTop:'4px', borderRadius:'9px', cursor:'pointer', fontFamily:'inherit',
+        background: this.state.selected === 'article' ? 'var(--surface)' : 'transparent',
+        border:'1px solid ' + (this.state.selected === 'article' ? 'var(--border2)' : 'transparent') },
+      goSystem: () => this.setState({ view:'system' }),
+      goPipeline: () => this.setState({ view:'pipeline' }),
+      goTrace: () => this.setState({ view:'trace' }),
+      setDark: () => this.setState({ theme:'dark' }),
+      setLight: () => this.setState({ theme:'light' }),
+      selectArticle: () => this.setState({ selected:'article' }),
+      rerun: () => this.setState({ view: this.state.view === 'system' ? 'pipeline' : this.state.view }, () => this.startRun())
+    };
+  }
+}
+</script>
+</body>
+</html>
