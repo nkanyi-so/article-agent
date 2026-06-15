@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timezone
 
 import anthropic
@@ -173,7 +174,12 @@ class ClaudeClient:
             )
 
         try:
-            resp = await anyio.to_thread.run_sync(_call)
+            resp = await asyncio.wait_for(
+                anyio.to_thread.run_sync(_call, cancellable=True),
+                timeout=120.0,
+            )
+        except asyncio.TimeoutError:
+            raise ClaudeError("Claude API call timed out after 120 s")
         except anthropic.APIError as exc:
             raise ClaudeError(f"Claude API error: {exc}") from exc
 
