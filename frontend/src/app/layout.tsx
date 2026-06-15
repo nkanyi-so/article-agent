@@ -38,7 +38,8 @@ export default function RootLayout({
       </head>
       <body
         style={{
-          minHeight: "100vh",
+          height: "100vh",
+          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
           background: "var(--bg)",
@@ -50,14 +51,14 @@ export default function RootLayout({
           style={{
             display: "flex",
             flex: 1,
-            overflow: "hidden",
-            height: "calc(100vh - 56px)",
+            minHeight: 0,
           }}
         >
           <Sidebar />
           <main
             style={{
               flex: 1,
+              minWidth: 0,
               overflowY: "auto",
               background: "var(--bg)",
             }}

@@ -40,7 +40,6 @@ export function Sidebar() {
         background: "var(--bgSub)",
         display: "flex",
         flexDirection: "column",
-        height: "100%",
       }}
     >
       {/* New article */}
