@@ -1,9 +1,17 @@
+from collections.abc import AsyncIterator
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from app.config import CORS_ORIGINS
-from app.runs import get_all_runs, get_run, run_form_pipeline
-from app.schemas import FormRequest, HealthResponse, RunResponse, RunsResponse
+from app.evals.schemas import EvalReport  # noqa: F401 — resolves Run.evals forward ref
+from app.runs import get_all_runs, get_run, run_form_pipeline, stream_form_pipeline
+from app.schemas import FormRequest, HealthResponse, Run, RunResponse, RunsResponse
+
+# EvalReport must be imported before model_rebuild so the forward reference in
+# Run.evals: EvalReport | None resolves when FastAPI builds the OpenAPI schema.
+Run.model_rebuild()
 
 app = FastAPI(title="article-agent", version="0.1.0")
 
@@ -57,6 +65,62 @@ async def create_run(
         )
 
     return RunResponse(run=run)
+
+
+@app.post("/api/runs/stream")
+async def stream_run(
+    form: FormRequest,
+    evaluate: bool = Query(False, description="Also run LLM-judge evals (groundedness + angle_support)."),
+) -> StreamingResponse:
+    """Execute the pipeline and stream SSE events as each stage completes.
+
+    Returns a ``text/event-stream`` response. Events emitted in order:
+
+    .. code-block:: text
+
+        event: run_started
+        data: {"run_id": "...", "created_at": "...", "input": {...}}
+
+        event: stage_started
+        data: {"name": "ingest"}
+
+        event: stage_completed
+        data: {"stage": {"name": "ingest", "status": "ok", ...}}
+
+        ... (stage_started / stage_completed for enrich, research, draft)
+
+        event: evaluating       # only when ?evaluate=true
+        data: {}
+
+        event: run_completed    # terminal — success
+        data: {"run": {...}}
+
+        # OR
+
+        event: needs_disambiguation   # terminal — user must pick a candidate
+        data: {"run_id": "...", "candidates": [...]}
+
+        # OR
+
+        event: run_failed       # terminal — pipeline error
+        data: {"run": {...}}
+
+    The run is stored in the in-memory store on every terminal event so that
+    GET /api/runs/{id} is immediately available after the stream ends.
+    """
+
+    async def _event_stream() -> AsyncIterator[str]:
+        async for event_name, payload in stream_form_pipeline(form, evaluate=evaluate):
+            yield f"event: {event_name}\ndata: {payload.model_dump_json()}\n\n"
+
+    return StreamingResponse(
+        _event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.post("/api/runs/{run_id}/evals", response_model=RunResponse)

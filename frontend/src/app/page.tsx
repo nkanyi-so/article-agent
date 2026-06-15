@@ -1,58 +1,204 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { InputForm } from "@/components/new-article/InputForm";
+import { DisambiguationChooser } from "@/components/new-article/DisambiguationChooser";
+import { RunErrorNotice } from "@/components/new-article/RunErrorNotice";
+import { ProcessingView, type LiveStage } from "@/components/run/ProcessingView";
+import { api, ApiError } from "@/lib/api";
+import type { EnrichCandidate, FormRequest, Run } from "@/lib/run-types";
+import type { StageStatusToken } from "@/lib/status";
 
-type HealthStatus = "loading" | "ok" | "error";
+const ALL_STAGES = ["ingest", "enrich", "research", "draft"];
 
-export default function Home() {
-  const [status, setStatus] = useState<HealthStatus>("loading");
-  const [detail, setDetail] = useState<string>("");
+function initStages(): LiveStage[] {
+  return ALL_STAGES.map((name) => ({ name, status: "pending" as StageStatusToken }));
+}
 
-  useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+type PageState =
+  | { phase: "idle" }
+  | { phase: "streaming"; subject: string; stages: LiveStage[]; evaluating: boolean }
+  | { phase: "disambiguation"; candidates: EnrichCandidate[]; runId: string }
+  | { phase: "error"; error: ApiError | Error; partialRun?: Run };
 
-    fetch(`${apiUrl}/health`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<{ status: string; service: string; version: string }>;
-      })
-      .then((data) => {
-        setStatus("ok");
-        setDetail(`${data.service} v${data.version}`);
-      })
-      .catch((err: Error) => {
-        setStatus("error");
-        setDetail(err.message);
-      });
-  }, []);
+export default function HomePage() {
+  const router = useRouter();
+  const [state, setState] = useState<PageState>({ phase: "idle" });
+  const abortRef = useRef<AbortController | null>(null);
+
+  const startRun = useCallback((form: FormRequest, evaluate: boolean) => {
+    // Cancel any existing stream.
+    abortRef.current?.abort();
+
+    const subject =
+      form.name ??
+      form.linkedin_url?.split("/in/")[1]?.replace(/-/g, " ") ??
+      "Unknown";
+
+    setState({
+      phase: "streaming",
+      subject,
+      stages: initStages(),
+      evaluating: false,
+    });
+
+    const controller = api.streamRun(form, evaluate, {
+      onRunStarted: (data) => {
+        // Silently update the URL to be the canonical run URL so it's shareable,
+        // without remounting (we stay on this client component to keep the stream alive).
+        window.history.replaceState(null, "", `/runs/${data.run_id}`);
+      },
+
+      onStageStarted: ({ name }) => {
+        setState((prev) => {
+          if (prev.phase !== "streaming") return prev;
+          return {
+            ...prev,
+            stages: prev.stages.map((s) =>
+              s.name === name ? { ...s, status: "running" } : s
+            ),
+          };
+        });
+      },
+
+      onStageCompleted: ({ stage }) => {
+        setState((prev) => {
+          if (prev.phase !== "streaming") return prev;
+          return {
+            ...prev,
+            stages: prev.stages.map((s) =>
+              s.name === stage.name
+                ? {
+                    ...s,
+                    status: stage.status === "ok" ? "ok" : "error",
+                    completedStage: stage,
+                  }
+                : s
+            ),
+          };
+        });
+      },
+
+      onNeedsDisambiguation: ({ candidates, run_id }) => {
+        setState({ phase: "disambiguation", candidates, runId: run_id });
+      },
+
+      onEvaluating: () => {
+        setState((prev) => {
+          if (prev.phase !== "streaming") return prev;
+          return { ...prev, evaluating: true };
+        });
+      },
+
+      onCompleted: ({ run }) => {
+        // Navigate to the canonical run view (pipeline tab).
+        router.push(`/runs/${run.id}`);
+      },
+
+      onFailed: ({ run }) => {
+        const err = run.error
+          ? new ApiError(
+              run.error.http_status,
+              run.error.message,
+              run.error.code,
+              run.error.retryable,
+            )
+          : new ApiError(500, "Pipeline failed");
+        setState({ phase: "error", error: err, partialRun: run });
+      },
+
+      onError: (err) => {
+        setState({ phase: "error", error: err });
+      },
+    });
+
+    abortRef.current = controller;
+  }, [router]);
+
+  function handleDisambiguationPick(form: FormRequest) {
+    startRun(form, false);
+  }
+
+  function reset() {
+    abortRef.current?.abort();
+    setState({ phase: "idle" });
+    // Push back to "/" to restore the form URL.
+    window.history.replaceState(null, "", "/");
+  }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-8">
-      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-6">
-          article-agent
-        </h1>
-
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-zinc-500 dark:text-zinc-400 w-20">Backend</span>
-
-          {status === "loading" && (
-            <span className="text-sm text-zinc-400 animate-pulse">checking…</span>
-          )}
-          {status === "ok" && (
-            <>
-              <span className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
-              <span className="text-sm text-zinc-700 dark:text-zinc-300">{detail}</span>
-            </>
-          )}
-          {status === "error" && (
-            <>
-              <span className="h-2 w-2 rounded-full bg-red-500 shrink-0" />
-              <span className="text-sm text-red-600 dark:text-red-400">{detail}</span>
-            </>
-          )}
+    <div
+      style={{
+        maxWidth: 640,
+        margin: "0 auto",
+        padding: "48px 24px 80px",
+        width: "100%",
+      }}
+    >
+      {/* Hero header — visible only when idle */}
+      {state.phase === "idle" && (
+        <div style={{ marginBottom: 32 }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              fontFamily: "var(--font-mono), monospace",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--accent)",
+              marginBottom: 12,
+            }}
+          >
+            New article
+          </div>
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 600,
+              color: "var(--text)",
+              marginBottom: 8,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.25,
+            }}
+          >
+            Start from a name or profile
+          </h1>
+          <p style={{ fontSize: 14, color: "var(--text2)", lineHeight: 1.6, margin: 0 }}>
+            Bylined researches the person, picks a grounded angle, writes a draft,
+            and traces every claim back to a real source.
+          </p>
         </div>
-      </div>
-    </main>
+      )}
+
+      {/* Main content area */}
+      {state.phase === "idle" && (
+        <InputForm onSubmit={startRun} />
+      )}
+
+      {state.phase === "streaming" && (
+        <ProcessingView
+          subject={state.subject}
+          stages={state.stages}
+          evaluating={state.evaluating}
+        />
+      )}
+
+      {state.phase === "disambiguation" && (
+        <DisambiguationChooser
+          candidates={state.candidates}
+          onPick={handleDisambiguationPick}
+          onCancel={reset}
+        />
+      )}
+
+      {state.phase === "error" && (
+        <RunErrorNotice
+          error={state.error}
+          partialRun={state.partialRun}
+          onRetry={reset}
+        />
+      )}
+    </div>
   );
 }

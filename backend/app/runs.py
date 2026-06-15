@@ -3,18 +3,29 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from asyncio import CancelledError
+from collections.abc import AsyncIterator
 from datetime import datetime, timezone
+
+from pydantic import BaseModel
 
 from app.clients import Clients
 from app.errors import PipelineError
 from app.schemas import (
     DraftResult,
     EnrichResult,
+    EvaluatingEvent,
     FormRequest,
+    NeedsDisambiguationEvent,
     Run,
+    RunCompletedEvent,
+    RunFailedEvent,
+    RunStartedEvent,
     Source,
+    StageCompletedEvent,
     StageError,
     StageOutput,
+    StageStartedEvent,
 )
 from app.stages.draft import draft
 from app.stages.enrich import enrich
@@ -88,37 +99,51 @@ def _dedup_sources(sources: list[Source]) -> list[Source]:
 
 
 # ---------------------------------------------------------------------------
-# Pipeline orchestration
+# Streaming pipeline (async generator — the source of truth)
 # ---------------------------------------------------------------------------
 
 
-async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run:
-    """Execute the four-stage form-door pipeline and return a Run.
+async def stream_form_pipeline(
+    form: FormRequest,
+    *,
+    evaluate: bool = False,
+) -> AsyncIterator[tuple[str, BaseModel]]:
+    """Four-stage pipeline that yields SSE events as each stage progresses.
 
-    Errors are always captured into the Run (never raised to the caller);
-    the route handler inspects run.status and raises HTTPException as needed.
+    Yields ``(event_name, payload)`` pairs:
+      run_started          → RunStartedEvent
+      stage_started        → StageStartedEvent        (before every stage)
+      stage_completed      → StageCompletedEvent      (after every stage)
+      needs_disambiguation → NeedsDisambiguationEvent  (terminal)
+      evaluating           → EvaluatingEvent           (only when evaluate=True)
+      run_completed        → RunCompletedEvent         (terminal, success)
+      run_failed           → RunFailedEvent            (terminal, failure)
 
-    If evaluate=True, the two LLM-judge evals (groundedness, angle_support) also
-    run and attach a complete EvalReport to run.evals.  Otherwise, only the two
-    cheap deterministic evals run automatically on every completed run.
+    The final Run is stored in _store before the terminal event is yielded so
+    that GET /api/runs/{id} is immediately available.
+
+    Cancellation (client disconnect) propagates via CancelledError; the
+    ``finally`` block closes Clients regardless.
     """
     run_id = uuid.uuid4().hex
     created_at = datetime.now(timezone.utc)
     all_sources: list[Source] = []
 
-    # Pre-initialise stage envelopes so the failure path always has something
-    # to put in the Run, even for stages that were never reached.
     ingest_stage = _placeholder_stage("ingest")
     enrich_stage = _placeholder_stage("enrich")
     research_stage: StageOutput | None = None
     draft_stage: StageOutput | None = None
     clients: Clients | None = None
 
+    yield "run_started", RunStartedEvent(
+        run_id=run_id, created_at=created_at, input=form
+    )
+
     try:
-        # Validates all three API keys — raises MissingKeyError immediately if absent.
         clients = Clients()
 
         # ── Stage 1: Ingest ────────────────────────────────────────────────
+        yield "stage_started", StageStartedEvent(name="ingest")
         t0 = time.perf_counter()
         try:
             brief, _ = await ingest(form)
@@ -130,9 +155,12 @@ async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run
             )
         except PipelineError as exc:
             ingest_stage = _error_envelope("ingest", t0, exc)
+            yield "stage_completed", StageCompletedEvent(stage=ingest_stage)
             raise
+        yield "stage_completed", StageCompletedEvent(stage=ingest_stage)
 
         # ── Stage 2: Enrich ────────────────────────────────────────────────
+        yield "stage_started", StageStartedEvent(name="enrich")
         t0 = time.perf_counter()
         try:
             enrich_result, enrich_sources = await enrich(brief, clients.apollo)
@@ -146,10 +174,11 @@ async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run
             all_sources.extend(enrich_sources)
         except PipelineError as exc:
             enrich_stage = _error_envelope("enrich", t0, exc)
+            yield "stage_completed", StageCompletedEvent(stage=enrich_stage)
             raise
+        yield "stage_completed", StageCompletedEvent(stage=enrich_stage)
 
-        # Ambiguous match — return early with a 200-level Run so the caller
-        # can present candidates and ask the user to disambiguate.
+        # Ambiguous — surface candidates and stop.
         if enrich_result.status == "ambiguous":
             run = Run(
                 id=run_id,
@@ -161,9 +190,13 @@ async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run
                 sources=_dedup_sources(all_sources),
             )
             _store[run_id] = run
-            return run
+            yield "needs_disambiguation", NeedsDisambiguationEvent(
+                run_id=run_id, candidates=enrich_result.candidates
+            )
+            return
 
         # ── Stage 3: Research ──────────────────────────────────────────────
+        yield "stage_started", StageStartedEvent(name="research")
         t0 = time.perf_counter()
         try:
             research_result, research_sources = await research(
@@ -179,9 +212,12 @@ async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run
             all_sources.extend(research_sources)
         except PipelineError as exc:
             research_stage = _error_envelope("research", t0, exc)
+            yield "stage_completed", StageCompletedEvent(stage=research_stage)
             raise
+        yield "stage_completed", StageCompletedEvent(stage=research_stage)
 
         # ── Stage 4: Draft ─────────────────────────────────────────────────
+        yield "stage_started", StageStartedEvent(name="draft")
         t0 = time.perf_counter()
         try:
             draft_result, draft_sources = await draft(
@@ -197,7 +233,9 @@ async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run
             all_sources.extend(draft_sources)
         except PipelineError as exc:
             draft_stage = _error_envelope("draft", t0, exc)
+            yield "stage_completed", StageCompletedEvent(stage=draft_stage)
             raise
+        yield "stage_completed", StageCompletedEvent(stage=draft_stage)
 
         run = Run(
             id=run_id,
@@ -213,21 +251,29 @@ async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run
             sources=_dedup_sources(all_sources),
         )
 
-        # ── Inline deterministic evals (always) ───────────────────────────
+        # ── Evals ─────────────────────────────────────────────────────────
         try:
             from app.evals.base import run_all_evals, run_deterministic_evals
             from app.evals.judge import JudgeClient
 
             if evaluate:
+                yield "evaluating", EvaluatingEvent()
                 judge = JudgeClient(clients.claude)
                 run.evals = await run_all_evals(run, judge)
             else:
                 run.evals = await run_deterministic_evals(run)
+        except CancelledError:
+            raise
         except Exception:
             logger.exception("Eval layer failed — run still stored without evals")
 
         _store[run_id] = run
-        return run
+        yield "run_completed", RunCompletedEvent(run=run)
+
+    except CancelledError:
+        # Client disconnected — don't store a partial run.
+        logger.info("Stream cancelled for run %s", run_id)
+        raise
 
     except PipelineError as exc:
         stage_err = StageError(
@@ -249,8 +295,36 @@ async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run
             error=stage_err,
         )
         _store[run_id] = run
-        return run
+        yield "run_failed", RunFailedEvent(run=run)
 
     finally:
         if clients is not None:
             await clients.aclose()
+
+
+# ---------------------------------------------------------------------------
+# Non-streaming wrapper (keeps existing tests + harness working unchanged)
+# ---------------------------------------------------------------------------
+
+
+async def run_form_pipeline(form: FormRequest, *, evaluate: bool = False) -> Run:
+    """Drain the streaming generator and return the final Run.
+
+    Preserves the original API used by tests, the harness, and the existing
+    POST /api/runs endpoint so nothing external needs to change.
+    """
+    final_run: Run | None = None
+
+    async for event_name, payload in stream_form_pipeline(form, evaluate=evaluate):
+        if event_name in ("run_completed", "run_failed"):
+            assert isinstance(payload, (RunCompletedEvent, RunFailedEvent))
+            final_run = payload.run
+        elif event_name == "needs_disambiguation":
+            assert isinstance(payload, NeedsDisambiguationEvent)
+            # Reconstruct the partial Run stored in _store for disambiguation.
+            final_run = get_run(payload.run_id)
+
+    if final_run is None:  # pragma: no cover
+        raise RuntimeError("Pipeline generator completed without a terminal event.")
+
+    return final_run
