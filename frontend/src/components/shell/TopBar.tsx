@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface TopBarProps {
@@ -21,8 +22,16 @@ export function TopBar({ runId }: TopBarProps) {
         top: 0,
       }}
     >
-      {/* Brand */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      {/* Brand — links home */}
+      <Link
+        href="/"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          textDecoration: "none",
+        }}
+      >
         <div
           style={{
             width: 26,
@@ -59,7 +68,7 @@ export function TopBar({ runId }: TopBarProps) {
             Grounded articles
           </span>
         </div>
-      </div>
+      </Link>
 
       <div style={{ flex: 1 }} />
 

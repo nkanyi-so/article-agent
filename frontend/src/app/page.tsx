@@ -165,8 +165,8 @@ export default function HomePage() {
             Start from a name or profile
           </h1>
           <p style={{ fontSize: 14, color: "var(--text2)", lineHeight: 1.6, margin: 0 }}>
-            Bylined researches the person, picks a grounded angle, writes a draft,
-            and traces every claim back to a real source.
+            Enter a name or LinkedIn profile. The pipeline researches them, picks
+            a grounded angle, writes a draft, and traces every claim to a real source.
           </p>
         </div>
       )}
