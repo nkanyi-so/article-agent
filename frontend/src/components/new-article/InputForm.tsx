@@ -13,7 +13,8 @@ interface InputFormProps {
 type EntryTab = "name" | "transcript";
 
 function isLinkedInUrl(s: string) {
-  return s.startsWith("https://www.linkedin.com/") || s.startsWith("http://www.linkedin.com/") || s.startsWith("linkedin.com/");
+  // Matches www and country subdomains (uk.linkedin.com, fr.linkedin.com, etc.)
+  return /^https?:\/\/([\w-]+\.)?linkedin\.com\//i.test(s) || s.startsWith("linkedin.com/");
 }
 
 export function InputForm({ onSubmit, disabled = false }: InputFormProps) {
