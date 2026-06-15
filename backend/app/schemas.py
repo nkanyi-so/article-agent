@@ -218,3 +218,51 @@ class RunResponse(BaseModel):
 
 class RunsResponse(BaseModel):
     runs: list[Run]
+
+
+# ---------------------------------------------------------------------------
+# SSE pipeline event payloads (emitted by stream_form_pipeline)
+# ---------------------------------------------------------------------------
+
+
+class RunStartedEvent(BaseModel):
+    """First event — the run has been assigned an id and is starting."""
+
+    run_id: str
+    created_at: datetime
+    input: FormRequest
+
+
+class StageStartedEvent(BaseModel):
+    """A stage has begun executing."""
+
+    name: str
+
+
+class StageCompletedEvent(BaseModel):
+    """A stage finished (ok or error)."""
+
+    stage: StageOutput
+
+
+class NeedsDisambiguationEvent(BaseModel):
+    """Terminal — Apollo returned multiple candidates; user must pick one."""
+
+    run_id: str
+    candidates: list[EnrichCandidate]
+
+
+class EvaluatingEvent(BaseModel):
+    """Emitted just before the LLM-judge evals run (only when evaluate=True)."""
+
+
+class RunCompletedEvent(BaseModel):
+    """Terminal — the run completed successfully."""
+
+    run: Run
+
+
+class RunFailedEvent(BaseModel):
+    """Terminal — the run failed; partial trace included."""
+
+    run: Run
