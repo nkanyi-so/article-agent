@@ -2,8 +2,13 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import CORS_ORIGINS
+from app.evals.schemas import EvalReport  # noqa: F401 — resolves Run.evals forward ref
 from app.runs import get_all_runs, get_run, run_form_pipeline
-from app.schemas import FormRequest, HealthResponse, RunResponse, RunsResponse
+from app.schemas import FormRequest, HealthResponse, Run, RunResponse, RunsResponse
+
+# EvalReport must be imported before model_rebuild so the forward reference in
+# Run.evals: EvalReport | None resolves when FastAPI builds the OpenAPI schema.
+Run.model_rebuild()
 
 app = FastAPI(title="article-agent", version="0.1.0")
 
