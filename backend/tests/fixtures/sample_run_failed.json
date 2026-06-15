@@ -1,0 +1,50 @@
+{
+  "id": "fixture_failed_01",
+  "created_at": "2026-06-13T10:10:00Z",
+  "input": {"name": "zxqvmnobscure7734person", "linkedin_url": null, "company": null},
+  "status": "failed",
+  "ingest": {
+    "name": "ingest", "status": "ok", "duration_ms": 1, "sources": [], "error": null,
+    "output": {
+      "name": "zxqvmnobscure7734person", "linkedin_url": null, "company": null,
+      "display_name": "zxqvmnobscure7734person",
+      "search_terms": ["zxqvmnobscure7734person"]
+    }
+  },
+  "enrich": {
+    "name": "enrich", "status": "ok", "duration_ms": 390, "sources": [], "error": null,
+    "output": {
+      "status": "matched",
+      "person": {
+        "apollo_id": null, "name": "zxqvmnobscure7734person", "title": null,
+        "organization": null, "organization_domain": null,
+        "linkedin_url": null, "location": null,
+        "raw": {
+          "_source": "form-input",
+          "_apollo_skipped": "Apollo people/match returned HTTP 403: API_INACCESSIBLE on free plan"
+        }
+      },
+      "candidates": []
+    }
+  },
+  "research": {
+    "name": "research", "status": "error", "duration_ms": 8100, "sources": [], "output": null,
+    "error": {
+      "code": "exa_empty",
+      "message": "Exa returned no news for 'zxqvmnobscure7734person' in the last 180 days.",
+      "retryable": true,
+      "http_status": 422
+    }
+  },
+  "draft": null,
+  "article": null,
+  "claim_source_map": null,
+  "sources": [],
+  "error": {
+    "code": "exa_empty",
+    "message": "Exa returned no news for 'zxqvmnobscure7734person' in the last 180 days.",
+    "retryable": true,
+    "http_status": 422
+  },
+  "evals": null
+}

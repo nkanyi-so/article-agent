@@ -1,0 +1,107 @@
+{
+  "id": "fixture_degraded_01",
+  "created_at": "2026-06-13T10:05:00Z",
+  "input": {"name": "Sam Altman", "linkedin_url": null, "company": "OpenAI"},
+  "status": "completed",
+  "ingest": {
+    "name": "ingest", "status": "ok", "duration_ms": 1, "sources": [], "error": null,
+    "output": {
+      "name": "Sam Altman", "linkedin_url": null, "company": "OpenAI",
+      "display_name": "Sam Altman", "search_terms": ["Sam Altman", "OpenAI"]
+    }
+  },
+  "enrich": {
+    "name": "enrich", "status": "ok", "duration_ms": 410, "sources": [], "error": null,
+    "output": {
+      "status": "matched",
+      "person": {
+        "apollo_id": null, "name": "Sam Altman", "title": null,
+        "organization": "OpenAI", "organization_domain": null,
+        "linkedin_url": null, "location": null,
+        "raw": {
+          "_source": "form-input",
+          "_apollo_skipped": "Apollo people/match returned HTTP 403: API_INACCESSIBLE on free plan"
+        }
+      },
+      "candidates": []
+    }
+  },
+  "research": {
+    "name": "research", "status": "ok", "duration_ms": 11800, "error": null,
+    "sources": [
+      {
+        "id": "exa:0", "kind": "exa",
+        "url": "https://en.yna.co.kr/view/AEN20260612009800320",
+        "title": "OpenAI's Sam Altman postpones visit to S. Korea",
+        "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.",
+        "retrieved_at": "2026-06-13T10:05:05Z"
+      },
+      {
+        "id": "exa:1", "kind": "exa",
+        "url": "https://www.koreatimes.co.kr/ai-chip-talks",
+        "title": "Samsung AI chip talks with OpenAI stall",
+        "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.",
+        "retrieved_at": "2026-06-13T10:05:05Z"
+      }
+    ],
+    "output": {
+      "angle": {
+        "headline": "Altman Postpones South Korea Trip, Leaving Samsung Chip Talks in Limbo",
+        "angle": "Sam Altman's postponement disrupts AI chip partnership discussions with Samsung Electronics.",
+        "rationale": "The postponement stalls chip cooperation talks that Samsung had scheduled at its Suwon campus.",
+        "supporting_source_ids": ["exa:0", "exa:1"]
+      },
+      "sources": [
+        {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:05:05Z"},
+        {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:05:05Z"}
+      ]
+    }
+  },
+  "draft": {
+    "name": "draft", "status": "ok", "duration_ms": 21000, "error": null,
+    "sources": [
+      {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:05:05Z"},
+      {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:05:05Z"}
+    ],
+    "output": {
+      "article": {
+        "title": "Altman Postpones South Korea Trip, Leaving Samsung Chip Talks in Limbo",
+        "body": "OpenAI CEO Sam Altman has postponed his visit to South Korea, citing personal reasons. Samsung Electronics had prepared meetings at its Suwon campus to discuss AI chip development.",
+        "claims": [
+          {"text": "Sam Altman postponed his visit to South Korea citing personal reasons.", "source_ids": ["exa:0"]},
+          {"text": "Samsung had prepared a multi-day schedule at its Suwon campus to discuss AI chip development.", "source_ids": ["exa:1"]},
+          {"text": "This claim cites a non-existent source to test the honesty path.", "source_ids": ["exa:FAKE"]}
+        ]
+      },
+      "claim_source_map": {
+        "0": ["exa:0"],
+        "1": ["exa:1"],
+        "2": ["exa:FAKE"]
+      },
+      "sources": [
+        {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:05:05Z"},
+        {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:05:05Z"}
+      ]
+    }
+  },
+  "article": {
+    "title": "Altman Postpones South Korea Trip, Leaving Samsung Chip Talks in Limbo",
+    "body": "OpenAI CEO Sam Altman has postponed his visit to South Korea, citing personal reasons. Samsung Electronics had prepared meetings at its Suwon campus to discuss AI chip development.",
+    "claims": [
+      {"text": "Sam Altman postponed his visit to South Korea citing personal reasons.", "source_ids": ["exa:0"]},
+      {"text": "Samsung had prepared a multi-day schedule at its Suwon campus to discuss AI chip development.", "source_ids": ["exa:1"]},
+      {"text": "This claim cites a non-existent source to test the honesty path.", "source_ids": ["exa:FAKE"]}
+    ]
+  },
+  "claim_source_map": {
+    "0": ["exa:0"],
+    "1": ["exa:1"],
+    "2": ["exa:FAKE"]
+  },
+  "sources": [
+    {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:05:05Z"},
+    {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:05:05Z"}
+  ],
+  "error": null,
+  "evals": null
+}

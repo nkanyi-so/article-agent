@@ -1,0 +1,126 @@
+{
+  "id": "fixture_completed_01",
+  "created_at": "2026-06-13T10:00:00Z",
+  "input": {"name": "Sam Altman", "linkedin_url": null, "company": "OpenAI"},
+  "status": "completed",
+  "ingest": {
+    "name": "ingest", "status": "ok", "duration_ms": 1, "sources": [], "error": null,
+    "output": {
+      "name": "Sam Altman", "linkedin_url": null, "company": "OpenAI",
+      "display_name": "Sam Altman", "search_terms": ["Sam Altman", "OpenAI"]
+    }
+  },
+  "enrich": {
+    "name": "enrich", "status": "ok", "duration_ms": 410, "sources": [], "error": null,
+    "output": {
+      "status": "matched",
+      "person": {
+        "apollo_id": null, "name": "Sam Altman", "title": null,
+        "organization": "OpenAI", "organization_domain": null,
+        "linkedin_url": null, "location": null,
+        "raw": {
+          "_source": "form-input",
+          "_apollo_skipped": "Apollo people/match returned HTTP 403: API_INACCESSIBLE on free plan"
+        }
+      },
+      "candidates": []
+    }
+  },
+  "research": {
+    "name": "research", "status": "ok", "duration_ms": 12200, "error": null,
+    "sources": [
+      {
+        "id": "exa:0", "kind": "exa",
+        "url": "https://en.yna.co.kr/view/AEN20260612009800320",
+        "title": "OpenAI's Sam Altman postpones visit to S. Korea",
+        "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.",
+        "retrieved_at": "2026-06-13T10:00:05Z"
+      },
+      {
+        "id": "exa:1", "kind": "exa",
+        "url": "https://www.koreatimes.co.kr/ai-chip-talks",
+        "title": "Samsung AI chip talks with OpenAI stall as Altman postpones Seoul trip",
+        "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.",
+        "retrieved_at": "2026-06-13T10:00:05Z"
+      },
+      {
+        "id": "exa:2", "kind": "exa",
+        "url": "https://www.koreaherald.com/openai-naver-kakao",
+        "title": "Naver and Kakao executives were scheduled to meet Altman",
+        "snippet": "Portal operator Naver and mobile platform Kakao had confirmed executive-level meetings with Sam Altman during his planned two-day Korea trip. Both companies are exploring AI licensing agreements with OpenAI.",
+        "retrieved_at": "2026-06-13T10:00:05Z"
+      }
+    ],
+    "output": {
+      "angle": {
+        "headline": "Altman Postpones South Korea Trip, Leaving Samsung Chip Talks in Limbo",
+        "angle": "Sam Altman's last-minute postponement of his South Korea visit disrupts high-stakes AI chip partnership discussions with Samsung Electronics.",
+        "rationale": "The postponement directly stalls concrete chip cooperation talks that Samsung had scheduled at its Suwon campus, with no rescheduled date announced.",
+        "supporting_source_ids": ["exa:0", "exa:1"]
+      },
+      "sources": [
+        {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:00:05Z"},
+        {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall as Altman postpones Seoul trip", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:00:05Z"},
+        {"id": "exa:2", "kind": "exa", "url": "https://www.koreaherald.com/openai-naver-kakao", "title": "Naver and Kakao executives were scheduled to meet Altman", "snippet": "Portal operator Naver and mobile platform Kakao had confirmed executive-level meetings with Sam Altman during his planned two-day Korea trip. Both companies are exploring AI licensing agreements with OpenAI.", "retrieved_at": "2026-06-13T10:00:05Z"}
+      ]
+    }
+  },
+  "draft": {
+    "name": "draft", "status": "ok", "duration_ms": 22000, "error": null,
+    "sources": [
+      {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:00:05Z"},
+      {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall as Altman postpones Seoul trip", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:00:05Z"},
+      {"id": "exa:2", "kind": "exa", "url": "https://www.koreaherald.com/openai-naver-kakao", "title": "Naver and Kakao executives were scheduled to meet Altman", "snippet": "Portal operator Naver and mobile platform Kakao had confirmed executive-level meetings with Sam Altman during his planned two-day Korea trip. Both companies are exploring AI licensing agreements with OpenAI.", "retrieved_at": "2026-06-13T10:00:05Z"}
+    ],
+    "output": {
+      "article": {
+        "title": "Altman Postpones South Korea Trip, Leaving Samsung Chip Talks in Limbo",
+        "body": "OpenAI CEO Sam Altman has postponed a closely watched trip to South Korea that was scheduled for next week, with the AI company citing personal reasons for the delay.\n\nThe visit had centred on meetings with Samsung Electronics at its Suwon campus, where Samsung had prepared a multi-day schedule to discuss custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.\n\nNaver and Kakao executives had also confirmed meetings with Altman during the planned two-day trip, with both companies exploring AI licensing agreements with OpenAI.",
+        "claims": [
+          {"text": "OpenAI CEO Sam Altman has postponed his visit to South Korea scheduled for next week.", "source_ids": ["exa:0"]},
+          {"text": "OpenAI cited personal reasons for the postponement.", "source_ids": ["exa:0"]},
+          {"text": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus to discuss custom AI chip development.", "source_ids": ["exa:1"]},
+          {"text": "The postponement leaves the timeline for a potential chip partnership in limbo.", "source_ids": ["exa:1"]},
+          {"text": "Naver and Kakao executives were scheduled to meet Altman during the planned two-day trip.", "source_ids": ["exa:2"]}
+        ]
+      },
+      "claim_source_map": {
+        "0": ["exa:0"],
+        "1": ["exa:0"],
+        "2": ["exa:1"],
+        "3": ["exa:1"],
+        "4": ["exa:2"]
+      },
+      "sources": [
+        {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:00:05Z"},
+        {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall as Altman postpones Seoul trip", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:00:05Z"},
+        {"id": "exa:2", "kind": "exa", "url": "https://www.koreaherald.com/openai-naver-kakao", "title": "Naver and Kakao executives were scheduled to meet Altman", "snippet": "Portal operator Naver and mobile platform Kakao had confirmed executive-level meetings with Sam Altman during his planned two-day Korea trip. Both companies are exploring AI licensing agreements with OpenAI.", "retrieved_at": "2026-06-13T10:00:05Z"}
+      ]
+    }
+  },
+  "article": {
+    "title": "Altman Postpones South Korea Trip, Leaving Samsung Chip Talks in Limbo",
+    "body": "OpenAI CEO Sam Altman has postponed a closely watched trip to South Korea that was scheduled for next week, with the AI company citing personal reasons for the delay.\n\nThe visit had centred on meetings with Samsung Electronics at its Suwon campus, where Samsung had prepared a multi-day schedule to discuss custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.\n\nNaver and Kakao executives had also confirmed meetings with Altman during the planned two-day trip, with both companies exploring AI licensing agreements with OpenAI.",
+    "claims": [
+      {"text": "OpenAI CEO Sam Altman has postponed his visit to South Korea scheduled for next week.", "source_ids": ["exa:0"]},
+      {"text": "OpenAI cited personal reasons for the postponement.", "source_ids": ["exa:0"]},
+      {"text": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus to discuss custom AI chip development.", "source_ids": ["exa:1"]},
+      {"text": "The postponement leaves the timeline for a potential chip partnership in limbo.", "source_ids": ["exa:1"]},
+      {"text": "Naver and Kakao executives were scheduled to meet Altman during the planned two-day trip.", "source_ids": ["exa:2"]}
+    ]
+  },
+  "claim_source_map": {
+    "0": ["exa:0"],
+    "1": ["exa:0"],
+    "2": ["exa:1"],
+    "3": ["exa:1"],
+    "4": ["exa:2"]
+  },
+  "sources": [
+    {"id": "exa:0", "kind": "exa", "url": "https://en.yna.co.kr/view/AEN20260612009800320", "title": "OpenAI's Sam Altman postpones visit to S. Korea", "snippet": "OpenAI CEO Sam Altman has postponed a visit to South Korea scheduled for next week, citing personal reasons. He was due to meet Samsung Electronics executives to discuss AI cooperation.", "retrieved_at": "2026-06-13T10:00:05Z"},
+    {"id": "exa:1", "kind": "exa", "url": "https://www.koreatimes.co.kr/ai-chip-talks", "title": "Samsung AI chip talks with OpenAI stall as Altman postpones Seoul trip", "snippet": "Samsung Electronics had prepared a multi-day schedule for Altman at its Suwon campus, including discussions on custom AI chip development. The postponement leaves the timeline for a potential chip partnership in limbo.", "retrieved_at": "2026-06-13T10:00:05Z"},
+    {"id": "exa:2", "kind": "exa", "url": "https://www.koreaherald.com/openai-naver-kakao", "title": "Naver and Kakao executives were scheduled to meet Altman", "snippet": "Portal operator Naver and mobile platform Kakao had confirmed executive-level meetings with Sam Altman during his planned two-day Korea trip. Both companies are exploring AI licensing agreements with OpenAI.", "retrieved_at": "2026-06-13T10:00:05Z"}
+  ],
+  "error": null,
+  "evals": null
+}
