@@ -118,8 +118,10 @@ Do not reference any person, company, or event not mentioned in the sources."""
     angle.supporting_source_ids = [
         sid for sid in angle.supporting_source_ids if sid in valid_ids
     ]
+    angle_fallback = False
     if not angle.supporting_source_ids:
         # Fallback: use the first two sources if Claude returned nothing valid.
         angle.supporting_source_ids = source_ids[:2]
+        angle_fallback = True
 
-    return ResearchResult(angle=angle, sources=sources), sources
+    return ResearchResult(angle=angle, sources=sources, angle_fallback=angle_fallback), sources

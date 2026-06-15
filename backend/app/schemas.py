@@ -141,6 +141,7 @@ class ChosenAngle(BaseModel):
 class ResearchResult(BaseModel):
     angle: ChosenAngle
     sources: list[Source]  # Exa hits given to Claude
+    angle_fallback: bool = False  # True when Claude returned no valid source IDs
 
 
 # ---------------------------------------------------------------------------

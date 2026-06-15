@@ -83,6 +83,7 @@ export interface ChosenAngle {
 export interface ResearchResult {
   angle: ChosenAngle;
   sources: Source[];
+  angle_fallback: boolean;
 }
 
 export interface Claim {

@@ -28,6 +28,18 @@ async def evaluate(ctx: EvalContext) -> EvalVerdict:
             caveats=["No research stage output — run did not complete research."],
         )
 
+    if research_result.angle_fallback:
+        return EvalVerdict(
+            name="angle_support",
+            score=0.0,
+            passed=False,
+            reasoning="Angle fell back to positional sources — Claude returned no valid source IDs.",
+            method="deterministic",
+            confidence="high",
+            degraded=True,
+            caveats=["Angle supporting sources were selected by positional fallback, not by Claude."],
+        )
+
     if ctx.judge is None:
         raise ValueError("angle_support eval requires a JudgeClient")
 
