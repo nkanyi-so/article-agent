@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DEFAULT_THEME, THEME_KEY, type Theme } from "@/lib/theme";
 
 export function ThemeToggle() {
-  // Lazy initialiser reads the DOM attribute set by ThemeScript — matches the
-  // server-rendered default without a useEffect flash.
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof document === "undefined") return DEFAULT_THEME;
-    return (document.documentElement.getAttribute("data-theme") as Theme) ?? DEFAULT_THEME;
-  });
+  // Must start with DEFAULT_THEME so the server-rendered HTML matches the
+  // initial client render exactly (React 19 won't patch hydration mismatches).
+  // useEffect then syncs to whatever ThemeScript wrote to data-theme before
+  // React loaded — this corrects the toggle button after first paint without
+  // any page-level flash.
+  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+
+  useEffect(() => {
+    const current = document.documentElement.getAttribute("data-theme") as Theme | null;
+    if (current && current !== theme) setTheme(current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function applyTheme(next: Theme) {
     document.documentElement.setAttribute("data-theme", next);
