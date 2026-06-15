@@ -1,16 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { api } from "@/lib/api";
 import type { Run } from "@/lib/run-types";
 import { formatDate } from "@/lib/format";
 
-interface SidebarProps {
-  runs: Run[];
-}
-
-export function Sidebar({ runs }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname();
+  const [runs, setRuns] = useState<Run[]>([]);
+
+  // Re-fetch on every navigation so the list updates after a run completes.
+  useEffect(() => {
+    api
+      .listRuns()
+      .then((r) =>
+        setRuns(
+          r.slice().sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )
+        )
+      )
+      .catch(() => setRuns([]));
+  }, [pathname]);
 
   return (
     <nav

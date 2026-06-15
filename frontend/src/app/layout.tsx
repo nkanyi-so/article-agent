@@ -3,8 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeScript } from "@/components/shell/ThemeScript";
 import { TopBar } from "@/components/shell/TopBar";
 import { Sidebar } from "@/components/shell/Sidebar";
-import { api } from "@/lib/api";
-import type { Run } from "@/lib/run-types";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,29 +16,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bylined — Grounded articles from real sources",
+  title: "Article Agent — Grounded articles from real sources",
   description:
-    "Enter a person's name. Bylined researches, writes, and fact-checks a grounded article — every claim traced to a real source.",
+    "Enter a person's name. Article Agent researches, writes, and fact-checks a grounded article — every claim traced to a real source.",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch run history for the sidebar. Fails gracefully (backend may be down
-  // at dev start or after a restart which clears the in-memory store).
-  let runs: Run[] = [];
-  try {
-    runs = await api.listRuns();
-    // Most-recent first.
-    runs = runs.slice().sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-  } catch {
-    // Sidebar just renders empty.
-  }
-
   return (
     <html
       lang="en"
@@ -69,7 +54,7 @@ export default async function RootLayout({
             height: "calc(100vh - 56px)",
           }}
         >
-          <Sidebar runs={runs} />
+          <Sidebar />
           <main
             style={{
               flex: 1,
