@@ -183,7 +183,7 @@ export default function DesignSystemPage() {
                 margin: 0,
               }}
             >
-              Bylined Design System
+              Article Agent — Design System
             </h1>
             <p
               style={{
@@ -193,9 +193,8 @@ export default function DesignSystemPage() {
                 lineHeight: 1.6,
               }}
             >
-              Tokens, primitives, and component states for the Bylined article
-              pipeline UI. Not linked from the product — this is a reference and
-              portfolio page.
+              Tokens, primitives, and component states for the Article Agent UI.
+              Not linked from the product — this is a reference and portfolio page.
             </p>
           </div>
           <ThemeToggle />
@@ -538,7 +537,7 @@ export default function DesignSystemPage() {
           fontFamily: "var(--font-mono), monospace",
         }}
       >
-        Bylined design system · article-agent · not linked from product nav
+        Article Agent design system · not linked from product nav
       </div>
     </div>
   );

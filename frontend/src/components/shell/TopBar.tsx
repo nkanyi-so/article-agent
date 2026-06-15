@@ -40,11 +40,11 @@ export function TopBar({ runId }: TopBarProps) {
             flexShrink: 0,
           }}
         >
-          B
+          A
         </div>
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>
-            Bylined
+            Article Agent
           </span>
           <span
             style={{
@@ -56,7 +56,7 @@ export function TopBar({ runId }: TopBarProps) {
               color: "var(--text3)",
             }}
           >
-            Run Inspector
+            Grounded articles
           </span>
         </div>
       </div>
