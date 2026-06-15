@@ -139,8 +139,11 @@ class ExaClient:
 # ---------------------------------------------------------------------------
 
 
+JUDGE_MODEL = "claude-opus-4-8"
+
+
 class ClaudeClient:
-    MODEL = "claude-opus-4-8"
+    MODEL = JUDGE_MODEL
 
     def __init__(
         self,

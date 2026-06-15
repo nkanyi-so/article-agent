@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
+from app.clients import JUDGE_MODEL
 from app.evals.schemas import EvalReport, EvalVerdict
 from app.schemas import Brief, EnrichResult, ResearchResult, Run
 
@@ -149,4 +150,4 @@ async def run_all_evals(run: Run, judge: "JudgeClient") -> EvalReport:
         await eval_angle(ctx),
         await eval_stage(ctx),
     ]
-    return _build_report(verdicts, complete=True, judge_model="claude-opus-4-8")
+    return _build_report(verdicts, complete=True, judge_model=JUDGE_MODEL)
