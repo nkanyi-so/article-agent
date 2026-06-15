@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
+import re
 from datetime import datetime, timezone
 from typing import Any
 
-from app.clients import ApolloClient
+from app.clients import ApolloClient, ExaClient, ExaHit
 from app.errors import EnrichNotFoundError, UpstreamError
 from app.schemas import (
     Brief,
@@ -12,6 +13,10 @@ from app.schemas import (
     EnrichResult,
     PersonFacts,
     Source,
+)
+
+_LINKEDIN_RE = re.compile(
+    r'https?://([\w-]+\.)?linkedin\.com/in/[\w%-]+', re.IGNORECASE
 )
 
 logger = logging.getLogger(__name__)
@@ -60,11 +65,7 @@ def _to_person_facts(person: dict) -> PersonFacts:
 
 
 def _stub_from_brief(brief: Brief, reason: str) -> PersonFacts:
-    """Fallback person record built entirely from form inputs.
-
-    Used when Apollo is unavailable (plan restriction, network error, etc.).
-    Downstream stages still run; the article is grounded in Exa sources only.
-    """
+    """Last-resort fallback when both Apollo and Exa are unavailable."""
     return PersonFacts(
         name=brief.name or brief.display_name,
         organization=brief.company,
@@ -72,9 +73,73 @@ def _stub_from_brief(brief: Brief, reason: str) -> PersonFacts:
     )
 
 
+def _extract_linkedin_url(hits: list[ExaHit]) -> str | None:
+    """Scan Exa results for a LinkedIn profile URL."""
+    for hit in hits:
+        for text in [hit.url or "", hit.text or "", *hit.highlights]:
+            m = _LINKEDIN_RE.search(text)
+            if m:
+                return m.group(0)
+    return None
+
+
+async def _exa_fallback(
+    brief: Brief,
+    exa: ExaClient,
+    *,
+    apollo_error: str,
+) -> tuple[EnrichResult, list[Source]]:
+    """Enrich via Exa general web search when Apollo is unavailable."""
+    parts = [p for p in [brief.name or brief.display_name, brief.company] if p]
+    query = " ".join(f'"{p}"' for p in parts)
+
+    try:
+        hits = await exa.search_web(query, num_results=5)
+    except Exception as exc:
+        logger.warning("Exa web search also failed (%s) — falling back to form inputs.", exc)
+        return (
+            EnrichResult(status="matched", person=_stub_from_brief(brief, apollo_error)),
+            [],
+        )
+
+    linkedin_url = _extract_linkedin_url(hits)
+    person = PersonFacts(
+        name=brief.name or brief.display_name,
+        organization=brief.company,
+        linkedin_url=linkedin_url,
+        raw={
+            "_source": "exa-web",
+            "_apollo_skipped": apollo_error,
+            "_exa_linkedin_found": linkedin_url is not None,
+            "_exa_result_count": len(hits),
+        },
+    )
+
+    sources: list[Source] = []
+    if hits:
+        top = hits[0]
+        sources = [
+            Source(
+                id="exa:enrich:0",
+                kind="exa",
+                url=top.url,
+                title=top.title,
+                snippet=(
+                    top.highlights[0]
+                    if top.highlights
+                    else (top.text[:200] if top.text else None)
+                ),
+                retrieved_at=datetime.now(timezone.utc),
+            )
+        ]
+
+    return EnrichResult(status="matched", person=person), sources
+
+
 async def enrich(
     brief: Brief,
     apollo: ApolloClient,
+    exa: ExaClient,
 ) -> tuple[EnrichResult, list[Source]]:
     """Stage 2: Resolve the person via Apollo.
 
@@ -94,11 +159,8 @@ async def enrich(
             linkedin_url=brief.linkedin_url,
         )
     except UpstreamError as exc:
-        logger.warning("Apollo match unavailable (%s) — falling back to form inputs.", exc)
-        return (
-            EnrichResult(status="matched", person=_stub_from_brief(brief, str(exc))),
-            [],  # no Apollo source to attach
-        )
+        logger.warning("Apollo match unavailable (%s) — falling back to Exa web search.", exc)
+        return await _exa_fallback(brief, exa, apollo_error=str(exc))
 
     person = match_resp.get("person") or {}
 
@@ -114,11 +176,8 @@ async def enrich(
     try:
         search_resp = await apollo.search(q_keywords=keywords, per_page=5)
     except UpstreamError as exc:
-        logger.warning("Apollo search unavailable (%s) — falling back to form inputs.", exc)
-        return (
-            EnrichResult(status="matched", person=_stub_from_brief(brief, str(exc))),
-            [],
-        )
+        logger.warning("Apollo search unavailable (%s) — falling back to Exa web search.", exc)
+        return await _exa_fallback(brief, exa, apollo_error=str(exc))
 
     people: list[dict] = search_resp.get("people") or []
 

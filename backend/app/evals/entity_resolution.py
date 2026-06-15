@@ -79,6 +79,46 @@ async def evaluate(ctx: EvalContext) -> EvalVerdict:
             details={"apollo_skipped": str(skipped), "source": "form-input"},
         )
 
+    # ── Exa web-search fallback path ─────────────────────────────────────────
+    if person and person.raw.get("_source") == "exa-web":
+        skipped = person.raw.get("_apollo_skipped", "unknown reason")
+        linkedin_found = bool(person.raw.get("_exa_linkedin_found"))
+        if linkedin_found:
+            return EvalVerdict(
+                name="entity_resolution",
+                score=0.75,
+                passed=True,
+                reasoning=(
+                    "Apollo unavailable; Exa web search found a LinkedIn profile URL — "
+                    "identity independently verified via web."
+                ),
+                method="deterministic",
+                confidence="medium",
+                degraded=False,
+                caveats=[
+                    f"Apollo unavailable ({str(skipped)[:120]}); "
+                    "identity verified via Exa web search (LinkedIn URL found)."
+                ],
+                details={"exa_linkedin_found": True, "source": "exa-web"},
+            )
+        return EvalVerdict(
+            name="entity_resolution",
+            score=0.45,
+            passed=False,
+            reasoning=(
+                "Apollo unavailable; Exa web search ran but found no LinkedIn URL. "
+                "Identity not independently verified."
+            ),
+            method="deterministic",
+            confidence="low",
+            degraded=True,
+            caveats=[
+                f"Apollo unavailable ({str(skipped)[:120]}); "
+                "Exa web search returned no LinkedIn URL."
+            ],
+            details={"exa_linkedin_found": False, "source": "exa-web"},
+        )
+
     # ── Ambiguous path ────────────────────────────────────────────────────────
     if enrich_result.status == "ambiguous":
         return EvalVerdict(

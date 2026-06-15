@@ -98,7 +98,7 @@ async def test_apollo_degraded_still_completes(
     with patch("app.runs.Clients", return_value=fc):
         run = await run_form_pipeline(FormRequest(name="Sam Altman", company="OpenAI"))
 
-    # Apollo degraded → enrich falls back to form-input stub → pipeline continues
+    # Apollo degraded → enrich falls back to Exa web search → pipeline continues
     assert run.status == "completed"
     assert run.enrich.status == "ok"
 
@@ -106,5 +106,5 @@ async def test_apollo_degraded_still_completes(
     enrich_out = get_enrich_result(run)
     assert enrich_out is not None
     assert enrich_out.person is not None
-    assert enrich_out.person.raw.get("_source") == "form-input"
+    assert enrich_out.person.raw.get("_source") == "exa-web"
     assert run.article is not None

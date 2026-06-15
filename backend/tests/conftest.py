@@ -140,6 +140,9 @@ def fake_claude_client(canned_angle: ChosenAngle, canned_article: DraftArticle) 
 def fake_exa_client(fake_exa_hits: list[ExaHit]) -> ExaClient:
     client = MagicMock(spec=ExaClient)
     client.search_news = AsyncMock(return_value=fake_exa_hits)
+    # search_web is used by the enrich stage when Apollo is unavailable.
+    # Default: empty results (no LinkedIn found). Override in individual tests as needed.
+    client.search_web = AsyncMock(return_value=[])
     return client
 
 

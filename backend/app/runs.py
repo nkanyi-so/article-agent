@@ -163,7 +163,7 @@ async def stream_form_pipeline(
         yield "stage_started", StageStartedEvent(name="enrich")
         t0 = time.perf_counter()
         try:
-            enrich_result, enrich_sources = await enrich(brief, clients.apollo)
+            enrich_result, enrich_sources = await enrich(brief, clients.apollo, clients.exa)
             enrich_stage = StageOutput(
                 name="enrich",
                 status="ok",

@@ -134,6 +134,25 @@ class ExaClient:
         result = await anyio.to_thread.run_sync(_call)
         return [ExaHit(r, i) for i, r in enumerate(result.results)]
 
+    async def search_web(
+        self,
+        query: str,
+        *,
+        num_results: int = 5,
+    ) -> list[ExaHit]:
+        """General web search (no category filter) — used for identity enrichment."""
+
+        def _call() -> object:
+            return self._exa.search_and_contents(
+                query,
+                num_results=num_results,
+                text=True,
+                highlights=True,
+            )
+
+        result = await anyio.to_thread.run_sync(_call)
+        return [ExaHit(r, i) for i, r in enumerate(result.results)]
+
 
 # ---------------------------------------------------------------------------
 # Claude client  (sync SDK offloaded to a thread)
