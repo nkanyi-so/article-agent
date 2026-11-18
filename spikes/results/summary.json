@@ -1,0 +1,1537 @@
+{
+  "total_cost_usd": 0.4364,
+  "drafts": [
+    {
+      "label": "t1-sentence-opus-low",
+      "model_served": "claude-opus-5-5",
+      "stop_reason": "end_turn",
+      "effort": "low",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 4803,
+      "output_tokens": 884,
+      "cost_usd": 0.036892,
+      "latency_s": 7.17,
+      "article_words": 318,
+      "paragraphs": 5,
+      "text_blocks": 29,
+      "cited_blocks": 14,
+      "uncited_blocks_with_words": 15,
+      "uncited_blocks_whitespace_only": 0,
+      "share_of_words_uncited": 0.516,
+      "headline": "Sensor irrigation cuts tomato water use by a third at Korvath Greenhouses",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 2,
+      "cited_blocks_with_more_than_one_sentence": 1,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.07,
+      "cited_text_words_mean": 13.8,
+      "cited_text_words_max": 20,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [],
+      "uncited_text": [
+        "Sensor irrigation cuts tomato water use by a third at Korvath Greenhouses\n\nKorvath Greenhouses has moved its Ellsmoor site from fixed irrigation timers to substrate moisture sensors, according to operations director Teodor Vance and head grower Priya Lindqvist. Lindqvist said that previously",
+        "Now",
+        "Vance said a pilot began in",
+        ", and the full rollout of 420 sensors across Ellsmoor was finished in October 2025.\n\nVance said that",
+        "He added that",
+        "The project cost",
+        ", and Vance expects payback in about three years, mostly from water and fertiliser savings.\n\nThe two disagree on yield. Vance described it as flat and said",
+        "Lindqvist said",
+        ", though she acknowledged",
+        "Vance noted the cucumber variety was changed in the same year.\n\nLindqvist said that",
+        ", and those rows went back on the old timers. Vance said",
+        "No one was laid off, and",
+        "Vance said the company plans to install the same system at Farrow Bank in spring 2026;",
+        "A rainwater tank holding",
+        "is also being built at Ellsmoor."
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-sentence-opus-medium",
+      "model_served": "claude-opus-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 1,
+      "thinking_tokens": 481,
+      "input_tokens": 4803,
+      "output_tokens": 1582,
+      "cost_usd": 0.050852,
+      "latency_s": 12.87,
+      "article_words": 355,
+      "paragraphs": 5,
+      "text_blocks": 43,
+      "cited_blocks": 21,
+      "uncited_blocks_with_words": 22,
+      "uncited_blocks_whitespace_only": 0,
+      "share_of_words_uncited": 0.473,
+      "headline": "Korvath Greenhouses cuts tomato water use by about a third with moisture sensors",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 1,
+      "span_blocks_mean": 1,
+      "cited_text_words_mean": 12.6,
+      "cited_text_words_max": 20,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by about a third with moisture sensors\n\nKorvath Greenhouses, which",
+        ", has moved irrigation at its Ellsmoor site from timers to sensors, operations director Teodor Vance and head grower Priya Lindqvist said. Vance said the company",
+        "of 2 hectares, and the full rollout was finished in",
+        ". Ellsmoor now has 420 sensors.\n\nLindqvist said that before the pilot,",
+        ". Now",
+        ". On the pilot, she said:",
+        "Vance said that",
+        ", and that",
+        ". The two disagreed on yield. Vance called it flat and said he",
+        ". Lindqvist said",
+        ". Vance noted",
+        ". Lindqvist acknowledged she",
+        ". The project cost",
+        ". Vance expects payback in about three years, mostly from water and fertiliser savings.\n\nLindqvist said that",
+        ", and those rows went back on the old timers. Vance said the company",
+        ".",
+        ", Vance said, and Lindqvist said",
+        ".\n\nVance said the company plans",
+        "at its Farrow Bank site.",
+        ", but",
+        ". Korvath is also building a rainwater tank at Ellsmoor that",
+        "."
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-sentence-sonnet-low",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "low",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 4886,
+      "output_tokens": 1097,
+      "cost_usd": 0.020742,
+      "latency_s": 6.55,
+      "article_words": 311,
+      "paragraphs": 5,
+      "text_blocks": 47,
+      "cited_blocks": 23,
+      "uncited_blocks_with_words": 24,
+      "uncited_blocks_whitespace_only": 0,
+      "share_of_words_uncited": 0.328,
+      "headline": "Korvath Greenhouses cuts tomato water use by a third with sensor irrigation",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.3,
+      "cited_text_words_mean": 14.0,
+      "cited_text_words_max": 19,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Korvath Greenhouses began a pilot of sensor-based irrigation in a 2-hectare block in March 2025",
+          "missing": [
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "the same system is planned for Farrow Bank in spring 2026",
+          "missing": [
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by a third with sensor irrigation",
+        ", and",
+        ". Operations director Teodor Vance said",
+        ". Before the change, head grower Priya Lindqvist said",
+        ".\n\nVance said",
+        ", and",
+        ". Lindqvist said the pilot showed",
+        ".\n\nThe two differ on yield. Vance said",
+        ". Lindqvist said",
+        ". Vance replied that",
+        ", and Lindqvist agreed she",
+        ".\n\nVance put the cost at",
+        ", with",
+        ". Lindqvist said",
+        ", and",
+        ". Vance said",
+        ".\n\nVance said",
+        ", and Lindqvist said",
+        ". Next,",
+        ";",
+        ". Vance said",
+        ". Their advice to other growers: Lindqvist said",
+        ", and Vance said",
+        "."
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-a",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 4886,
+      "output_tokens": 1089,
+      "cost_usd": 0.020662,
+      "latency_s": 6.77,
+      "article_words": 311,
+      "paragraphs": 5,
+      "text_blocks": 44,
+      "cited_blocks": 22,
+      "uncited_blocks_with_words": 10,
+      "uncited_blocks_whitespace_only": 12,
+      "share_of_words_uncited": 0.167,
+      "headline": "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1.05,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.3,
+      "cited_text_words_mean": 15.0,
+      "cited_text_words_max": 27,
+      "cited_blocks_failing_number_check": [
+        {
+          "text": "Every block at its Ellsmoor site has been on moisture sensors since the full rollout finished in October 2025.",
+          "missing": [
+            "2025"
+          ]
+        }
+      ],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Korvath Greenhouses began an irrigation pilot in March 2025 in a single 2-hectare block.",
+          "missing": [
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "Korvath plans the same system at Farrow Bank in spring 2026; the budget is approved but installation dates are not fixed.",
+          "missing": [
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+        "Previously, head grower Priya Lindqvist said,",
+        "Operations director Teodor Vance said",
+        "Lindqvist said of the pilot:",
+        "The two differ on yield. Vance said",
+        "Lindqvist noted that",
+        "Vance replied that",
+        "Lindqvist said",
+        "Lindqvist advised other growers to",
+        ", and Vance added:"
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-b",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 4886,
+      "output_tokens": 1131,
+      "cost_usd": 0.021082,
+      "latency_s": 6.72,
+      "article_words": 331,
+      "paragraphs": 5,
+      "text_blocks": 46,
+      "cited_blocks": 23,
+      "uncited_blocks_with_words": 2,
+      "uncited_blocks_whitespace_only": 21,
+      "share_of_words_uncited": 0.051,
+      "headline": "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1.04,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.33,
+      "cited_text_words_mean": 15.1,
+      "cited_text_words_max": 27,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Korvath Greenhouses has cut water use on tomatoes at its Ellsmoor site from 22 litres per kilo of fruit to 15 litres, operations director Teodor Vance said.",
+          "missing": [
+            "Greenhouses",
+            "Ellsmoor"
+          ]
+        },
+        {
+          "text": "Korvath plans to install the same system at Farrow Bank in spring 2026.",
+          "missing": [
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+        "The two disagree on yield."
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-c",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 4886,
+      "output_tokens": 1125,
+      "cost_usd": 0.021022,
+      "latency_s": 7.5,
+      "article_words": 325,
+      "paragraphs": 5,
+      "text_blocks": 44,
+      "cited_blocks": 22,
+      "uncited_blocks_with_words": 10,
+      "uncited_blocks_whitespace_only": 12,
+      "share_of_words_uncited": 0.157,
+      "headline": "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1.09,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.42,
+      "cited_text_words_mean": 16.5,
+      "cited_text_words_max": 32,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Korvath Greenhouses began an irrigation project in March 2025 with a pilot in one 2-hectare block.",
+          "missing": [
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "The same system is planned for Farrow Bank in spring 2026; the budget is approved but installation dates are not fixed.",
+          "missing": [
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+        "Head grower Priya Lindqvist said",
+        "Operations director Teodor Vance said",
+        "The pilot showed, Lindqvist said, that",
+        "The two disagree on yield. Vance said",
+        "Lindqvist noted",
+        "Vance replied that",
+        "Lindqvist said",
+        "Lindqvist advised other growers to",
+        ", and Vance added:"
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-nothinking",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "between_tools",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 4885,
+      "output_tokens": 973,
+      "cost_usd": 0.0195,
+      "latency_s": 6.03,
+      "article_words": 264,
+      "paragraphs": 5,
+      "text_blocks": 40,
+      "cited_blocks": 20,
+      "uncited_blocks_with_words": 3,
+      "uncited_blocks_whitespace_only": 17,
+      "share_of_words_uncited": 0.083,
+      "headline": "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1.15,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.35,
+      "cited_text_words_mean": 15.7,
+      "cited_text_words_max": 27,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Korvath Greenhouses began a sensor-based irrigation pilot in March 2025 in a 2-hectare block.",
+          "missing": [
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "Korvath plans to install the same system at Farrow Bank in spring 2026.",
+          "missing": [
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by a third with soil sensors",
+        "Operations director Teodor Vance said",
+        "The two disagreed on yield."
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-turn-opus-medium",
+      "model_served": "claude-opus-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 1,
+      "thinking_tokens": 461,
+      "input_tokens": 3882,
+      "output_tokens": 1578,
+      "cost_usd": 0.047088,
+      "latency_s": 12.56,
+      "article_words": 322,
+      "paragraphs": 5,
+      "text_blocks": 53,
+      "cited_blocks": 26,
+      "uncited_blocks_with_words": 27,
+      "uncited_blocks_whitespace_only": 0,
+      "share_of_words_uncited": 0.441,
+      "headline": "Korvath Greenhouses cuts tomato water use by about a third with moisture sensors",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 2,
+      "cited_blocks_with_more_than_one_sentence": 1,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 1,
+      "span_blocks_mean": 1,
+      "cited_text_words_mean": 18.0,
+      "cited_text_words_max": 31,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by about a third with moisture sensors\n\nKorvath Greenhouses, which",
+        ", has reduced water use on tomatoes",
+        ", operations director Teodor Vance said. He described it as",
+        ", the figure for its Ellsmoor site",
+        ", which was completed in",
+        ".\n\nThe project",
+        "of 2 hectares. Head grower Priya Lindqvist said the company previously used fixed timers, with",
+        ". Moisture sensors now water a row",
+        ". Ellsmoor has",
+        "sensors. Lindqvist said of the pilot:",
+        "Vance said",
+        "and called yield",
+        ". Lindqvist said",
+        ", but Vance noted",
+        ". Lindqvist said she believed",
+        ". The system cost",
+        ", with payback expected in",
+        ".",
+        ", and those rows went",
+        ". Vance said the company",
+        ".",
+        ";",
+        ", Lindqvist said.\n\nThe company plans",
+        "at its Farrow Bank site",
+        ". Vance said",
+        "A rainwater tank holding",
+        "is also being built at Ellsmoor."
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t1-turn-sonnet-medium",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 3965,
+      "output_tokens": 1118,
+      "cost_usd": 0.01911,
+      "latency_s": 6.58,
+      "article_words": 311,
+      "paragraphs": 5,
+      "text_blocks": 48,
+      "cited_blocks": 24,
+      "uncited_blocks_with_words": 5,
+      "uncited_blocks_whitespace_only": 19,
+      "share_of_words_uncited": 0.1,
+      "headline": "Korvath Greenhouses cuts tomato water use by a third with sensor irrigation",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.04,
+      "cited_text_words_mean": 18.9,
+      "cited_text_words_max": 31,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor and Farrow Bank, with Ellsmoor the larger at 14 hectares.",
+          "missing": [
+            "Greenhouses"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Korvath Greenhouses cuts tomato water use by a third with sensor irrigation",
+        "Operations director Teodor Vance said",
+        ",",
+        "Head grower Priya Lindqvist said of the pilot:",
+        "The two differ on yield."
+      ],
+      "mentions_4800": []
+    },
+    {
+      "label": "t2-sentence-opus-low",
+      "model_served": "claude-opus-5-5",
+      "stop_reason": "end_turn",
+      "effort": "low",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 2222,
+      "output_tokens": 587,
+      "cost_usd": 0.020628,
+      "latency_s": 5.57,
+      "article_words": 197,
+      "paragraphs": 4,
+      "text_blocks": 18,
+      "cited_blocks": 9,
+      "uncited_blocks_with_words": 7,
+      "uncited_blocks_whitespace_only": 2,
+      "share_of_words_uncited": 0.411,
+      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in record third quarter",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 2,
+      "cited_blocks_with_more_than_one_sentence": 1,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.56,
+      "cited_text_words_mean": 15.3,
+      "cited_text_words_max": 22,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [],
+      "uncited_text": [
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in record third quarter\n\nHartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, according to Samir Vale, speaking at the company's operations review led by Dana Whitlock. Vale initially gave a higher figure but corrected it, saying",
+        "Whitlock noted that this left the company",
+        ", which Vale confirmed.\n\nVale said",
+        "Joss Tennant said the corrected figure",
+        "Asked by Tennant what held it back, Vale pointed",
+        "He said",
+        "On flour prices, Whitlock said"
+      ],
+      "mentions_4800": [
+        "Vale initially gave a higher figure but corrected it, saying \"We shipped 4,300 pallets in the quarter, not 4,800.\" \"The 4,800 was the forecast.\" Whitlock noted that this left the company 500 pallets under forecast, which Vale confirmed."
+      ]
+    },
+    {
+      "label": "t2-sentence-opus-medium",
+      "model_served": "claude-opus-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 1,
+      "thinking_tokens": 644,
+      "input_tokens": 2222,
+      "output_tokens": 1421,
+      "cost_usd": 0.037308,
+      "latency_s": 12.42,
+      "article_words": 242,
+      "paragraphs": 5,
+      "text_blocks": 31,
+      "cited_blocks": 15,
+      "uncited_blocks_with_words": 16,
+      "uncited_blocks_whitespace_only": 0,
+      "share_of_words_uncited": 0.599,
+      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter to date",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 1,
+      "span_blocks_mean": 1,
+      "cited_text_words_mean": 10.4,
+      "cited_text_words_max": 18,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [],
+      "uncited_text": [
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter to date\n\nHartwell Lane Bakery Supply",
+        ", Samir Vale told",
+        ", which Dana Whitlock opened. Vale first gave a figure of 4,800 pallets, then corrected it, saying",
+        ". Whitlock said the company was therefore",
+        ", and Vale confirmed this.\n\nVale said",
+        ". Joss Tennant, who had asked for the second-quarter figure, said the corrected number",
+        ".\n\nOn-time delivery for the quarter",
+        ", according to Vale, who said",
+        ". Asked by Tennant what held it back, Vale said the cause was",
+        ", which",
+        ".\n\nIn response to a question from Whitlock about what is being done at Redgate, Vale said",
+        ". He added that he expects",
+        ".\n\nTennant also raised the price of flour. Whitlock said",
+        "and that",
+        ". Tennant said that answered the outstanding questions, and Whitlock closed the review by saying the group",
+        "."
+      ],
+      "mentions_4800": [
+        "Vale first gave a figure of 4,800 pallets, then corrected it, saying the 4,800 was the forecast."
+      ]
+    },
+    {
+      "label": "t2-sentence-sonnet-low",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "low",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 2305,
+      "output_tokens": 651,
+      "cost_usd": 0.01112,
+      "latency_s": 4.98,
+      "article_words": 198,
+      "paragraphs": 5,
+      "text_blocks": 24,
+      "cited_blocks": 12,
+      "uncited_blocks_with_words": 4,
+      "uncited_blocks_whitespace_only": 8,
+      "share_of_words_uncited": 0.141,
+      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in third quarter, a record but short of forecast",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1.08,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.31,
+      "cited_text_words_mean": 13.9,
+      "cited_text_words_max": 19,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter.",
+          "missing": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in third quarter, a record but short of forecast",
+        ", but",
+        "On flour pricing,",
+        "Joss Tennant asked questions during the review."
+      ],
+      "mentions_4800": [
+        "He first gave the figure as 4,800 pallets, but corrected himself, saying he had given the wrong number and that 4,800 was the forecast."
+      ]
+    },
+    {
+      "label": "t2-sentence-sonnet-medium",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 2305,
+      "output_tokens": 633,
+      "cost_usd": 0.01094,
+      "latency_s": 4.91,
+      "article_words": 192,
+      "paragraphs": 5,
+      "text_blocks": 24,
+      "cited_blocks": 12,
+      "uncited_blocks_with_words": 4,
+      "uncited_blocks_whitespace_only": 8,
+      "share_of_words_uncited": 0.099,
+      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1.08,
+      "span_blocks_max": 2,
+      "span_blocks_mean": 1.38,
+      "cited_text_words_mean": 14.5,
+      "cited_text_words_max": 22,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter.",
+          "missing": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet",
+        ", but",
+        "On flour prices,",
+        "after the review."
+      ],
+      "mentions_4800": [
+        "He first gave the figure as 4,800, but corrected himself, saying he had given the wrong number and that 4,800 was the forecast."
+      ]
+    },
+    {
+      "label": "t2-turn-opus-medium",
+      "model_served": "claude-opus-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 1,
+      "thinking_tokens": 528,
+      "input_tokens": 1890,
+      "output_tokens": 1184,
+      "cost_usd": 0.03124,
+      "latency_s": 11.23,
+      "article_words": 220,
+      "paragraphs": 5,
+      "text_blocks": 20,
+      "cited_blocks": 10,
+      "uncited_blocks_with_words": 10,
+      "uncited_blocks_whitespace_only": 0,
+      "share_of_words_uncited": 0.486,
+      "headline": "Hartwell Lane Bakery Supply reports best quarter yet despite missing shipment forecast",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 2,
+      "cited_blocks_with_more_than_one_sentence": 1,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 1,
+      "span_blocks_mean": 1,
+      "cited_text_words_mean": 16.9,
+      "cited_text_words_max": 29,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [],
+      "uncited_text": [
+        "Hartwell Lane Bakery Supply reports best quarter yet despite missing shipment forecast\n\nHartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, Samir Vale told the company's third-quarter operations review, chaired by Dana Whitlock. Vale corrected an earlier figure during the meeting, saying",
+        "Whitlock noted that",
+        "Vale said",
+        "Joss Tennant said the corrected figure",
+        "On-time delivery fell just short of its goal. Vale reported that",
+        "Asked by Tennant what held it back, Vale pointed",
+        "Responding to Whitlock's question about the depot, Vale said",
+        "and that",
+        "On flour costs, Whitlock said",
+        "Tennant said that answer provided everything needed from the review.\n\nWhitlock closed the meeting by saying"
+      ],
+      "mentions_4800": [
+        "Vale corrected an earlier figure during the meeting, saying \"We shipped 4,300 pallets in the quarter, not 4,800.",
+        "The 4,800 was the forecast.\""
+      ]
+    },
+    {
+      "label": "t2-turn-sonnet-medium",
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "effort": "medium",
+      "thinking_requested": "adaptive",
+      "thinking_blocks": 0,
+      "thinking_tokens": 0,
+      "input_tokens": 1973,
+      "output_tokens": 618,
+      "cost_usd": 0.010126,
+      "latency_s": 4.21,
+      "article_words": 200,
+      "paragraphs": 5,
+      "text_blocks": 22,
+      "cited_blocks": 11,
+      "uncited_blocks_with_words": 1,
+      "uncited_blocks_whitespace_only": 10,
+      "share_of_words_uncited": 0.055,
+      "headline": "Hartwell Lane Bakery Supply ships record 4,300 pallets in third quarter",
+      "headline_cited": false,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
+      "citations_per_cited_block_mean": 1,
+      "span_blocks_max": 1,
+      "span_blocks_mean": 1,
+      "cited_text_words_mean": 15.1,
+      "cited_text_words_max": 29,
+      "cited_blocks_failing_number_check": [],
+      "cited_blocks_failing_quote_check": [],
+      "cited_blocks_failing_name_check": [
+        {
+          "text": "Samir Vale told the third-quarter operations review that Hartwell Lane Bakery Supply shipped 4,300 pallets in the quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
+          "missing": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply"
+          ]
+        }
+      ],
+      "uncited_text": [
+        "Hartwell Lane Bakery Supply ships record 4,300 pallets in third quarter"
+      ],
+      "mentions_4800": [
+        "Samir Vale told the third-quarter operations review that Hartwell Lane Bakery Supply shipped 4,300 pallets in the quarter, correcting an earlier figure of 4,800, which he said was the forecast."
+      ]
+    }
+  ],
+  "other_calls": [
+    {
+      "kind": "extract",
+      "label": "t1-sonnet-low",
+      "cost_usd": 0.017312,
+      "latency_s": 8.12,
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "input_tokens": 3451,
+      "output_tokens": 1041,
+      "thinking_tokens": 0
+    },
+    {
+      "kind": "extract",
+      "label": "t2-sonnet-low",
+      "cost_usd": 0.007972,
+      "latency_s": 4.37,
+      "model_served": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "input_tokens": 1686,
+      "output_tokens": 460,
+      "thinking_tokens": 0
+    },
+    {
+      "kind": "judge",
+      "label": "t1-opus-medium",
+      "cost_usd": 0.032844,
+      "latency_s": 11.54,
+      "model_served": "claude-opus-5-5",
+      "stop_reason": "end_turn",
+      "input_tokens": 2356,
+      "output_tokens": 1171,
+      "thinking_tokens": 487
+    },
+    {
+      "kind": "check400",
+      "label": "citations-with-schema",
+      "cost_usd": 0.0,
+      "latency_s": 0.5,
+      "error": {
+        "status": 400,
+        "type": "BadRequestError",
+        "body": {
+          "type": "error",
+          "error": {
+            "type": "invalid_request_error",
+            "message": "Citations cannot be enabled when output format is set. Please disable citations on uploaded document blocks."
+          },
+          "request_id": "req_011ChAv55o7hH4e3qeHaUKxU"
+        }
+      }
+    }
+  ],
+  "sentence_unit": [
+    {
+      "label": "t1-sentence-opus-low",
+      "sentences": 17,
+      "sentences_with_no_citation": 3,
+      "sentences_failing_numbers": 2,
+      "sentences_failing_names": 3,
+      "sentences_failing_names_if_title_counts": 3,
+      "kept_strict": 11,
+      "kept_if_title_counts": 11,
+      "words_kept_strict_share": 0.663,
+      "words_kept_if_title_counts_share": 0.663,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses has moved its Ellsmoor site from fixed irrigation timers to substrate moisture sensors, according to operations director Teodor Vance and head grower Priya Lindqvist.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses",
+            "Ellsmoor",
+            "Teodor",
+            "Vance",
+            "Priya",
+            "Lindqvist"
+          ]
+        },
+        {
+          "text": "Vance said a pilot began in March 2025 with a pilot in one block, and the full rollout of 420 sensors across Ellsmoor was finished in October 2025.",
+          "cited": true,
+          "missing_numbers": [
+            "420"
+          ],
+          "missing_names": [
+            "Ellsmoor"
+          ]
+        },
+        {
+          "text": "The two disagree on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Vance noted the cucumber variety was changed in the same year.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": [
+            "Vance"
+          ]
+        },
+        {
+          "text": "Vance said the company plans to install the same system at Farrow Bank in spring 2026; the budget is approved.",
+          "cited": true,
+          "missing_numbers": [
+            "2026"
+          ],
+          "missing_names": [
+            "Farrow",
+            "Bank"
+          ]
+        },
+        {
+          "text": "A rainwater tank holding 5,000 cubic metres is also being built at Ellsmoor.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Ellsmoor"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-sentence-opus-medium",
+      "sentences": 20,
+      "sentences_with_no_citation": 3,
+      "sentences_failing_numbers": 1,
+      "sentences_failing_names": 3,
+      "sentences_failing_names_if_title_counts": 3,
+      "kept_strict": 13,
+      "kept_if_title_counts": 13,
+      "words_kept_strict_share": 0.67,
+      "words_kept_if_title_counts_share": 0.67,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses, which grow[s] tomatoes and cucumbers under glass, has moved irrigation at its Ellsmoor site from timers to sensors, operations director Teodor Vance and head grower Priya Lindqvist said.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses",
+            "Ellsmoor",
+            "Priya",
+            "Lindqvist"
+          ]
+        },
+        {
+          "text": "Vance said the company started in March 2025 with a pilot in one block of 2 hectares, and the full rollout was finished in October 2025.",
+          "cited": true,
+          "missing_numbers": [
+            "2"
+          ],
+          "missing_names": []
+        },
+        {
+          "text": "Ellsmoor now has 420 sensors.",
+          "cited": false,
+          "missing_numbers": [
+            "420"
+          ],
+          "missing_names": [
+            "Ellsmoor"
+          ]
+        },
+        {
+          "text": "The two disagreed on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Vance expects payback in about three years, mostly from water and fertiliser savings.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": [
+            "Vance"
+          ]
+        },
+        {
+          "text": "Vance said the company plans to install the same system there in spring 2026 at its Farrow Bank site.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Farrow",
+            "Bank"
+          ]
+        },
+        {
+          "text": "Korvath is also building a rainwater tank at Ellsmoor that will hold 5,000 cubic metres.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Ellsmoor"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-sentence-sonnet-low",
+      "sentences": 16,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 1,
+      "kept_strict": 13,
+      "kept_if_title_counts": 14,
+      "words_kept_strict_share": 0.796,
+      "words_kept_if_title_counts_share": 0.91,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses began a pilot of sensor-based irrigation in a 2-hectare block in March 2025, and the full rollout at its Ellsmoor site finished in October 2025, with every block on sensors since then.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "The two differ on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Next, the same system is planned for Farrow Bank in spring 2026; the budget is approved but installation dates are not fixed.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-a",
+      "sentences": 22,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 1,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 1,
+      "kept_strict": 18,
+      "kept_if_title_counts": 19,
+      "words_kept_strict_share": 0.803,
+      "words_kept_if_title_counts_share": 0.849,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses began an irrigation pilot in March 2025 in a single 2-hectare block.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "Every block at its Ellsmoor site has been on moisture sensors since the full rollout finished in October 2025.",
+          "cited": true,
+          "missing_numbers": [
+            "2025"
+          ],
+          "missing_names": []
+        },
+        {
+          "text": "The two differ on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Korvath plans the same system at Farrow Bank in spring 2026; the budget is approved but installation dates are not fixed.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-b",
+      "sentences": 23,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 2,
+      "kept_strict": 20,
+      "kept_if_title_counts": 20,
+      "words_kept_strict_share": 0.859,
+      "words_kept_if_title_counts_share": 0.859,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses has cut water use on tomatoes at its Ellsmoor site from 22 litres per kilo of fruit to 15 litres, operations director Teodor Vance said.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses",
+            "Ellsmoor"
+          ]
+        },
+        {
+          "text": "The two disagree on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Korvath plans to install the same system at Farrow Bank in spring 2026.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-c",
+      "sentences": 22,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 1,
+      "kept_strict": 19,
+      "kept_if_title_counts": 20,
+      "words_kept_strict_share": 0.866,
+      "words_kept_if_title_counts_share": 0.917,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses began an irrigation project in March 2025 with a pilot in one 2-hectare block.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "The two disagree on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "The same system is planned for Farrow Bank in spring 2026; the budget is approved but installation dates are not fixed.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-sentence-sonnet-medium-nothinking",
+      "sentences": 21,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 3,
+      "sentences_failing_names_if_title_counts": 1,
+      "kept_strict": 17,
+      "kept_if_title_counts": 19,
+      "words_kept_strict_share": 0.837,
+      "words_kept_if_title_counts_share": 0.929,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses began a sensor-based irrigation pilot in March 2025 in a 2-hectare block.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "The two disagreed on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Korvath now tests every update on one row first.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath"
+          ]
+        },
+        {
+          "text": "Korvath plans to install the same system at Farrow Bank in spring 2026.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Farrow",
+            "Bank"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-turn-opus-medium",
+      "sentences": 18,
+      "sentences_with_no_citation": 0,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 1,
+      "sentences_failing_names_if_title_counts": 0,
+      "kept_strict": 17,
+      "kept_if_title_counts": 18,
+      "words_kept_strict_share": 0.896,
+      "words_kept_if_title_counts_share": 1.0,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses, which grows tomatoes and cucumbers under glass, has reduced water use on tomatoes from 22 litres of water per kilo of fruit to 15 litres, operations director Teodor Vance said.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t1-turn-sonnet-medium",
+      "sentences": 24,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 0,
+      "kept_strict": 21,
+      "kept_if_title_counts": 23,
+      "words_kept_strict_share": 0.866,
+      "words_kept_if_title_counts_share": 0.983,
+      "removed_strict": [
+        {
+          "text": "Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor and Farrow Bank, with Ellsmoor the larger at 14 hectares.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath",
+            "Greenhouses"
+          ]
+        },
+        {
+          "text": "The two differ on yield.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Korvath plans to install the same system at Farrow Bank in spring 2026.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Korvath"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t2-sentence-opus-low",
+      "sentences": 11,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 2,
+      "kept_strict": 8,
+      "kept_if_title_counts": 8,
+      "words_kept_strict_share": 0.661,
+      "words_kept_if_title_counts_share": 0.661,
+      "removed_strict": [
+        {
+          "text": "Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, according to Samir Vale, speaking at the company's operations review led by Dana Whitlock.",
+          "cited": false,
+          "missing_numbers": [
+            "4,300"
+          ],
+          "missing_names": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply",
+            "Samir",
+            "Vale",
+            "Dana",
+            "Whitlock"
+          ]
+        },
+        {
+          "text": "Whitlock noted that this left the company 500 pallets under forecast, which Vale confirmed.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Vale"
+          ]
+        },
+        {
+          "text": "Asked by Tennant what held it back, Vale pointed mostly to the Redgate depot, which was short of two drivers for most of August.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Tennant"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t2-sentence-opus-medium",
+      "sentences": 12,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 4,
+      "sentences_failing_names_if_title_counts": 4,
+      "kept_strict": 7,
+      "kept_if_title_counts": 7,
+      "words_kept_strict_share": 0.604,
+      "words_kept_if_title_counts_share": 0.604,
+      "removed_strict": [
+        {
+          "text": "Whitlock said the company was therefore 500 pallets under forecast, and Vale confirmed this.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Vale"
+          ]
+        },
+        {
+          "text": "Asked by Tennant what held it back, Vale said the cause was mostly the Redgate depot, which was short of two drivers for most of August.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Tennant"
+          ]
+        },
+        {
+          "text": "In response to a question from Whitlock about what is being done at Redgate, Vale said both driver positions were filled in September.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Whitlock",
+            "Redgate"
+          ]
+        },
+        {
+          "text": "Tennant also raised the price of flour.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": [
+            "Tennant"
+          ]
+        },
+        {
+          "text": "Tennant said that answered the outstanding questions, and Whitlock closed the review by saying the group will meet again in January.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Tennant"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t2-sentence-sonnet-low",
+      "sentences": 12,
+      "sentences_with_no_citation": 1,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 1,
+      "sentences_failing_names_if_title_counts": 0,
+      "kept_strict": 10,
+      "kept_if_title_counts": 11,
+      "words_kept_strict_share": 0.885,
+      "words_kept_if_title_counts_share": 0.962,
+      "removed_strict": [
+        {
+          "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply"
+          ]
+        },
+        {
+          "text": "Joss Tennant asked questions during the review.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": [
+            "Joss",
+            "Tennant"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t2-sentence-sonnet-medium",
+      "sentences": 11,
+      "sentences_with_no_citation": 0,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 1,
+      "sentences_failing_names_if_title_counts": 0,
+      "kept_strict": 10,
+      "kept_if_title_counts": 11,
+      "words_kept_strict_share": 0.923,
+      "words_kept_if_title_counts_share": 1.0,
+      "removed_strict": [
+        {
+          "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t2-turn-opus-medium",
+      "sentences": 13,
+      "sentences_with_no_citation": 3,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 2,
+      "kept_strict": 8,
+      "kept_if_title_counts": 8,
+      "words_kept_strict_share": 0.543,
+      "words_kept_if_title_counts_share": 0.543,
+      "removed_strict": [
+        {
+          "text": "Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, Samir Vale told the company's third-quarter operations review, chaired by Dana Whitlock.",
+          "cited": false,
+          "missing_numbers": [
+            "4,300"
+          ],
+          "missing_names": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply",
+            "Samir",
+            "Vale",
+            "Dana",
+            "Whitlock"
+          ]
+        },
+        {
+          "text": "On-time delivery fell just short of its goal.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Asked by Tennant what held it back, Vale pointed mostly to the Redgate depot, which was short of two drivers for most of August.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Tennant"
+          ]
+        },
+        {
+          "text": "Responding to Whitlock's question about the depot, Vale said both driver positions were filled in September and that he expects on-time delivery back at 95 percent or better this quarter.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Whitlock"
+          ]
+        },
+        {
+          "text": "Tennant said that answer provided everything needed from the review.",
+          "cited": false,
+          "missing_numbers": [],
+          "missing_names": [
+            "Tennant"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "t2-turn-sonnet-medium",
+      "sentences": 11,
+      "sentences_with_no_citation": 0,
+      "sentences_failing_numbers": 0,
+      "sentences_failing_names": 1,
+      "sentences_failing_names_if_title_counts": 0,
+      "kept_strict": 10,
+      "kept_if_title_counts": 11,
+      "words_kept_strict_share": 0.841,
+      "words_kept_if_title_counts_share": 1.0,
+      "removed_strict": [
+        {
+          "text": "Samir Vale told the third-quarter operations review that Hartwell Lane Bakery Supply shipped 4,300 pallets in the quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Hartwell",
+            "Lane",
+            "Bakery",
+            "Supply"
+          ]
+        }
+      ]
+    }
+  ]
+}

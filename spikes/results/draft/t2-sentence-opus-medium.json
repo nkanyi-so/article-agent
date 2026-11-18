@@ -1,0 +1,478 @@
+{
+  "kind": "draft",
+  "label": "t2-sentence-opus-medium",
+  "request": {
+    "model": "claude-opus-5-5",
+    "max_tokens": 16000,
+    "system": "You write short news briefs from meeting and interview transcripts.\n\nThe transcript is attached as a document. Every statement in your brief must come from it.\nDo not add background, context, explanation or opinion that the speakers did not give.\n\nFormat:\n- First line: a headline, on its own line, no trailing full stop.\n- Then three to five short paragraphs, 200 to 350 words in total.\n- Plain news-brief voice, third person. Name the speaker when attributing a statement.\n- If a speaker corrected an earlier statement, report the corrected version as the fact.\n- If speakers disagree, report both positions and who holds each.\n- Plain text only: no markdown, no bullet points, no notes to the reader.",
+    "thinking": {
+      "type": "adaptive",
+      "display": "summarized"
+    },
+    "output_config": {
+      "effort": "medium"
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "document",
+            "source": {
+              "type": "content",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: Right, let's start."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: This is the third-quarter operations review for Hartwell Lane Bakery Supply."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: Samir, do you want to open with shipments?"
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: Sure."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: We shipped 4,800 pallets in the quarter, which is our best quarter so far."
+                },
+                {
+                  "type": "text",
+                  "text": "Joss Tennant: That's higher than I expected."
+                },
+                {
+                  "type": "text",
+                  "text": "Joss Tennant: What did we ship in the second quarter?"
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: The second quarter was 3,900 pallets."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: And on-time delivery?"
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: On-time delivery was 94 percent."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: The target is 95, so we are just under."
+                },
+                {
+                  "type": "text",
+                  "text": "Joss Tennant: What held it back?"
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: Mostly the Redgate depot."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: It was short of two drivers for most of August."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: Sorry, I need to correct something."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: I gave you the wrong shipment number."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: We shipped 4,300 pallets in the quarter, not 4,800."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: The 4,800 was the forecast."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: So we were 500 pallets under forecast."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: Yes."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: It is still our best quarter, because 4,300 is above the 3,900 from the second quarter."
+                },
+                {
+                  "type": "text",
+                  "text": "Joss Tennant: Good, that makes more sense against the invoices I've seen."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: What are we doing about Redgate?"
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: Both driver positions were filled in September."
+                },
+                {
+                  "type": "text",
+                  "text": "Samir Vale: I expect on-time delivery back at 95 percent or better this quarter."
+                },
+                {
+                  "type": "text",
+                  "text": "Joss Tennant: And the flour price?"
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: The new contract starts on the first of November."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: It fixes the price for twelve months."
+                },
+                {
+                  "type": "text",
+                  "text": "Joss Tennant: Then I have what I need."
+                },
+                {
+                  "type": "text",
+                  "text": "Joss Tennant: Thanks, both."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: Thanks."
+                },
+                {
+                  "type": "text",
+                  "text": "Dana Whitlock: We'll meet again in January."
+                }
+              ]
+            },
+            "title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "citations": {
+              "enabled": true
+            }
+          },
+          {
+            "type": "text",
+            "text": "Write the news brief for the attached transcript, citing the transcript for every statement."
+          }
+        ]
+      }
+    ]
+  },
+  "latency_s": 12.42,
+  "request_id": "req_011ChAvCQ68teA1idt4bmRS2",
+  "cost_usd": 0.037308,
+  "response": {
+    "id": "msg_011ChAvCQForQR4g6Fr3JJgA",
+    "container": null,
+    "content": [
+      {
+        "signature": "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",
+        "thinking": "I'm drafting a short news piece of 200 to 350 words in three to five paragraphs, opening with a headline that reports the corrected figure of 4,300 pallets, and keeping it free of extra context.\n\nI'm checking the remaining paragraphs of the draft: Vale's correction from 4,800 to the 4,300 actual figure, the on-time delivery shortfall, and the flour contract. I'm also weighing whether the word count reaches 200 and whether to name Tennant without a pronoun.\n\n",
+        "type": "thinking"
+      },
+      {
+        "text": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter to date\n\nHartwell Lane Bakery Supply ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: We shipped 4,300 pallets in the quarter, not 4,800.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 17,
+            "start_block_index": 16,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "shipped 4,300 pallets in the quarter",
+        "type": "text"
+      },
+      {
+        "text": ", Samir Vale told ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Dana Whitlock: This is the third-quarter operations review for Hartwell Lane Bakery Supply.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 2,
+            "start_block_index": 1,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "the third-quarter operations review for Hartwell Lane Bakery Supply",
+        "type": "text"
+      },
+      {
+        "text": ", which Dana Whitlock opened. Vale first gave a figure of 4,800 pallets, then corrected it, saying ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: The 4,800 was the forecast.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 18,
+            "start_block_index": 17,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "the 4,800 was the forecast",
+        "type": "text"
+      },
+      {
+        "text": ". Whitlock said the company was therefore ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Dana Whitlock: So we were 500 pallets under forecast.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 19,
+            "start_block_index": 18,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "500 pallets under forecast",
+        "type": "text"
+      },
+      {
+        "text": ", and Vale confirmed this.\n\nVale said ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: It is still our best quarter, because 4,300 is above the 3,900 from the second quarter.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 21,
+            "start_block_index": 20,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "it is still our best quarter, because 4,300 is above the 3,900 from the second quarter",
+        "type": "text"
+      },
+      {
+        "text": ". Joss Tennant, who had asked for the second-quarter figure, said the corrected number ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Joss Tennant: Good, that makes more sense against the invoices I've seen.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 22,
+            "start_block_index": 21,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "makes more sense against the invoices I've seen",
+        "type": "text"
+      },
+      {
+        "text": ".\n\nOn-time delivery for the quarter ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: On-time delivery was 94 percent.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 10,
+            "start_block_index": 9,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "was 94 percent",
+        "type": "text"
+      },
+      {
+        "text": ", according to Vale, who said ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: The target is 95, so we are just under.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 11,
+            "start_block_index": 10,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "the target is 95, so we are just under",
+        "type": "text"
+      },
+      {
+        "text": ". Asked by Tennant what held it back, Vale said the cause was ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: Mostly the Redgate depot.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 13,
+            "start_block_index": 12,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "mostly the Redgate depot",
+        "type": "text"
+      },
+      {
+        "text": ", which ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: It was short of two drivers for most of August.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 14,
+            "start_block_index": 13,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "was short of two drivers for most of August",
+        "type": "text"
+      },
+      {
+        "text": ".\n\nIn response to a question from Whitlock about what is being done at Redgate, Vale said ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: Both driver positions were filled in September.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 24,
+            "start_block_index": 23,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "both driver positions were filled in September",
+        "type": "text"
+      },
+      {
+        "text": ". He added that he expects ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: I expect on-time delivery back at 95 percent or better this quarter.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 25,
+            "start_block_index": 24,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "on-time delivery back at 95 percent or better this quarter",
+        "type": "text"
+      },
+      {
+        "text": ".\n\nTennant also raised the price of flour. Whitlock said ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Dana Whitlock: The new contract starts on the first of November.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 27,
+            "start_block_index": 26,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "the new contract starts on the first of November",
+        "type": "text"
+      },
+      {
+        "text": " and that ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Dana Whitlock: It fixes the price for twelve months.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 28,
+            "start_block_index": 27,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "it fixes the price for twelve months",
+        "type": "text"
+      },
+      {
+        "text": ". Tennant said that answered the outstanding questions, and Whitlock closed the review by saying the group ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Dana Whitlock: We'll meet again in January.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 32,
+            "start_block_index": 31,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "will meet again in January",
+        "type": "text"
+      },
+      {
+        "text": ".",
+        "type": "text"
+      }
+    ],
+    "diagnostics": null,
+    "model": "claude-opus-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2222,
+      "output_tokens": 1421,
+      "output_tokens_details": {
+        "thinking_tokens": 644
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  }
+}

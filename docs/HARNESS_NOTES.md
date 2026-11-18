@@ -26,3 +26,10 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-18. The verifier found that `next dev` (16.3 and later) rewrites `frontend/AGENTS.md` whenever it detects a coding agent, which dirties the tree on every `make dev`. The frontend template should ship the current managed block.
 - 2026-11-18. The verifier stops `make dev` by signalling the `make` process, which orphans the servers under any Makefile. Its instructions should say to signal the process group.
 
+## Phase 1, harness 0.3.0
+
+- 2026-11-18. The plan's spike step counted draft calls only ("about 16"), but the owner also wanted the real cost of a whole run, which needs extract and judge calls too. The spike ran 18 billed calls. A spike template should list every kind of call a cost figure needs before the estimate is given.
+- 2026-11-18. The page-fetching tool returned the first half of the citations documentation verbatim and the rest as a summary it could not vouch for, including the request shape the spike needed. The shape was confirmed by the unbilled request and the first paid call instead. Worth knowing before quoting that page in the README.
+- 2026-11-18. The skill has one "stop if the findings contradict a decision record" rule and the owner asked for the phase to run through to the pull request. Resolved by writing the findings and the proposed changes, leaving the contradicted records unedited, and marking the dependent phase blocked. The skill could say that this is the expected way to hand over a spike.
+- 2026-11-18. `spikes/` is outside `make check`: no lint, no types, no tests. Right for throwaway code, but the reviewer has nothing mechanical to lean on there.
+
