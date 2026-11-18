@@ -1,0 +1,31 @@
+#!/bin/bash
+# Blocks any commit unless the project gate passes. Enabled with: git config core.hooksPath .githooks
+# Needs bash and make. gitleaks is optional but its absence is reported on every commit.
+
+# Files that must never be committed: real env files and unmerged harness copies.
+bad=$(git diff --cached --name-only --diff-filter=ACMR \
+  | grep -E '(^|/)\.env(\.[^/]*)?$|\.harness-new$' \
+  | grep -vE '\.example$')
+if [ -n "$bad" ]; then
+  echo "pre-commit: refusing to commit these files:" >&2
+  printf '  %s\n' $bad >&2
+  echo "pre-commit: .env files belong in .gitignore; .harness-new files are merged by hand and deleted." >&2
+  exit 1
+fi
+
+# Scan what is about to be committed. CI scans the whole history, so a finding that
+# gets committed cannot be fixed by a later commit: it has to be caught here.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --no-banner . || {
+    echo "pre-commit: the secret scan flagged staged changes. Fix or reword them before committing." >&2
+    exit 1
+  }
+else
+  echo "pre-commit: WARNING gitleaks is not installed, so staged changes were NOT scanned for secrets." >&2
+fi
+
+if [ -f Makefile ]; then
+  make check || { echo "pre-commit: make check failed. Fix the cause before committing." >&2; exit 1; }
+else
+  echo "pre-commit: WARNING no Makefile, so the gate (make check) did NOT run. Phase 0 creates it." >&2
+fi

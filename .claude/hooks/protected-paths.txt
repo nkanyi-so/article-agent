@@ -1,0 +1,2 @@
+# One glob per line. Files the agent must never edit by hand in this project,
+# for example generated data: data/ground_truth.json
