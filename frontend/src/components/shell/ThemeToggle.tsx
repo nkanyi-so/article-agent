@@ -1,21 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { DEFAULT_THEME, THEME_KEY, type Theme } from "@/lib/theme";
 
-export function ThemeToggle() {
-  // Must start with DEFAULT_THEME so the server-rendered HTML matches the
-  // initial client render exactly (React 19 won't patch hydration mismatches).
-  // useEffect then syncs to whatever ThemeScript wrote to data-theme before
-  // React loaded — this corrects the toggle button after first paint without
-  // any page-level flash.
-  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+// The theme lives on <html data-theme>, written by ThemeScript before React loads
+// and by the toggle afterwards. Reading it as an external store keeps the server
+// render on DEFAULT_THEME (so hydration matches) and then follows the attribute.
+function subscribeToTheme(onChange: () => void): () => void {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+  return () => observer.disconnect();
+}
 
-  useEffect(() => {
-    const current = document.documentElement.getAttribute("data-theme") as Theme | null;
-    if (current && current !== theme) setTheme(current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+function readTheme(): Theme {
+  const current = document.documentElement.getAttribute("data-theme");
+  return current === "dark" || current === "light" ? current : DEFAULT_THEME;
+}
+
+function readServerTheme(): Theme {
+  return DEFAULT_THEME;
+}
+
+export function ThemeToggle() {
+  const theme = useSyncExternalStore(subscribeToTheme, readTheme, readServerTheme);
 
   function applyTheme(next: Theme) {
     document.documentElement.setAttribute("data-theme", next);
@@ -24,7 +34,6 @@ export function ThemeToggle() {
     } catch {
       // Private browsing / storage blocked — fail silently.
     }
-    setTheme(next);
   }
 
   return (

@@ -10,25 +10,33 @@ import { formatDate } from "@/lib/format";
 export function Sidebar() {
   const pathname = usePathname();
   const [runs, setRuns] = useState<Run[]>([]);
-  const [loading, setLoading] = useState(true);
+  // The path the list was last loaded for. While it differs from the current
+  // path a reload is in flight, so "loading" needs no state of its own.
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
+  const loading = loadedFor !== pathname;
 
   useEffect(() => {
-    setLoading(true);
+    let stale = false;
     api
       .listRuns()
       .then((r) =>
-        setRuns(
-          r
-            .slice()
-            .sort(
-              (a, b) =>
-                new Date(b.created_at).getTime() -
-                new Date(a.created_at).getTime()
-            )
-        )
+        r
+          .slice()
+          .sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
       )
-      .catch(() => setRuns([]))
-      .finally(() => setLoading(false));
+      .catch((): Run[] => [])
+      .then((sorted) => {
+        if (stale) return;
+        setRuns(sorted);
+        setLoadedFor(pathname);
+      });
+    return () => {
+      stale = true;
+    };
   }, [pathname]);
 
   return (

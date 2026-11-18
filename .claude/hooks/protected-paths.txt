@@ -1,2 +1,9 @@
-# One glob per line. Files the agent must never edit by hand in this project,
-# for example generated data: data/ground_truth.json
+# One glob per line. Files the agent must never edit by hand in this project.
+
+# Frontend API types, generated from the backend's OpenAPI schema (decisions/0008).
+# Change the Pydantic model and regenerate.
+frontend/src/lib/generated/*
+
+# Recorded model requests and responses (decisions/0004). Written only by the
+# recording command, never by hand: a hand edit would make a replay lie.
+backend/recordings/*
