@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackendStatus } from "./BackendStatus";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface TopBarProps {
@@ -106,6 +107,8 @@ export function TopBar({ runId }: TopBarProps) {
           </span>
         </div>
       )}
+
+      <BackendStatus />
 
       <ThemeToggle />
     </header>

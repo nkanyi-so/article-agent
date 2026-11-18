@@ -1,6 +1,6 @@
 # 0002: the draft uses the Citations API, one citable block per sentence
 
-**Status:** proposed, 2026-11-18. Phase 1 confirms or changes it.
+**Status:** accepted by the owner on 2026-11-18. Phase 1 confirmed it, with caveats recorded in `0012`.
 
 **Context.** The old project asked the model to write source ids, then stripped the invalid ones. The claim here needs a pointer that cannot be invented. Checked on 2026-11-18 against https://platform.claude.com/docs/en/build-with-claude/citations, read in full:
 

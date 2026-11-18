@@ -1,0 +1,6 @@
+# What a command-line deploy from the repository root must never upload.
+.env
+.env.*
+.venv
+node_modules
+.next
