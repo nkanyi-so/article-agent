@@ -9,6 +9,8 @@ from fastapi.sse import EventSourceResponse
 from pydantic import BaseModel
 
 from app import __version__
+from app.model.fixture import FixtureModelClient
+from app.model.types import ModelClient
 from app.settings import Mode, Settings, load_settings
 from app.skeleton import RuntimeReport, SkeletonEvent, runtime_report, skeleton_events
 
@@ -19,9 +21,20 @@ class HealthResponse(BaseModel):
     version: str
 
 
+def build_model_client(settings: Settings) -> ModelClient:
+    """The mode is chosen once, here. Demo mode never loads the live client's module."""
+    if settings.mode == "live":
+        from app.model.live import LiveModelClient
+
+        key = settings.anthropic_api_key
+        return LiveModelClient(key.get_secret_value() if key else None)
+    return FixtureModelClient()
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or load_settings()
     app = FastAPI(title="article-agent", version=__version__)
+    app.state.model_client = build_model_client(settings)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origin_list(),

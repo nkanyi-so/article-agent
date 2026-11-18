@@ -51,3 +51,12 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-18. Asking the reviewer to break the checker, with a list of attack ideas, found three real holes and nine smaller ones that reading the diff would not have. For any phase whose product is a check, the reviewer's brief should say "try to get a false one through" as standard.
 - 2026-11-18. A file write was refused because the format hook had changed the file since it was last read, and the refusal was easy to miss among the test output: the next test run failed 73 tests against the old file. The harness could make a refused write louder than a failed test.
 
+## Phase 4, harness 0.3.0
+
+- 2026-11-19. A prompt that cleared the owner's bar (2.1% removed) had its worked examples lifted from the test transcripts; with neutral examples it measured 6.6%. Nothing in the harness would have caught it: it was noticed while writing the decision record. A test now fails if a prompt contains a name from a seeded or fixture transcript. The llm-app profile should carry that rule: examples in a prompt never come from the eval or seed data.
+- 2026-11-19. "Stop and bring options if the bar is not met" worked as an instruction, but only because the bar was a number. The plan template should ask for a measurable bar on any step that tunes a prompt.
+- 2026-11-19. A one-word prompt edit and its restore, made in the same second with the same file length, left a stale bytecode cache: Python kept running the edited prompt after the file was restored, and ten tests failed against a file that was correct on disk. Any "change it, show it fails, change it back" demonstration should clear `__pycache__` or touch the file afterwards.
+- 2026-11-19. A long shell command chained with `&&` stopped at an early failing step, so a file later steps needed was never written, and the failure showed up as an unrelated import error. Fewer, shorter commands per step.
+- 2026-11-19. The spend ledger with a hard stop (`tools/spend.py`) made the owner's limit real across tools and runs, and made "what did this phase cost" a one-line sum. The harness could ship that as a pattern for any paid step.
+- 2026-11-19. The seeds had to be recorded twice because the prompt changed after the first recording. Recording belongs after the prompt is decided; the plan lists it as its own step but not that it must be the last one.
+

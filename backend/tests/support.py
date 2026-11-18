@@ -72,3 +72,23 @@ def recorded(name: str) -> Recorded:
     (text_block,) = [b for b in extract["response"]["content"] if b["type"] == "text"]
     corrections = [Correction(**c) for c in json.loads(text_block["text"])["corrections"]]
     return Recorded(name, title, segments, corrections, copy.deepcopy(saved["response"]["content"]))
+
+
+def recorded_phase4() -> Recorded:
+    """One saved run of the Phase 4 prompt trial on the Sallowfield seed, with the prompt
+    whose examples come from no transcript. It has a sentence that uses two surnames where
+    the cited text has only first names."""
+    from app.seeds import seed
+
+    chosen = seed("sallowfield-dental")
+    saved = json.loads((FIXTURES / "phase4" / "draft-sallowfield-neutral-1.json").read_text())
+    extract = json.loads((FIXTURES / "phase4" / "extract-sallowfield.json").read_text())
+    segments = ingest(chosen.text(), chosen.title).segments
+    corrections = [Correction(**c) for c in extract["response"]["parsed"]["corrections"]]
+    return Recorded(
+        "sallowfield-neutral-1",
+        chosen.title,
+        segments,
+        corrections,
+        copy.deepcopy(saved["raw"]["content"]),
+    )

@@ -21,6 +21,7 @@ from app.schemas import (
     GroundResult,
     Headline,
     HeadlineFailure,
+    NameResolution,
     RemovalReason,
     RemovedUnit,
     Segment,
@@ -72,6 +73,69 @@ _NEVER_NAMES = {
     "under", "until", "we", "what", "when", "where", "which", "while", "who", "with", "yes",
     "you",
 }  # fmt: skip
+
+
+_TITLES = {"dr", "mr", "mrs", "ms", "prof"}
+
+
+_CALENDAR = {
+    "january", "february", "march", "april", "may", "june", "july", "august", "september",
+    "october", "november", "december", "monday", "tuesday", "wednesday", "thursday", "friday",
+    "saturday", "sunday",
+}  # fmt: skip
+
+FirstNames = dict[str, tuple[str, set[str]]]
+
+
+def _label_words(label: str) -> list[str]:
+    return [word for word in label.split() if word.rstrip(".").lower() not in _TITLES]
+
+
+def _first_names(segments: list[Segment], ordinary: set[str]) -> FirstNames:
+    """For each first name that can only mean one speaker: that speaker's label and the
+    rest of its words.
+
+    Left out, so that they support nothing: a first name two speakers share; one that is
+    also any other word of another speaker's label; one the transcript also uses as an
+    ordinary word ("will", "mark"); a month or a weekday ("June", "May"); and a one-word
+    label, which has no surname to support.
+    """
+    labels = {segment.speaker for segment in segments}
+    resolved: FirstNames = {}
+    for label in labels:
+        words = _label_words(label)
+        if len(words) < 2:
+            continue
+        first = words[0]
+        elsewhere = [w.lower() for other in labels - {label} for w in _label_words(other)]
+        if first.lower() in elsewhere:
+            continue
+        if first.lower() in ordinary or first.lower() in _CALENDAR or first.lower() in _NEVER_NAMES:
+            continue
+        resolved[first] = (label, {word.lower() for word in words[1:]})
+    return resolved
+
+
+def _names_someone(text: str, first: str) -> bool:
+    """Whether `first` appears in `text` written as a name: inside the sentence, or opening
+    it as a form of address ("Hana, run the calls"). A capitalised word that merely opens
+    a sentence ("Will do.") is not taken for a name."""
+    pattern = rf"(?<!{_LETTER}){re.escape(first)}(?!{_LETTER})"
+    for match in re.finditer(pattern, text):
+        if text[: match.start()].strip() or text[match.end() :].startswith(","):
+            return True
+    return False
+
+
+def _resolve_by_first_name(
+    name: str, cited: list[Segment], first_names: FirstNames
+) -> NameResolution | None:
+    """`name` is not in the cited text. It still stands if it is the surname of a speaker
+    whose first name, written as a name, is in a cited sentence and can only mean them."""
+    for first, (label, surnames) in first_names.items():
+        if name.lower() in surnames and any(_names_someone(s.text, first) for s in cited):
+            return NameResolution(name=name, first_name=first, speaker=label)
+    return None
 
 
 @dataclass(frozen=True)
@@ -234,9 +298,15 @@ def _cited_segments(sentence: _Sentence, segments: list[Segment]) -> list[Segmen
 
 
 def _check(
-    sentence: _Sentence, cited: list[Segment] | None, superseded: set[int], ordinary: set[str]
+    sentence: _Sentence,
+    cited: list[Segment] | None,
+    superseded: set[int],
+    ordinary: set[str],
+    first_names: FirstNames,
+    resolutions: list[NameResolution],
 ) -> tuple[RemovalReason, list[str]] | None:
-    """The first rule the sentence fails, with what was missing, or None if it passes all four."""
+    """The first rule the sentence fails, with what was missing, or None if it passes all four.
+    Names that stand only through the first-name rule are appended to `resolutions`."""
     if not sentence.citations:
         return "no_citation", []
     if cited is None:
@@ -252,7 +322,15 @@ def _check(
     if missing_numbers:
         return "unsupported_number", missing_numbers
     names = _names(sentence.text, ordinary)
-    missing_names = [name for name in names if not _contains_word(with_speakers, name)]
+    missing_names: list[str] = []
+    for name in names:
+        if _contains_word(with_speakers, name):
+            continue
+        resolution = _resolve_by_first_name(name, cited, first_names)
+        if resolution:
+            resolutions.append(resolution)
+        else:
+            missing_names.append(name)
     if missing_names:
         return "unsupported_name", missing_names
     if not _quotes_are_closed(sentence.text):
@@ -332,6 +410,7 @@ def ground(
     result, if fewer than three sentences survive."""
     superseded = {correction.superseded for correction in corrections}
     ordinary = _lower_case_words(segments)
+    first_names = _first_names(segments, ordinary)
     headline_text, sentences = _sentences(blocks)
 
     claims: list[Claim] = []
@@ -339,7 +418,8 @@ def ground(
     for sentence in sentences:
         cited = _cited_segments(sentence, segments)
         indexes = [segment.index for segment in cited or []]
-        failure = _check(sentence, cited, superseded, ordinary)
+        resolutions: list[NameResolution] = []
+        failure = _check(sentence, cited, superseded, ordinary, first_names, resolutions)
         if failure:
             reason, detail = failure
             removed.append(
@@ -358,6 +438,7 @@ def ground(
                     paragraph=sentence.paragraph,
                     citations=list(sentence.citations),
                     segment_indexes=indexes,
+                    name_resolutions=resolutions,
                 )
             )
 

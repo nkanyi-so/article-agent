@@ -6,13 +6,15 @@ response altered by hand in one place. A check that cannot fail proves nothing.
 
 import ast
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from app.errors import TooFewGroundedClaims
 from app.pipeline.ground import ground
-from app.schemas import Citation, Correction, DraftBlock, GroundResult, RemovedUnit
-from tests.support import DRAFTS, Recorded, recorded
+from app.pipeline.ingest import ingest
+from app.schemas import Citation, Correction, DraftBlock, GroundResult, NameResolution, RemovedUnit
+from tests.support import DRAFTS, Recorded, recorded, recorded_phase4
 
 T1 = "t1-sentence-sonnet-medium-a"
 T2 = "t2-sentence-sonnet-medium"
@@ -428,17 +430,18 @@ def test_a_draft_with_no_headline_line_takes_the_title() -> None:
 # ------------------------------------------------------------------ no model in this phase
 
 
-def test_no_module_of_the_app_imports_a_model_client() -> None:
-    imported: set[str] = set()
-    for path in (Path(__file__).parents[1] / "app").rglob("*.py"):
-        for node in ast.walk(ast.parse(path.read_text())):
+def test_ingest_and_ground_import_nothing_from_the_model_seam() -> None:
+    # They are pure code. The rule that only one module may import the SDK is in
+    # tests/test_model_seam.py.
+    pipeline = Path(__file__).parents[1] / "app" / "pipeline"
+    for name in ("ingest.py", "ground.py"):
+        modules: set[str] = set()
+        for node in ast.walk(ast.parse((pipeline / name).read_text())):
             if isinstance(node, ast.Import):
-                imported |= {alias.name.split(".")[0] for alias in node.names}
+                modules |= {alias.name for alias in node.names}
             elif isinstance(node, ast.ImportFrom) and node.module:
-                imported.add(node.module.split(".")[0])
-
-    assert "anthropic" not in imported
-    assert "httpx" not in imported
+                modules.add(node.module)
+        assert not {m for m in modules if m.startswith(("app.model", "anthropic", "httpx"))}
 
 
 # ------------------------------------------------------------------ found by the reviewer
@@ -665,3 +668,206 @@ def test_an_empty_or_one_line_draft_fails_cleanly(blocks: list[DraftBlock]) -> N
         ground(blocks, rec.segments, [Correction(superseded=9999, replaced_by=3)], "")
 
     assert failure.value.result.headline.source == "title"
+
+
+# ------------------------------------------------------------------ a first name and its speaker
+#
+# Decided by the owner on 2026-11-19: a first name in the cited text that matches exactly
+# one speaker label supports that speaker's surname. Nothing else is loosened.
+
+BOTH_RUN = "Mirela Stanek said both approaches would run for a month, with Olund running the calls"
+
+
+def test_real_a_surname_is_supported_by_its_speakers_first_name_in_the_cited_text() -> None:
+    # The cited text is the chair saying "Hana, run the calls in November. Tobias, get
+    # reception asking for mobile numbers." Hana Olund and Tobias Ferrant are speakers.
+    result = run(recorded_phase4())
+
+    (claim,) = [c for c in result.claims if c.text.startswith(BOTH_RUN)]
+    assert claim.name_resolutions == [
+        NameResolution(name="Olund", first_name="Hana", speaker="Hana Olund"),
+        NameResolution(name="Ferrant", first_name="Tobias", speaker="Tobias Ferrant"),
+    ]
+
+
+def test_a_sentence_kept_without_this_rule_records_nothing() -> None:
+    result = run(recorded_phase4())
+
+    others = [c for c in result.claims if not c.text.startswith(BOTH_RUN)]
+    assert others and all(c.name_resolutions == [] for c in others)
+
+
+def test_altered_without_the_first_names_in_the_cited_text_the_surnames_are_not_supported() -> None:
+    rec = recorded_phase4()
+    citation = rec.find(BOTH_RUN)["citations"][0]
+    citation["end_block_index"] = 35  # now cites only "We can do both for a month..."
+
+    unit = removed(run(rec), BOTH_RUN)
+
+    # "November" goes too: it was in the sentence that is no longer cited.
+    assert (unit.reason, unit.detail) == ("unsupported_name", ["Olund", "November", "Ferrant"])
+
+
+def test_altered_a_wrong_surname_is_not_rescued_by_a_first_name() -> None:
+    rec = recorded_phase4()
+    block = rec.find(BOTH_RUN)
+    block["text"] = block["text"].replace("Olund running", "Olsen running")
+
+    unit = removed(run(rec), "Olsen running")
+
+    assert (unit.reason, unit.detail) == ("unsupported_name", ["Olsen"])
+
+
+def test_altered_a_surname_from_a_different_person_is_not_rescued() -> None:
+    # The cited text says "Hana, put the sum in the notes." Ferrant's first name is Tobias,
+    # and Tobias is not in what this sentence cites.
+    rec = recorded_phase4()
+    block = rec.find("Stanek asked her to put the sum in the notes")
+    block["text"] = "Stanek asked Ferrant to put the sum in the notes."
+    block["citations"][0]["start_block_index"] = 56
+    block["citations"][0]["end_block_index"] = 57
+
+    unit = removed(run(rec), "Stanek asked Ferrant")
+
+    assert (unit.reason, unit.detail) == ("unsupported_name", ["Ferrant"])
+
+
+def test_the_same_sentence_with_the_right_surname_is_kept_and_the_reason_recorded() -> None:
+    rec = recorded_phase4()
+    block = rec.find("Stanek asked her to put the sum in the notes")
+    block["text"] = "Stanek asked Olund to put the sum in the notes."
+    block["citations"][0]["start_block_index"] = 56
+    block["citations"][0]["end_block_index"] = 57
+
+    (claim,) = [c for c in run(rec).claims if c.text.startswith("Stanek asked Olund")]
+
+    assert claim.name_resolutions == [
+        NameResolution(name="Olund", first_name="Hana", speaker="Hana Olund")
+    ]
+
+
+def a_meeting(
+    *speakers: str, said: str = "Hana, run the calls in November."
+) -> tuple[list[DraftBlock], list[Any]]:
+    """A small transcript whose first speaker says `said`, and draft sentences citing it,
+    one of which turns "Hana" into "Olund"."""
+    filler = " ".join(["word"] * 24) + " end."
+    lines = [f"{speakers[0]}: {said}"]
+    lines += [f"{speakers[i % len(speakers)]}: {filler}" for i in range(6)]
+    segments = ingest("\n".join(lines), "A meeting").segments
+    source = "Hana, run the calls in November."
+    blocks = [
+        DraftBlock(text="A headline\n\n"),
+        sentence("Stanek told Olund to run the calls in November.", 0, source),
+        sentence(" Stanek told Hana to run the calls in November.", 0, source),
+        sentence(" The calls run in November.", 0, source),
+        sentence(" Hana is to run the calls.", 0, source),
+    ]
+    return blocks, segments
+
+
+def test_two_speakers_sharing_a_first_name_support_neither_surname() -> None:
+    blocks, segments = a_meeting("Mirela Stanek", "Hana Olund", "Hana Brandt")
+
+    result = ground(blocks, segments, [], "A meeting")
+
+    unit = removed(result, "Stanek told Olund")
+    assert (unit.reason, unit.detail) == ("unsupported_name", ["Olund"])
+    assert all(claim.name_resolutions == [] for claim in result.claims)
+
+
+def test_a_first_name_that_matches_no_speaker_supports_no_surname() -> None:
+    blocks, segments = a_meeting("Mirela Stanek", "Tobias Ferrant")
+
+    unit = removed(ground(blocks, segments, [], "A meeting"), "Stanek told Olund")
+
+    assert (unit.reason, unit.detail) == ("unsupported_name", ["Olund"])
+
+
+def test_one_speaker_with_that_first_name_supports_the_surname() -> None:
+    blocks, segments = a_meeting("Mirela Stanek", "Hana Olund", "Tobias Ferrant")
+
+    result = ground(blocks, segments, [], "A meeting")
+
+    assert "Stanek told Olund to run the calls in November." in kept(result)
+
+
+def test_a_title_before_a_name_is_not_taken_for_the_first_name() -> None:
+    blocks, segments = a_meeting("Mirela Stanek", "Dr. Hana Olund")
+
+    assert "Stanek told Olund to run the calls in November." in kept(
+        ground(blocks, segments, [], "A meeting")
+    )
+
+
+def one_sentence(text: str, *speakers: str, said: str) -> GroundResult:
+    """Grounds `text`, citing the first speaker's sentence `said`, beside three safe sentences."""
+    _, segments = a_meeting(*speakers, said=said)
+    blocks = [
+        DraftBlock(text="A headline\n\n"),
+        sentence(text, 0, said),
+        sentence(" The speaker said this.", 0, said),
+        sentence(" It was said aloud.", 0, said),
+        sentence(" That was all.", 0, said),
+    ]
+    return ground(blocks, segments, [], "A meeting")
+
+
+@pytest.mark.parametrize(
+    ("speaker", "said", "claim", "surname"),
+    [
+        # The reviewer's cases: an ordinary word, or a month, that is also a first name.
+        (
+            "Will Barker",
+            "We will run the calls in November.",
+            "Barker ran the calls in November.",
+            "Barker",
+        ),
+        (
+            "Mark Ellis",
+            "We missed the mark on the calls.",
+            "Ellis missed the mark on the calls.",
+            "Ellis",
+        ),
+        ("May Chen", "We may run the calls again.", "Chen may run the calls again.", "Chen"),
+        (
+            "June Okafor",
+            "We launched the reminders in June.",
+            "Okafor launched the reminders in June.",
+            "Okafor",
+        ),
+        ("Will Barker", "Will do.", "Barker agreed to do it.", "Barker"),
+    ],
+)
+def test_a_first_name_that_is_also_an_ordinary_word_or_a_month_supports_nothing(
+    speaker: str, said: str, claim: str, surname: str
+) -> None:
+    # Mirela Stanek says the sentence; the other speaker is never spoken to or about.
+    result = one_sentence(claim, "Mirela Stanek", speaker, said=said)
+
+    unit = removed(result, claim)
+    assert (unit.reason, unit.detail) == ("unsupported_name", [surname])
+
+
+def test_a_first_name_that_is_also_another_speakers_surname_supports_nothing() -> None:
+    # "Hana" here could be Hana Olund or Rafael Hana, so it supports neither.
+    result = one_sentence(
+        "Stanek told Olund to run the calls in November.",
+        "Mirela Stanek",
+        "Hana Olund",
+        "Rafael Hana",
+        said="Hana, run the calls in November.",
+    )
+
+    assert removed(result, "Stanek told Olund").detail == ["Olund"]
+
+
+def test_the_first_name_must_be_written_as_a_name_in_the_cited_text() -> None:
+    result = one_sentence(
+        "Stanek told Olund to run the calls in November.",
+        "Mirela Stanek",
+        "Hana Olund",
+        said="We told hana to run the calls in November.",
+    )
+
+    assert removed(result, "Stanek told Olund").detail == ["Olund"]

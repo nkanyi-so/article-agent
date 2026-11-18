@@ -15,6 +15,9 @@ class AppError(Exception):
     http_status: int = 500
     retryable: bool = False
     message: str = "Something went wrong."
+    # Set when the error came from a model call that was billed although its response
+    # could not be used, so the run and the spend ledger can still count it.
+    cost_usd: float | None = None
 
     def __init__(self) -> None:
         super().__init__(self.message)
@@ -60,3 +63,78 @@ class TooFewGroundedClaims(AppError):
     def __init__(self, result: GroundResult) -> None:
         super().__init__()
         self.result = result
+
+
+class NoCheckableFacts(Refusal):
+    """The extract stage found nothing in the transcript that an article could report."""
+
+    code = "no_checkable_facts"
+    message = "The transcript contains nothing checkable to report."
+
+
+class DetailedError(AppError):
+    """An error with one short detail for the server's log and the trace: a model id, a
+    category, a key prefix. Never upstream text, and never part of the client message."""
+
+    def __init__(self, detail: str = "") -> None:
+        super().__init__()
+        self.detail = detail
+
+
+class FixtureMiss(DetailedError):
+    """Demo mode, tests and CI were asked for a model response that was never recorded."""
+
+    code = "fixture_miss"
+    message = "No recorded response exists for this request."
+
+
+class ModelRefused(DetailedError):
+    """The model declined the request (HTTP 200 with a refusal stop reason)."""
+
+    code = "model_refused"
+    http_status = 502
+    message = "The model declined this request."
+
+
+class ModelTruncated(AppError):
+    code = "model_truncated"
+    http_status = 502
+    message = "The model's response was cut off before it finished."
+
+
+class ModelMismatch(DetailedError):
+    """The response came from a model other than the one requested."""
+
+    code = "model_mismatch"
+    http_status = 502
+    message = "The response came from a different model than the one requested."
+
+
+class ModelOutputInvalid(DetailedError):
+    """The model's output did not have the shape or the references the stage requires."""
+
+    code = "model_output_invalid"
+    http_status = 502
+    message = "The model's output could not be used."
+
+
+class ModelCallFailed(DetailedError):
+    """The call itself failed: a timeout, a connection error or an API error status."""
+
+    code = "model_call_failed"
+    http_status = 502
+    retryable = True
+    message = "The model could not be reached."
+
+
+class MissingKey(AppError):
+    code = "missing_key"
+    http_status = 503
+    message = "Live mode needs ANTHROPIC_API_KEY, and it is not set."
+
+
+class RunTimedOut(AppError):
+    code = "run_timeout"
+    http_status = 504
+    retryable = True
+    message = "The run took longer than its time limit."

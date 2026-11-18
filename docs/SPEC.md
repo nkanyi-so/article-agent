@@ -21,7 +21,7 @@ It is a rebuild on synthetic data. Every transcript is about fictional people at
 3. **Draft (model, citations).** Write the article against the transcript, supplied as one citable block per sentence. The response's cited text blocks are the claim-to-source map. No output schema on this call.
 4. **Ground (code).** The unit is the sentence: the draft's text blocks are joined, the body is split into sentences, and each sentence carries the citations of every block it overlaps. Keep a sentence only if all of these hold; otherwise remove it and record why:
    - it carries at least one citation;
-   - every number, date and proper name in it appears in its cited text or is the speaker of a cited segment;
+   - every number, date and proper name in it appears in its cited text or is the speaker of a cited segment. One narrow exception, recorded in the trace when used: a first name in the cited text that matches exactly one speaker supports that speaker's surname;
    - anything in quotation marks is a verbatim substring of its cited text;
    - it does not rest only on a segment that a speaker later corrected, and if it cites such a segment beside others, every number in it appears in one of the others.
    A removed sentence is never given another citation. If fewer than three sentences survive, the run fails with `too_few_grounded_claims`.
