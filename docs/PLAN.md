@@ -393,6 +393,18 @@ warm request: first_byte=0.367900s total=0.368227s
 
 The instance was 0.2 seconds old when it answered, so this was a cold start. **A cold request took 1.57 s to the first byte against 0.37 to 0.47 s warm: a cold start costs about 1.1 to 1.2 seconds**, measured once, from the owner's machine to the `iad1` region, with only `/health`-sized work to import. It will grow when the app seeds its runs at startup (Phase 5), so Phase 8 measures it again.
 
+A second reading, taken at 20:48:09Z after about 30 minutes with no traffic (the verifier's last request was at about 20:18Z), agrees:
+
+```
+first request: status=200 connect=0.020799s tls=0.084394s first_byte=1.843143s total=1.845346s
+instance uptime at that request: 0.206 s
+warm request: first_byte=0.337298s total=0.337696s
+warm request: first_byte=0.360478s total=0.360843s
+warm request: first_byte=0.369670s total=0.370087s
+```
+
+Two cold starts, 1.57 s and 1.84 s to the first byte, against 0.34 to 0.47 s warm.
+
 **Verdict on the host: Vercel Hobby holds.** The stream is not buffered, the cold start is about a second, the SDK is absent, and the scratch disk works. The Fly.io fallback in `0009` is not needed.
 
 **Reviewer** (fresh context, over the first deploy's code and the decisions commit, run alone and told not to touch the deployed address). Its verdict: "There are no blocking findings for the Phase 2 code." It confirmed for itself that the stream cannot leak exception text, that only `Exception` is caught so a client that has gone is not sent anything, that each test fails without the behaviour it names, that importing the app reads no `.env` under test, and that no check was weakened. Findings as reported, and what I did:
