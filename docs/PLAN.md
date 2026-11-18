@@ -1,8 +1,8 @@
 # Plan: article-agent
 
-This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked.
+This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 (the walking skeleton on Vercel) is done on `phase-2-walking-skeleton` and waits for the owner's review of its pull request; Both Vercel projects are connected to the repository. Phase 3 is next.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 (ingest and the ground check) is done on `phase-3-ingest-ground` and waits for the owner's review of its pull request.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -457,20 +457,247 @@ article-agent-web | repo: nkanyi-so / article-agent | production branch: main | 
 
 From here a merge to `main` deploys both. The frontend's preview builds were also given the backend's address, because a build on the host without it now fails by design. A preview page will show "API unreachable": the backend allows the production frontend's origin only, and a preview has a different one. That is the CORS rule working, not a fault.
 
+### 2026-11-18, after the owner's review of Phase 2: the first deploy from GitHub
+
+- Pull request #3 merged by squash at the owner's instruction (`d8fe679`). CI on `main`: success.
+- **Both production deployments came from GitHub and are ready at the merged commit:**
+
+  ```
+  article-agent-api: READY d8fe679 git article-agent-boeeizr4v-nkanyi-so.vercel.app
+  article-agent-web: READY d8fe679 git article-agent-dx5xw428t-nkanyi-so.vercel.app
+  ```
+
+- **They still pass the Phase 2 checks:**
+
+  ```
+  $ curl -sN https://article-agent-api.vercel.app/skeleton/stream   (lines stamped on arrival)
+  + 0.70s  data: {"seq":0,"at":"2026-11-18T21:14:14.931+00:00","type":"run_started"}
+  + 2.79s  data: {"seq":1,"at":"2026-11-18T21:14:16.932+00:00","type":"stage_started","stage":"first"}
+  + 4.74s  data: {"seq":2,"at":"2026-11-18T21:14:18.934+00:00","type":"stage_completed","stage":"first"}
+  + 6.69s  data: {"seq":3,"at":"2026-11-18T21:14:20.935+00:00","type":"stage_started","stage":"second"}
+  + 8.69s  data: {"seq":4,"at":"2026-11-18T21:14:22.936+00:00","type":"stage_completed","stage":"second"}
+  +10.70s  data: {"seq":5,"at":"2026-11-18T21:14:24.937+00:00","type":"run_completed"}
+  $ curl -s https://article-agent-api.vercel.app/health
+  {"status":"ok","mode":"demo","version":"0.1.0"}
+  $ curl -s https://article-agent-api.vercel.app/skeleton/runtime   (summarised)
+  python 3.14.10 | anthropic_installed False | scratch_sqlite {'ok': True, 'rows_read': 1} | 28 packages | dev tools or anthropic present: []
+  $ CORS, frontend origin then another origin
+  access-control-allow-origin: https://article-agent-web.vercel.app
+  other origin header count: 0
+  $ frontend
+  status 200
+  ```
+
+  Headless Chrome on the frontend shows `API demo · 0.1.0`.
+- **The skeleton routes are now off on the hosted backend,** at the owner's instruction: `APP_SKELETON_ROUTES` was removed from the project's production settings and the production deployment rebuilt from the same commit.
+
+  ```
+  /health -> 200
+  /skeleton/stream -> 404
+  /skeleton/runtime -> 404
+  ```
+
+  The settings left on the backend are `APP_MODE` and `APP_CORS_ORIGINS`.
+- The owner confirmed the headline rule as refined (no headline number may appear in a superseded segment).
+- The old Vercel project `article-agent` stays paused; its deletion is now a Phase 9 step.
+- The owner's rule for every merge from here on is at the top of this file.
+
 ---
 
 ## Phase 3: ingest and the ground check
 
 Pure code, test-first. Uses the Phase 1 responses as fixtures.
 
-- [ ] Schemas: segment, claim, citation, removed unit, stage record, typed errors (the old hierarchy's shape, new members).
-- [ ] Ingest: turn parser, sentence splitter, segment numbering with speaker and source line, the four code refusals.
-- [ ] Ground: draft blocks joined and split into sentences, each with the citations of the blocks it overlaps; the four removal rules; removed sentences recorded with a reason; the fewer-than-three failure; the headline checked against the kept body, with the title as fallback and the failure in the trace (`0003`).
-- [ ] Tests on real recorded responses and on hand-altered ones (a wrong number, an uncited sentence, a misquote, a claim resting only on a corrected segment). Each must be removed with the right reason.
+- [x] Schemas: segment, claim, citation, removed unit, stage record, typed errors (the old hierarchy's shape, new members).
+- [x] Ingest: turn parser, sentence splitter, segment numbering with speaker and source line, the four code refusals.
+- [x] Ground: draft blocks joined and split into sentences, each with the citations of the blocks it overlaps; the four removal rules; removed sentences recorded with a reason; the fewer-than-three failure; the headline checked against the kept body, with the title as fallback and the failure in the trace (`0003`).
+- [x] Tests on real recorded responses and on hand-altered ones (a wrong number, an uncited sentence, a misquote, a claim resting only on a corrected segment). Each must be removed with the right reason.
 
 **Gate:** `make check` exits 0. The test list shows each removal rule failing a hand-altered response and passing the real one. No module in this phase imports a model client.
 
 **Log:**
+
+### 2026-11-18, Phase 3 on `phase-3-ingest-ground`
+
+No model call and no network anywhere in this phase. The fixtures are the eleven real draft responses the spike saved with one block per sentence, copied to `backend/tests/fixtures/` with the two transcripts and the two extract outputs.
+
+**Built.**
+
+- `app/errors.py`: typed errors with a code, an HTTP status, a retryable flag and a fixed message that never contains transcript text. The four refusals and `too_few_grounded_claims`.
+- `app/schemas.py`: segment, citation, draft block, claim, removed unit, headline, ground result, correction, stage record.
+- `app/pipeline/ingest.py`: the turn parser (optional timestamps in four forms; a line with no speaker continues the turn before it; a speaker label is one to four capitalised words, so a sentence with a colon is not read as a speaker), the sentence splitter (abbreviations, initials, decimals, closing quotes), segment numbering with turn, speaker and source line, and the four refusals in this order: empty, unparseable, too long, too short. Word counts are of what was spoken, not of speaker labels.
+- `app/pipeline/ground.py`: joins the draft's blocks, takes the first line as the headline, splits the body into sentences that each carry the citations of every block they overlap, applies the four rules in order, records each removed sentence with its reason and what was missing, checks the headline against the kept sentences, and fails with `too_few_grounded_claims` (carrying the result) below three.
+- `tools/ground_report.py`: prints what the check kept and removed on every recorded draft.
+
+**One compatibility test carries the fixtures:** ingest numbers both transcripts exactly as the recorded requests did (100 and 32 segments, text for text), so every recorded citation still points at the sentence it pointed at.
+
+**Choices the decision record left to the build,** now written into `0003` ("As built"):
+
+- A number is a run of digits, or a number word from two to ninety-nine, hundred, thousand, million. "60" and "sixty" match. "One" is not checked (it is usually a pronoun or an article), nor are ordinals or fractions in words ("a third").
+- A name is a capitalised word that is not on a short list of ordinary words. A word that opens a sentence counts as a name unless the transcript itself uses it in lower case. Months and weekdays count, which is how a date is checked beyond its digits.
+- Names and numbers are checked against the transcript's own text for the cited segments, not against the response's copy of it.
+- A quotation is checked ignoring case, spacing and trailing punctuation.
+- A first line that ends like a sentence is treated as body, not as a headline, so a draft that skips the headline loses nothing.
+- A citation pointing outside the transcript removes its sentence with its own reason, `invalid_citation`. The API promises this cannot happen; a recording edited by hand could do it.
+- After the review (below) several of these were tightened; `0003` "As built" has the final list, and the list of what the code does not check.
+
+**What the check does on the eleven real drafts** (`cd backend && uv run --locked python -m tools.ground_report`):
+
+```
+draft | sentences | kept | no_citation | number | name | misquote | corrected | words kept | headline
+t1-sentence-opus-low | 17 | 10 | 3 | 3 | 1 | 0 | 0 | 57% | title (headline_unsupported_name: Korvath, Greenhouses)
+t1-sentence-opus-medium | 20 | 13 | 3 | 1 | 3 | 0 | 0 | 67% | title (headline_unsupported_name: Korvath, Greenhouses)
+t1-sentence-sonnet-low | 16 | 13 | 1 | 0 | 2 | 0 | 0 | 80% | title (headline_unsupported_name: Korvath, Greenhouses)
+t1-sentence-sonnet-medium-a | 22 | 18 | 1 | 1 | 2 | 0 | 0 | 80% | title (headline_unsupported_name: Korvath, Greenhouses)
+t1-sentence-sonnet-medium-b | 23 | 20 | 1 | 0 | 2 | 0 | 0 | 86% | title (headline_unsupported_name: Korvath, Greenhouses)
+t1-sentence-sonnet-medium-c | 22 | 19 | 1 | 0 | 2 | 0 | 0 | 87% | title (headline_unsupported_name: Korvath, Greenhouses)
+t1-sentence-sonnet-medium-nothinking | 21 | 17 | 1 | 0 | 3 | 0 | 0 | 84% | title (headline_unsupported_name: Korvath, Greenhouses)
+t2-sentence-opus-low | 10 | 8 | 0 | 0 | 2 | 0 | 0 | 75% | title (headline_unsupported_name: Hartwell, Lane, Bakery, Supply)
+t2-sentence-opus-medium | 12 | 8 | 1 | 0 | 3 | 0 | 0 | 69% | title (headline_unsupported_number: 500)
+t2-sentence-sonnet-low | 13 | 11 | 0 | 0 | 2 | 0 | 0 | 86% | title (headline_unsupported_name: Hartwell, Lane, Bakery, Supply)
+t2-sentence-sonnet-medium | 10 | 9 | 0 | 0 | 1 | 0 | 0 | 92% | title (headline_unsupported_name: Hartwell, Lane, Bakery, Supply)
+```
+
+186 sentences, 146 kept, 40 removed: 12 for no citation, 5 for a number and 23 for a name outside the cited text. None for a misquote or a correction.
+
+**Read by hand, all 40 removed sentences are true to the transcript.** The real drafts contain no invented fact that I can find, so on real responses the check has nothing false to catch, and everything it removes is a cost:
+
+- 12 are sentences the model did not cite at all. Seven of them are the same bridge ("The two differ on yield."); the rest are true summaries. Removing an uncited sentence is the rule working as designed.
+- 28 are cited, true sentences whose subject, date or figure is named in a neighbouring sentence the model did not cite: the company's name (in the title and one other sentence), "Farrow Bank" where the cited sentence says "there", "October 2025" where it says "since then", "Tennant" where the cited sentence is the answer to Tennant's question.
+- For the writer as configured (Sonnet, medium, one block per sentence): transcript 1, three runs, 22, 23 and 22 sentences, of which 18, 20 and 19 kept (80%, 86%, 87% of words); transcript 2, 10 sentences, 9 kept (92%). Every run lost its lead sentence, the one that names the company.
+
+**What the check catches is shown on altered copies,** since the real drafts gave it nothing false. Each of these is a real response changed in one place, and each is removed with the reason named, while the unaltered sentence is kept:
+
+| Alteration | Removed as |
+|---|---|
+| A cited sentence with its citation stripped | `no_citation` |
+| "22 litres" changed to "25 litres" | `unsupported_number` |
+| "two days" changed to "five days" | `unsupported_number` |
+| "Teodor Vance" changed to "Teodor Vantz" | `unsupported_name` |
+| Vance's statement attributed to Priya Lindqvist | `unsupported_name` |
+| "In June" changed to "In July" | `unsupported_name` |
+| One word changed inside a quotation | `misquote` |
+| Words quoted from a sentence the claim does not cite | `misquote` |
+| A sentence stating the old figure and citing only the superseded segment | `rests_on_corrected_segment` |
+| A citation pointing outside the transcript, including a range of a billion segments | `invalid_citation` |
+| A stray quotation mark, then a made-up uncited sentence | `no_citation` (the stray mark no longer merges the paragraph) |
+| A quotation stitched from two speakers' sentences | `misquote` |
+| A quotation mark that is never closed | `misquote` |
+| The old figure, citing the superseded segment and a neighbour | `rests_on_corrected_segment` |
+| A made-up sentence after "etc." or after "plan A." | `no_citation` |
+| A made-up sentence after a cited block that spills one word into it | `no_citation` |
+| "zero", "a dozen", "twenty-five", "6,0" in place of the real figure | `unsupported_number` |
+| A name beginning with an accented letter; a made-up name as the first word | `unsupported_name` |
+
+**The headline: on every one of the eleven real drafts the model's headline was rejected and the title used.** Ten because the headline names the company and no kept sentence does (the strict name rule had removed the sentences that name it); one because its figure was in a removed sentence. So today the headline rule, as decided, always falls back. That is the same root cause as the 28 removals above, and the same fix is already planned: the draft prompt change in Phase 4. On altered headlines the check does what it should: a supported headline is used and linked to its sentences; a wrong number, a number from a removed sentence, a changed quotation and the superseded figure ("Record quarter: 4,800 pallets") each fall back to the title with the reason recorded.
+
+**What the check cannot see.** It compares numbers and names, not meaning. "Ellsmoor has 420 sensors" is kept on the strength of "Across Ellsmoor, 420.", where the word "sensors" is in the question before it; the judge flagged exactly that sentence in Phase 1. A sentence with no number, name or quotation passes on its citation alone. That is what the judge is for (Phase 6).
+
+**Gate evidence.**
+
+`make check`, exit 0: 142 backend tests (46 for ingest, 77 for ground, 19 from earlier phases), 10 frontend tests, lint, types and build.
+
+The rule tests, by name (`uv run --locked pytest -q --collect-only`):
+
+```
+test_rule_1_real_a_cited_sentence_is_kept
+test_rule_1_altered_the_same_sentence_without_its_citation_is_removed
+test_rule_1_real_a_bridge_sentence_the_model_did_not_cite_is_removed
+test_rule_2_real_a_sentence_whose_numbers_are_in_its_cited_text_is_kept
+test_rule_2_altered_a_wrong_number_is_removed
+test_rule_2_real_a_number_written_with_a_comma_matches_the_transcript
+test_rule_2_a_number_in_words_matches_the_same_number_in_digits
+test_rule_2_altered_a_number_in_words_that_nobody_said_is_removed
+test_rule_2_real_a_speaker_named_in_an_uncited_lead_in_is_the_cited_speaker
+test_rule_2_altered_a_wrong_name_is_removed
+test_rule_2_altered_a_statement_put_in_the_wrong_speakers_mouth_is_removed
+test_rule_2_real_a_true_sentence_whose_subject_is_named_in_another_block_is_removed
+test_rule_2_real_a_date_outside_the_cited_text_is_removed
+test_rule_2_altered_a_wrong_month_is_removed
+test_rule_2_an_ordinary_word_that_starts_a_sentence_is_not_taken_for_a_name
+test_rule_3_real_a_verbatim_quotation_is_kept
+test_rule_3_altered_a_quotation_with_one_word_changed_is_removed
+test_rule_3_real_a_short_quotation_inside_a_sentence_is_checked_too
+test_rule_3_altered_words_quoted_from_a_sentence_the_claim_does_not_cite_are_removed
+test_rule_4_the_recorded_extract_names_the_correction
+test_rule_4_altered_a_sentence_resting_only_on_the_corrected_segment_is_removed
+test_rule_4_is_what_removes_it_the_same_sentence_passes_every_other_rule
+test_rule_4_real_mentioning_the_old_figure_while_citing_the_correction_is_kept
+test_rule_4_altered_citing_an_extra_segment_beside_the_corrected_one_does_not_rescue_it
+test_rule_4_a_sentence_citing_the_old_statement_and_its_correction_is_kept
+test_rule_2_altered_small_number_words_are_checked[zero sensors for two days]
+test_rule_2_altered_small_number_words_are_checked[a dozen sensors for two days]
+test_rule_2_altered_small_number_words_are_checked[a couple of hundred sensors for two days]
+test_rule_2_altered_a_compound_number_word_is_checked
+test_rule_2_altered_digits_split_by_a_comma_are_not_read_as_one_number
+test_rule_2_altered_a_name_starting_with_an_accented_letter_is_checked[\xc9mile]
+test_rule_2_altered_a_name_starting_with_an_accented_letter_is_checked[\xd8resund]
+test_rule_2_altered_a_made_up_name_as_the_first_word_is_checked
+test_rule_2_real_a_first_word_the_transcript_uses_in_lower_case_is_not_a_name
+```
+
+`real` tests run the unaltered recorded response; `altered` tests run a copy changed in one place.
+
+No module in this phase imports a model client: `test_no_module_of_the_app_imports_a_model_client` parses every file under `backend/app` and asserts that neither `anthropic` nor `httpx` is imported.
+
+**Reviewer** (fresh context, run alone, asked to break the check and not only read it). It confirmed the fixtures are byte-identical copies of the spike's files, that the report numbers match this log, and, reading all 40 removed sentences against the transcripts itself, that all 40 are true. Then it got made-up sentences through the first version of the check. Its verdict: "Three findings are blocking. Each has a small fix, and none of the fixes changes the result on the eleven real drafts." Every finding below now has a test that failed before the fix.
+
+Blocking, all fixed:
+
+- *B1. A huge out-of-range citation crashes the process before it can be removed:* a range ending at a billion was expanded before it was checked, and the process was killed. **Fixed:** the range is checked before it is walked.
+- *B2. One unbalanced quotation mark turns the rest of a paragraph into one "sentence", so made-up uncited sentences inherit citations.* **Fixed:** quotation marks are respected only when they balance; an unclosed one removes its sentence as a misquote.
+- *B3. A quotation stitched across two cited segments, even from different speakers, passes rule 3:* Vance "quoted" saying what Lindqvist said. **Fixed:** a quotation must sit inside one uninterrupted stretch of one speaker's turn.
+
+Not blocking, as it reported them, and what I did:
+
+- *N1. Rule 4 is defeated by citing one extra segment next to the superseded one.* **Fixed, by making the rule stricter, which is the owner's to confirm:** when a sentence cites a superseded segment beside others, its numbers must appear in the others. `0003` and the spec say so. A test now also pins the original "only" condition.
+- *N2. A final "etc." or a single capital letter merged an uncited sentence into the cited one before it.* **Fixed:** in the draft, such a full stop ends the sentence when a capital follows.
+- *N3. A cited block spilling one word into the next sentence lent it its citation.* **Fixed** for spills under three words; a longer spill is listed as a limit.
+- *N4. "zero", "a dozen", "a couple" and "6,0" were not checked.* **Fixed.** "twice" and "a couple of weeks" against "two days" are listed as limits.
+- *N5. Names starting with a non-ASCII letter were never checked.* **Fixed.**
+- *N6. Guillemets and an unclosed quotation skipped rule 3.* **Fixed.** Single quotation marks stay a listed limit.
+- *N7. Already admitted in `0003`.* No change.
+- *N8. A sentence of punctuation alone became a claim and counted toward the minimum of three.* **Fixed.**
+- *N9. Ingest: speaker labels with a role in brackets, a late timestamp, "PM", or an accented capital were folded into the previous speaker's turn; and the splitter was quadratic on a long run of initials.* **Fixed,** with a test that 20,000 initials split in under a second. Labels of more than four words, lower-case labels and lines such as "Note:" are listed as limits, with why they matter.
+- *N10. Test gaps:* compound numbers, the rule 4 condition, and the first-word name rule were not really exercised. **Fixed:** a test for each.
+
+The results on the eleven real drafts are identical before and after these fixes (the report's output was compared).
+
+**Verifier** (run alone, after the reviewer's fixes; no network, no server).
+
+| # | What it did | Expected | What happened | Result |
+|---|---|---|---|---|
+| 1 | `make check` | Exit 0 | Exit 0; "140 passed", frontend 10 passed, build ok | pass |
+| 2 | `pytest -q --collect-only \| grep test_rule_`, then `pytest -q -k test_rule_` | Each of rules 1 to 4 has a `real` and an `altered` test, all passing | 34 tests. Rule 1: 2 real, 1 altered. Rule 2: 6 real, 13 altered. Rule 3: 2 real, 2 altered. Rule 4: 1 real, 2 altered, plus 3 more. "34 passed" | pass |
+| 3 | `pytest -q -k test_no_module`; `grep -rnE "anthropic\|httpx" backend/app` | Test passes, no imports | "1 passed". Two grep hits in `app/skeleton.py`, a field name and a `find_spec("anthropic")` call; neither is an import | pass |
+| 4 | `python -m tools.ground_report`, row by row against this log, totals by its own sum | Identical; 186, 146, 40 (12, 5, 23) | All 11 rows identical. Its sums: 186 sentences, 146 kept, 12 / 5 / 23 removed | pass |
+| 5a to 5f | `ingest` with empty text; white space; prose with no speakers; five turns; six turns under 120 words; 13,000 words | The six refusals | `transcript_empty` 422 (twice); `transcript_unparseable` 422; `transcript_too_short` 422 (twice); `transcript_too_long` 413. Exactly 12,000 words is accepted | pass |
+| 5g | The two fixture transcripts | 100 and 32 segments | 100 and 32 | pass |
+| 5h | Its own transcript with `Dana Reyes (Host):`, `Omar Ito [Guest]:` and a continuation line | Roles dropped; continuation joins the turn before | Speakers "Dana Reyes" and "Omar Ito"; continuation sentences belong to Omar Ito | pass |
+| 5i | Timestamp forms through `parse_turns` | All parse | `[00:12]`, `00:12`, `(00:01:02)`, `1:02:03 PM Name:`, `Name [1:02 PM]:` parse. **`[1:02 PM] Bob Jones: ...` does not:** the line is folded into the previous speaker's turn | **fail (minor)** |
+| 5j | A marker string in refused input | Not in the message | Not in either message | pass |
+| 6a | "11 percent" changed to "17 percent" | Removed; original kept | `unsupported_number`; original kept | pass |
+| 6b | Speaker changed to another real name from the transcript | Removed | `unsupported_name` | pass |
+| 6c | A word inside the quotation changed | Removed | "at twelve" for "at eleven": `unsupported_number` (the number rule runs first); "hungry" for "thirsty": `misquote` | pass |
+| 6d | A citation stripped | Removed | `no_citation` | pass |
+| 6e | An uncited sentence inserted | Removed | `no_citation`; its cited neighbour stays | pass |
+| 6f | A citation pointing at segment 999 | Removed | `invalid_citation` | pass |
+| 6g | "June" changed to "August" | Removed | `unsupported_name` | pass |
+| 6h | "4 percent" changed to "forty percent" | Removed | `unsupported_number` | pass |
+| 6i | "the old timers" changed to "the new valves": a change of meaning with no number, name or quotation | The code cannot see this | **Kept.** The limit this log and `0003` state | expected limit |
+| 6j | Is a removed sentence among the claims; is its wording kept | No; yes | Not in `claims`; text equals the original | pass |
+| 7a | The headline on the real response | Falls back, with the reason | Source `title`, failure `headline_unsupported_name`, detail `['Korvath', 'Greenhouses']`, the model's headline in `rejected_text` | pass |
+| 7b | A headline whose facts are in kept sentences | Used | Source `model`, `supporting_claims=[0, 2, 3, 10, 16]` | pass |
+| 7c | The same with "99 litres" | Falls back | `headline_unsupported_number`, `['99']` | pass |
+| 8 | A draft with two valid sentences | Fails | `too_few_grounded_claims`, 422, carrying 2 claims; three valid sentences do not fail | pass |
+
+Its one defect (5i): a time with AM or PM inside brackets hid the speaker, although this log said "PM" was fixed; only the unbracketed form was. **Fixed:** two failing test cases added, then the pattern corrected. 142 backend tests now.
+
+What the verifier could not exercise: any HTTP route (this phase has none, so the error statuses are attributes, not observed responses); whether the 40 removals are all true (the reviewer read them; it only confirmed the numbers reproduce); sentences that are wrong in meaning but carry no number, name or quotation, which the check cannot see (6i) and the judge must; single quotation marks and long or lower-case speaker labels, listed as limits and not tested.
+
+**Gate: passed, 2026-11-18.** `make check` exits 0. The test list shows each of the four removal rules failing a hand-altered response and passing the real one, confirmed by the verifier's count. No module in this phase imports a model client.
+
+**For the owner, in the pull request:** rule 4 was made stricter than the decision record said, to close a hole the reviewer found (`0003`, "As built"); and until the Phase 4 prompt change, every model headline falls back to the title.
 
 ---
 
@@ -559,6 +786,7 @@ Read `frontend/AGENTS.md` and the bundled Next.js guide first.
 - [ ] README with the seven profile sections; every claim traced to code or to a result file.
 - [ ] Reviewer in security mode over the whole repository; fix every blocking finding.
 - [ ] History check against the synthetic-data rule and a full-history secret scan. Known already: a depot in the second spike transcript carried a name that is also a real software company's, in commits `74f3425` and `1cee60f` on `main` (replaced in `0effa8c`). Before the repository is made public, either `main` is rewritten to remove it or the owner explicitly accepts it as a depot's name.
+- [ ] Delete the old paused Vercel project `article-agent` (asks first; it cannot be undone). Left paused until then by the owner's decision.
 - [ ] Ask the owner, then make the repository public. Turn on branch protection on `main` (no force-push, the `check` and `secrets` jobs must pass) and show it is on: carried from Phase 0, where GitHub refused it on the private repository.
 - [ ] Walkthrough video (owner).
 

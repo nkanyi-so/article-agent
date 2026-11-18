@@ -41,3 +41,13 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-18. Follow-up work from the previous phase's review (the owner's decisions, a re-run) had no home: the skill is one branch and one pull request per phase. It went in as its own commit at the start of this phase's branch. The skill could name that as the place.
 - 2026-11-18. The reviewer caught that "never `*`" for CORS was only a comment. A rule stated in a comment and not enforced is worth a line in the reviewer's checklist.
 
+## Phase 3, harness 0.3.0
+
+- 2026-11-18. The format-on-edit hook rewrites a file straight after it is written, so a scripted follow-up edit that matched the text as written silently missed lines the formatter had re-wrapped. Three rounds of fixes. Either the hook should report what it changed, or scripted edits should always re-read first.
+- 2026-11-18. Test-first held up: of the three failures on the first full run, two were mistakes in the tests' own expectations and one was a real gap (a draft with no headline line was read as having one). Worth saying in the skill that a failing new test is checked against the spec before the code is changed.
+- 2026-11-18. The gate asks for "the test list shows each removal rule failing a hand-altered response and passing the real one". Naming the tests `rule_N_real_...` and `rule_N_altered_...` made that list readable without opening the file. The template could ask for that convention.
+- 2026-11-18. The owner's new rule (check both production deploys after every merge, and log it) belongs in the skill's hand-over step for any project where a merge deploys. It is written at the top of the plan for now.
+- 2026-11-18. The real drafts contain nothing false, so "what the check catches" can only be shown on altered copies, and everything it removes from real drafts is a cost. A phase that builds a checker should plan for that up front: it needs negatives made by hand, or it has nothing to catch.
+- 2026-11-18. Asking the reviewer to break the checker, with a list of attack ideas, found three real holes and nine smaller ones that reading the diff would not have. For any phase whose product is a check, the reviewer's brief should say "try to get a false one through" as standard.
+- 2026-11-18. A file write was refused because the format hook had changed the file since it was last read, and the refusal was easy to miss among the test output: the next test run failed 73 tests against the old file. The harness could make a refused write louder than a failed test.
+

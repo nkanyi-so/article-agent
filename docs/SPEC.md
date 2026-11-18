@@ -23,7 +23,7 @@ It is a rebuild on synthetic data. Every transcript is about fictional people at
    - it carries at least one citation;
    - every number, date and proper name in it appears in its cited text or is the speaker of a cited segment;
    - anything in quotation marks is a verbatim substring of its cited text;
-   - it does not rest only on a segment that a speaker later corrected.
+   - it does not rest only on a segment that a speaker later corrected, and if it cites such a segment beside others, every number in it appears in one of the others.
    A removed sentence is never given another citation. If fewer than three sentences survive, the run fails with `too_few_grounded_claims`.
    The headline is checked after the body, against the sentences that were kept (below).
 5. **Evaluate.** Code checks over the stored run, then a model judge (a different model from the writer) on whether each surviving claim is supported by its cited text. The judge cannot pass a claim that failed a code check.

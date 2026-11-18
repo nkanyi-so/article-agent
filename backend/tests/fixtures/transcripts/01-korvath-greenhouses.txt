@@ -1,0 +1,63 @@
+Odalys Brenner: Thanks for making the time, both of you. Can you hear me all right?
+Teodor Vance: Loud and clear.
+Priya Lindqvist: Yes, fine here. Sorry about the fans in the background, I'm in the packing hall.
+Odalys Brenner: No problem at all. For readers who don't know Korvath Greenhouses, give me the short version.
+Teodor Vance: We grow tomatoes and cucumbers under glass. We have two sites, Ellsmoor and Farrow Bank. Ellsmoor is the bigger one, 14 hectares.
+Odalys Brenner: And you are the operations director.
+Teodor Vance: I am. Priya is our head grower at Ellsmoor.
+Odalys Brenner: The reason I called is the irrigation project. When did it start?
+Teodor Vance: We started in March 2025 with a pilot in one block. That block is 2 hectares.
+Odalys Brenner: What were you doing before the pilot?
+Priya Lindqvist: Fixed timers. Every block got 9 irrigation cycles a day, at set times, whatever the weather was doing.
+Odalys Brenner: Whatever the weather.
+Priya Lindqvist: More or less. We would adjust by hand on very hot days, but the schedule was the schedule.
+Odalys Brenner: And what replaced it?
+Priya Lindqvist: Moisture sensors in the growing substrate. The system waters a row when that row is actually drying out, not when the clock says so.
+Odalys Brenner: How many sensors are we talking about?
+Teodor Vance: Across Ellsmoor, 420. The pilot block had 60 of them.
+Odalys Brenner: What did the pilot show you?
+Priya Lindqvist: That we had been watering at the wrong times. The plants were telling us they were thirsty at eleven, and we were watering them at nine.
+Odalys Brenner: That's a good line. Can I quote that?
+Priya Lindqvist: Go ahead.
+Odalys Brenner: Let's talk numbers. What happened to water use?
+Teodor Vance: On tomatoes we went from 22 litres of water per kilo of fruit to 15 litres.
+Odalys Brenner: So about a third less.
+Teodor Vance: About a third, yes. That is the Ellsmoor figure for the season after the full rollout.
+Odalys Brenner: When was the full rollout finished?
+Teodor Vance: October 2025. Every block at Ellsmoor has been on sensors since then.
+Odalys Brenner: Did anything else move? Fertiliser, for example.
+Teodor Vance: Fertiliser spend is down 11 percent. Less water through the substrate means less feed washed out with it.
+Odalys Brenner: And yield?
+Teodor Vance: Flat. I would not claim a yield gain from this.
+Priya Lindqvist: I'd put it a bit differently. Cucumber yield was up 4 percent in the sensor blocks.
+Teodor Vance: It was, but that is one season, and we changed the cucumber variety in the same year.
+Priya Lindqvist: That's fair. I think the sensors helped, but I can't prove it from one season.
+Odalys Brenner: So you two don't fully agree on that one.
+Teodor Vance: We agree on the water. We disagree a little on the cucumbers.
+Odalys Brenner: What did the whole thing cost?
+Teodor Vance: 310,000 euros for Ellsmoor, including the sensors, the controllers and the installation.
+Odalys Brenner: And the payback?
+Teodor Vance: We expect about three years. Most of that comes from water and fertiliser, not from yield.
+Odalys Brenner: Did anything go wrong?
+Priya Lindqvist: Yes. In June a firmware update knocked out 60 sensors for two days.
+Odalys Brenner: What did you do for those two days?
+Priya Lindqvist: We put those rows back on the old timers. That's the fallback, and it worked, but it was a nervous couple of days.
+Teodor Vance: We now test every update on one row before it goes anywhere else.
+Odalys Brenner: What about the people side? Did anyone lose their job to a sensor?
+Teodor Vance: No. Nobody was laid off.
+Priya Lindqvist: Three of our growers were retrained to read the sensor data. Their job changed from walking the rows with a hand meter to checking the rows the system flags.
+Odalys Brenner: Do they like it?
+Priya Lindqvist: Two of them do. One still walks the rows anyway, and honestly I don't mind that.
+Odalys Brenner: What's next?
+Teodor Vance: Farrow Bank. We plan to install the same system there in spring 2026.
+Odalys Brenner: Is that decided or is that a hope?
+Teodor Vance: The budget is approved. The installation dates are not fixed yet.
+Odalys Brenner: Anything beyond the sensors?
+Teodor Vance: We are also building a rainwater tank at Ellsmoor. It will hold 5,000 cubic metres.
+Priya Lindqvist: The idea is that less of what we use comes from the mains in the first place.
+Odalys Brenner: Last question. If another grower asked whether to do this, what would you tell them?
+Priya Lindqvist: Start with one block. We learned more from the pilot than from any brochure.
+Teodor Vance: And keep the timers. You will need them the day the sensors go down.
+Odalys Brenner: That's a good place to stop. Thank you both.
+Teodor Vance: Thank you.
+Priya Lindqvist: Thanks, Odalys.
