@@ -36,7 +36,7 @@ Whole project: about $15. Recommended guard, an owner action before Phase 1: a s
 - [x] No `*.harness-new` file left.
 - [x] `BRIEF.md` moved to `docs/archive/` as history. `reference/` stays until Phase 6 replaces it.
 - [x] Check the history about to be pushed against the synthetic-data rule: search the tree for the real names the brief says were replaced.
-- [ ] First commit and push (asks first). Branch protection on `main`: no force-push, CI must pass.
+- [x] First commit and push (asks first). Branch protection on `main`: no force-push, CI must pass. *Pushed; protection refused by GitHub on the private repository and carried to Phase 9 by the owner's decision.*
 
 **Gate:** `make check` exits 0 with at least one passing test on each side. The pre-commit hook refuses a commit when a test is made to fail (show it, then undo). CI runs green on the first push. Branch protection is shown to be on, **or** GitHub's refusal is pasted (protection on a private repository may need a paid plan) and the owner decides: pay for it, or carry this one item to Phase 9 when the repository goes public.
 
@@ -161,6 +161,28 @@ Its findings, and what I did about each:
 4. *Another process was running `make check` in a loop.* That was the reviewer, running at the same time. See the reviewer's finding 1.
 
 What the verifier could not exercise: the pre-commit refusal (it was told not to commit; shown above instead); CI and branch protection (below); the frontend in a real browser, so hydration, the theme toggle and the sidebar's loading state are unchecked beyond lint, types and build; an interactive Ctrl-C (covered above by signalling the group, which is not quite the same thing); `--reload` on file edits; `make setup` from a clean checkout with no `.venv` or `node_modules` (CI does exactly that, below).
+
+**First push, CI and branch protection.** `main` (the base commit, CI skipped by its message) and `phase-0-scaffold` were pushed with the owner's go-ahead, and pull request #1 opened. The first CI run, on the pull request, from a clean checkout:
+
+```
+$ gh run view 44366655242 --json conclusion,jobs --jq '.conclusion, (.jobs[] | "\(.name): \(.conclusion)")'
+success
+secrets: success
+check: success
+```
+
+The `check` job's steps: checkout, setup-uv, setup-node, `make setup`, `make check`, all passed, 47 seconds. This also covers what the verifier could not: `make setup` with no `.venv` and no `node_modules`.
+
+Branch protection, GitHub's refusal:
+
+```
+$ gh api -X PUT repos/nkanyi-so/article-agent/branches/main/protection --input protection.json
+{"message":"Upgrade to GitHub Pro or make this repository public to enable this feature.","documentation_url":"https://docs.github.com/rest/branches/branch-protection#update-branch-protection","status":"403"}
+```
+
+The owner had already decided this case: do not pay, carry the item to Phase 9. The Phase 9 step now says so. What was asked for, for when it can be set: required checks `check` and `secrets`, no force-push, no deletion, applied to administrators too.
+
+**Gate: passed, 2026-11-18.** `make check` exits 0 with passing tests on both sides; the pre-commit hook refused a failing commit; CI is green on the first run; branch protection was refused and the refusal is pasted, with the owner's decision. One step stays open and is not part of the gate: the allow-list lines in `.claude/settings.json`, which only the owner can add.
 
 ---
 
@@ -293,7 +315,7 @@ Read `frontend/AGENTS.md` and the bundled Next.js guide first.
 - [ ] README with the seven profile sections; every claim traced to code or to a result file.
 - [ ] Reviewer in security mode over the whole repository; fix every blocking finding.
 - [ ] History check against the synthetic-data rule and a full-history secret scan.
-- [ ] Ask the owner, then make the repository public. Confirm branch protection is on.
+- [ ] Ask the owner, then make the repository public. Turn on branch protection on `main` (no force-push, the `check` and `secrets` jobs must pass) and show it is on: carried from Phase 0, where GitHub refused it on the private repository.
 - [ ] Walkthrough video (owner).
 
 **Gate:** the spec's "Done when", item by item, each with its evidence.
