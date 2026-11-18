@@ -65,7 +65,8 @@ def main() -> None:
         print(
             f"Would record {len(SEEDS)} seeds, two calls each. Spent so far: ${spend.spent():.4f}."
         )
-        return
+        # Not success: nothing was done. A script must not take this for a completed run.
+        raise SystemExit(2)
     asyncio.run(record_all(args.only))
 
 

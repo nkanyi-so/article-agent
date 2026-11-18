@@ -58,6 +58,7 @@ A headline that passes is stored with the kept sentences that supplied its numbe
 - "One", ordinals ("the second of June"), fractions and multiples in words ("a third", "half", "twice", "double").
 - A name written in lower case, and a capitalised ordinary word found in the cited text in lower case.
 - Quotations in single quotation marks, which cannot be told from apostrophes.
+- Who a pronoun refers to. "He said a tank is being built", after a sentence about someone else, passes if its own citation is of the right speaker; the reader may take "he" for the wrong person. The verifier found one in a recorded seed.
 - A sentence with no number, name or quotation: it passes on having a citation.
 - A cited block that spills three or more words into a following uncited sentence lends it its citation. The sentence's numbers and names are still checked against that cited text.
 - A superseded segment's claim restated with no number in it, cited beside another segment.

@@ -147,7 +147,8 @@ def main() -> None:
         print(
             f"Would make up to {calls} calls. Spent so far: ${spend.spent():.4f}. Pass --yes-spend."
         )
-        return
+        # Not success: nothing was done. A script must not take this for a completed run.
+        raise SystemExit(2)
     asyncio.run(run(args.variant, args.repeats, args.only))
 
 

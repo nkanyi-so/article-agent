@@ -841,6 +841,35 @@ Not blocking:
 
 It judged the `pyproject.toml` changes: the line-length exemption for the two prompt files and the async-file exemption for the tools justified; the pins in `tests/test_seeds.py` not a weakening; the type-check exemption for the SDK justified but with a cost, since the one module that spends is never type-checked against the SDK in CI. **Left for the owner:** a CI job that installs the live group for the type check only (no calls) would close that; it is a CI change, so it is not made here.
 
+**Verifier** (run alone, after the reviewer's fixes and the last recording; no key, no network, no spend flag).
+
+| # | What it did | Expected | What happened | Result |
+|---|---|---|---|---|
+| 1 | `make check` | Exit 0 | Exit 0; "251 passed, 1 skipped"; frontend 10 passed; build ok | pass |
+| 2 | `python -m tools.run_seed` for the three seeds | Completes; the model's headline; the lead names the organisation; counts as logged and as pinned | All three end `run_completed`; the model's headline in each; each first sentence names the organisation; 20/2, 17/2 and 14/0 kept/removed, equal to the pins and to the block above; both model calls `fixture` | pass |
+| 3 | Read the Korvath article against its transcript: five kept sentences and both removed ones; also Sallowfield's removed and some kept | Cited segments say what the sentences say | Every sentence checked is true, numbers and names included. Both seeds' removed sentences are also true | pass, with a note |
+| 4 | In a throwaway process: the draft request with "short" changed to "brief", then unchanged, through the fixture client | A miss, then a replay | `changed -> FixtureMiss fixture_miss`; `unchanged replays`. No file edited | pass |
+| 5 | The seeds with the key variable unset and under `env -i`; `import anthropic`; what importing the app loads | Seeds complete; the import fails; neither the live client nor the SDK loaded | All six runs `run_completed`; `ModuleNotFoundError: No module named 'anthropic'`; `False False` | pass |
+| 6 | The two paid tools with no spend flag, with `trials/` and `backend/recordings/` checksummed before and after | Nothing sent, nothing changed | "Would make up to 8 calls ... Pass --yes-spend." and "Would record 3 seeds ..."; checksums identical | pass |
+| 7 | `tools.trial_report`, its own tally from the rows, its own sum of the ledger | The figures in `0013` and this log | All five totals lines identical. Its tally: baseline 216 sentences, 34 removed, lead 3, headline 5; neutral 197, 10, 11, 11. Ledger: 82 lines, $1.4820. Neutral 10 plus seeds 4 is 14; 197 plus 55 is 252; 5.56% | pass |
+| 8 | `run_pipeline` with a too-short transcript, an empty one, and a valid one of its own with no recording | One terminal event with a code; the run failed; no stage left running | `transcript_too_short` and `transcript_empty`, each failing in ingest with no model call; `fixture_miss` failing in extract, ingest completed; state failed in all three | pass |
+| 9 | The dev script; `/health`; the frontend root | Demo mode; 200 | `{"status":"ok","mode":"demo","version":"0.1.0"}`; 200; ports free after stopping | pass |
+| 10 | `tools.ground_report` | 186 sentences, 146 kept | 186 and 146 | pass |
+
+(The verifier's baseline tally of 34 removed is with today's check, first-name rule included; the "before" figure of 37 in the table above is with the check as Phase 3 left it.)
+
+No defect blocks the gate. Its observations, and what I did:
+
+- *A pronoun the check cannot see.* In the Korvath recording, "He said a rainwater tank ... is being built at Ellsmoor" follows a sentence about Lindqvist. Its citation is of Vance, so the fact and its source are right, but a reader may take "He" for the wrong person. **Recorded as a limit in `0003`.** It is the kind of thing the judge is for.
+- *The paid tools exit 0 when they refuse to spend.* **Fixed:** they now exit 2.
+- *Event times read a day behind the local date.* They are in UTC, by design.
+
+What the verifier could not exercise: anything live (the live client, a real refusal, the SDK's types); the claim that every removed sentence in all fifteen runs is true, beyond the seeds and what it sampled (the reviewer read the final prompt's twelve runs in full); the first-name rule's edge cases, cancellation and the ceiling, which only the unit tests cover; any HTTP route for the pipeline, since there is none until Phase 5; the frontend beyond a 200.
+
+**Gate: passed, 2026-11-19.** `make check` exits 0 with the three seeds running end to end from recordings. Editing one word of a prompt makes the fixture client fail with a miss, shown twice and confirmed by the verifier without editing a file. The recording runs' spend is stated.
+
+**The owner's bar:** the lead survives (11 of 12 trial runs, 3 of 3 seeds) and the model's headline is accepted on most runs (the same). True sentences removed are at 5.6%, about 1 in 18, with a plausible range of 3% to 9%: at the edge of "roughly one in twenty", not clearly inside it. Every altered-copy test is still caught. The figure is reported as it is, by the owner's instruction.
+
 ---
 
 ## Phase 5: stored runs, replay, API, guards
