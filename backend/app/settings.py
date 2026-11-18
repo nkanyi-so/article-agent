@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from typing import Literal
 
-from pydantic import field_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # An origin is a scheme, a host and an optional port: no path, no wildcard.
@@ -23,9 +23,15 @@ Mode = Literal["demo", "live"]
 class Settings(BaseSettings):
     """Reads environment variables only. Use `load_settings` to also read the env file."""
 
-    model_config = SettingsConfigDict(env_prefix="APP_", env_file=None, extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="APP_", env_file=None, extra="ignore", populate_by_name=True
+    )
 
     mode: Mode = "demo"
+    # Read from ANTHROPIC_API_KEY, without the APP_ prefix. Needed in live mode only.
+    anthropic_api_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("ANTHROPIC_API_KEY", "anthropic_api_key")
+    )
     # Comma-separated origins allowed to call the API from a browser. A wildcard is refused.
     cors_origins: str = "http://localhost:3000"
     # The Phase 2 skeleton routes. Off unless switched on; Phase 5 deletes them.

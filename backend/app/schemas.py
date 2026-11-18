@@ -30,6 +30,28 @@ class Correction(BaseModel):
     replaced_by: int = Field(ge=0)
 
 
+class Point(BaseModel):
+    """Something said in the transcript that an article could report."""
+
+    text: str
+    segments: list[int]
+
+
+class Disagreement(BaseModel):
+    topic: str
+    side_a: list[int]
+    side_b: list[int]
+
+
+class ExtractResult(BaseModel):
+    """What the extract stage found. Every segment index in it has been range-checked."""
+
+    points: list[Point]
+    corrections: list[Correction]
+    disagreements: list[Disagreement]
+    angle: str
+
+
 class Citation(BaseModel):
     """A pointer into the transcript: segments from `start_segment` up to, not including,
     `end_segment`."""
@@ -46,6 +68,15 @@ class DraftBlock(BaseModel):
     citations: list[Citation] = []
 
 
+class NameResolution(BaseModel):
+    """A surname that passed the name check through its owner's first name: the cited text
+    has the first name, and exactly one speaker of the transcript has that first name."""
+
+    name: str
+    first_name: str
+    speaker: str
+
+
 class Claim(BaseModel):
     """A sentence of the draft that passed the ground check."""
 
@@ -53,6 +84,9 @@ class Claim(BaseModel):
     paragraph: int = Field(ge=0)
     citations: list[Citation]
     segment_indexes: list[int]
+    name_resolutions: list[NameResolution] = Field(
+        default=[], description="Names kept by the first-name rule, so the trace shows it."
+    )
 
 
 RemovalReason = Literal[

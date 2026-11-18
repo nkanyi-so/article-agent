@@ -183,4 +183,5 @@ def ingest(text: str, title: str) -> IngestResult:
                     text=turn.text[start:end],
                 )
             )
-    return IngestResult(title=title.strip()[:MAX_TITLE_CHARS], segments=segments)
+    # One line, whatever was sent: a title with line breaks could pose as a new paragraph.
+    return IngestResult(title=" ".join(title.split())[:MAX_TITLE_CHARS], segments=segments)

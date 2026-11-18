@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 (ingest and the ground check) is done on `phase-3-ingest-ground` and waits for the owner's review of its pull request.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 (the model seam, extract, draft, the runner, and the fix for over-removal) is done on `phase-4-model-seam-runner` and waits for the owner's review of its pull request.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -13,13 +13,13 @@ This file is the single record of progress. Each phase lands as its own branch a
 | 0 | First push to GitHub; branch protection setting | free |
 | 1 | Citations spike, about 16 model calls | about $1, stop at $3. **Actual: $0.55, 25 billed calls** (18 in the spike, 7 re-run after a name change). |
 | 2 | Connect two Vercel projects; first deploys | free |
-| 4 | Record the three seeded transcripts, and try the draft prompt change from `0012` | about $0.30 (measured: about 4 cents a transcript for extract and draft; a few repeats for the prompt change). Stop at $1. |
+| 4 | Record the three seeded transcripts, and try the draft prompt change from `0012` | about $0.30, limit raised by the owner to $1.50 and then $2.00. **Actual: $1.48, 82 calls** (64 in the prompt trial, 18 recording the seeds three times). |
 | 6 | Record the remaining eval cases; first judged live run | about $1 (measured: about 7 cents a full run, about 60 cents an eval run). Stop at $3. |
 | 6 | Second judged run after the first real failure is fixed | about $1. Stop at $3. |
 | 8 | Production deploy of the demo | free |
 | 9 | Make the repository public | free |
 
-Whole project: about $3 to $4 on the measured figures (was about $15 before Phase 1 measured them); $0.55 spent so far. Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
+Whole project: about $4 to $5 on the measured figures (was about $15 before Phase 1 measured them); $2.03 spent so far ($0.55 in Phase 1, $1.48 in Phase 4). Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
 
 **What a merge to `main` does.** It deploys the frontend and the backend to Vercel (both projects were connected to the repository on 2026-11-18, production branch `main`). A push to any other branch builds a preview deployment of each.
 
@@ -699,22 +699,176 @@ What the verifier could not exercise: any HTTP route (this phase has none, so th
 
 **For the owner, in the pull request:** rule 4 was made stricter than the decision record said, to close a hole the reviewer found (`0003`, "As built"); and until the Phase 4 prompt change, every model headline falls back to the title.
 
+### 2026-11-18, after the owner's review of Phase 3
+
+- Pull request #4 merged by squash at the owner's instruction (`0737473`). The owner kept the stricter rule 4.
+- **Both production deployments came from GitHub and are ready at the merged commit,** checked before Phase 4 started:
+
+  ```
+  article-agent-api: READY 0737473 git article-agent-b5jj5h12u-nkanyi-so.vercel.app
+  article-agent-web: READY 0737473 git article-agent-2f4kc5w15-nkanyi-so.vercel.app
+  health: {"status":"ok","mode":"demo","version":"0.1.0"}
+  skeleton routes: 404 404
+  cors frontend: access-control-allow-origin: https://article-agent-web.vercel.app
+  cors other: 0 headers
+  frontend: 200
+  browser: API demo · 0.1.0
+  ```
+
 ---
 
 ## Phase 4: model seam, extract, draft, runner
 
-- [ ] `ModelClient` interface and its request and response models; the request hash; `FixtureModelClient` (loud miss); `LiveModelClient` with explicit timeout and retries, cost and latency from usage, typed errors for refusal, truncation and a model mismatch.
-- [ ] A test that only the live client module imports `anthropic`, and that demo mode cannot construct it.
-- [ ] Extract stage (structured output, validated segment indexes) and draft stage (citable document, no schema). Transcript text only as document blocks or delimited data.
-- [ ] Try the draft prompt change from `0012` (ask the model to cite every sentence it drew on, including the one naming the subject) and measure the removal rate with and without it. Asks first, a few cents.
-- [ ] The three typed model errors (refusal, truncation, model mismatch) tested against hand-built responses: Phase 1 never saw one.
-- [ ] The runner: stage order, stage records in memory, events, the terminal-event guarantee, the run ceiling.
-- [ ] Write the other two seeded transcripts. Ask the owner, then record all three with the live client (about $1).
-- [ ] A command that runs a seeded transcript end to end in fixture mode and prints the article with its citations and removed units.
+- [x] `ModelClient` interface and its request and response models; the request hash; `FixtureModelClient` (loud miss); `LiveModelClient` with explicit timeout and retries, cost and latency from usage, typed errors for refusal, truncation and a model mismatch.
+- [x] A test that only the live client module imports `anthropic`, and that demo mode cannot construct it.
+- [x] Extract stage (structured output, validated segment indexes) and draft stage (citable document, no schema). Transcript text only as document blocks or delimited data.
+- [x] Try the draft prompt change from `0012` (ask the model to cite every sentence it drew on, including the one naming the subject) and measure the removal rate with and without it. Asks first, a few cents.
+- [x] The three typed model errors (refusal, truncation, model mismatch) tested against hand-built responses: Phase 1 never saw one.
+- [x] The runner: stage order, stage records in memory, events, the terminal-event guarantee, the run ceiling.
+- [x] Write the other two seeded transcripts. Ask the owner, then record all three with the live client (about $1).
+- [x] A command that runs a seeded transcript end to end in fixture mode and prints the article with its citations and removed units.
 
 **Gate:** `make check` exits 0 with the three seeds running end to end from recordings. Editing one word of a prompt makes the fixture client fail with a miss (show it, then undo). The recording run's spend is stated.
 
 **Log:**
+
+### 2026-11-19, Phase 4 on `phase-4-model-seam-runner`
+
+**Built.**
+
+- **The model seam** (`backend/app/model/`): request and response types; the request key (SHA-256 of the canonical request); the fixture client, which replays a recording of the exact request and otherwise fails with `fixture_miss`; the live client, the only module that imports the SDK, with a 60 second timeout, one retry and no fallback model; conversion of a raw response with typed errors for a refusal, a truncation, a response from another model and unusable structured output; prices in one dated table.
+- **Stages:** extract (structured output; the transcript as escaped, delimited data; every segment index range-checked; nothing to report becomes `no_checkable_facts`) and draft (one citable block per segment, no schema; the extract's notes as escaped, delimited data).
+- **The runner** (`backend/app/pipeline/runner.py`): the only place that knows the stage order. A stage record before and after each stage, a record of every model call with its request, response and cost, events, a 240 second ceiling, exactly one terminal event on every path, and a run closed as failed if the consumer goes away.
+- **Seeds:** two new fictional transcripts (a dental group's operations meeting with a corrected figure and a disagreement; an interview with a bookshop's founder). A web search found no business with either invented name; the first name tried for the bookshop turned out to be a town in a published novel series and was changed.
+- **Tools:** `tools/record.py` (paid, records the seeds through the real pipeline), `tools/run_seed.py` (prints an article from recordings), `tools/prompt_trial.py` (paid) and `tools/trial_report.py`, and `tools/spend.py`, a ledger of every paid call with the owner's limit as a stop.
+
+**The owner's bar, and what happened.** The instruction of 2026-11-18: fix the over-removal with the draft prompt, without loosening the ground check; the lead survives, the model's headline is accepted on most runs, true sentences removed drop to roughly one in twenty or better, every altered-copy test still caught; measured over repeated runs; if the prompt alone falls short, stop.
+
+The prompt alone fell short on one of the three and the phase stopped. Three rounds of prompt change brought removals from 17.1% to 2.1%, but the third round's worked examples had been lifted from the seeded transcripts; with neutral examples the same prompt gave 6.6%, with the lead kept and the headline accepted in 11 of 12 runs each. The owner then decided (2026-11-19): take the neutral prompt, add one narrow rule to the check (a first name matching exactly one speaker label supports that speaker's surname), no more prompt rounds, and report the figure as it is. `decisions/0013` has the full record, including the options rejected.
+
+**Final numbers** (`cd backend && uv run --locked python -m tools.trial_report`, on the saved responses, with the check as it now stands):
+
+```
+baseline: 12 runs, 216 sentences, 34 removed (15.7%), lead kept in 3 of 12, model headline accepted in 5 of 12, draft cost $0.0177 a run
+cite-all: 12 runs, 203 sentences, 12 removed (5.9%), lead kept in 10 of 12, model headline accepted in 6 of 12, draft cost $0.0177 a run
+cite-all-2: 12 runs, 205 sentences, 13 removed (6.3%), lead kept in 11 of 12, model headline accepted in 11 of 12, draft cost $0.0186 a run
+cite-all-3: 12 runs, 195 sentences, 1 removed (0.5%), lead kept in 12 of 12, model headline accepted in 12 of 12, draft cost $0.0189 a run
+neutral: 12 runs, 197 sentences, 10 removed (5.1%), lead kept in 11 of 12, model headline accepted in 11 of 12, draft cost $0.0188 a run
+```
+
+| | Before | After |
+|---|---|---|
+| Sentences removed, 12 trial runs | 37 of 216: 17.1%, about 1 in 6 | 10 of 197: 5.1%, about 1 in 20 |
+| Sentences removed, all 15 runs with the final setup | | 14 of 252: 5.6%, about 1 in 18 |
+| Lead sentence survives | 3 of 12 | 11 of 12, and 3 of 3 recorded seeds |
+| Model's headline accepted | 5 of 12 | 11 of 12, and 3 of 3 recorded seeds |
+
+- "Before" is the old prompt with the check as Phase 3 left it. "After" is the final prompt (`neutral`) with the first-name rule.
+- **What the first-name rule recovered:** 3 sentences in the trial (13 removed without it, 10 with it), one in each Sallowfield run, and 1 of the 51 sentences kept in the recorded seeds. Each use is recorded on the kept sentence.
+- **The recorded seeds**, recorded once and not chosen among runs: 55 sentences, 4 removed (7.3%), lead kept and model headline accepted in all three.
+- **The honest figure is 5.6%, with a plausible range of roughly 3% to 9%:** 14 removals in 252 sentences, and 12 of the 15 runs are the same three seeds. Every removed sentence, read against its transcript, is true.
+- **It was measured on four transcripts written for this project, with a prompt developed while looking at them.** The prompt's examples no longer name anything from them, but they are the same situations with the names changed. Phase 6 measures the rate on cases the prompt has never seen.
+
+**Spend, from the ledger (`trials/phase4/spend.jsonl`): $1.48 of the $2.00 limit, 82 calls.** The prompt trial: 64 calls, $1.15. Recording the seeds: 18 calls, $0.33, because they were recorded three times: once before the prompt was settled, once with the final prompt, and once more after the review moved the title inside the data tags and changed what the request key covers. A full run of a seed, extract plus draft, costs 3.2 to 4.2 cents; the longer prompt adds about 6% to a draft call.
+
+**No refusal, truncation or model mismatch occurred in any of the 82 calls,** so what a refusal looks like from the API is still unobserved. The typed errors are tested against hand-built responses (`tests/test_model_seam.py`, `tests/test_runner.py`), which is what Phase 1 carried here.
+
+**Gate evidence.**
+
+`make check`, exit 0: 251 backend tests (1 skipped: it needs the live group installed), 10 frontend tests, lint, types and build.
+
+The three seeds end to end from recordings, with no key (`cd backend && uv run --locked python -m tools.run_seed <seed>`; headline, lead and removals shown):
+
+```
+=========== korvath-greenhouses
+Korvath Greenhouses sensor irrigation cuts tomato water use by about a third
+(headline: the model's)
+Korvath Greenhouses said on tomatoes it went from 22 litres of water per kilo of fruit to 15 litres, according to Teodor Vance.  [6, 37]
+Removed by the ground check: 2
+  - no_citation: On yield, the two differ.
+  - unsupported_name ['Farrow', 'Bank']: Vance said the company plans to install the same system at Farrow Bank in spring 2026; the budget is approved but installation dates are not fixed.
+Model calls (replayed, cost as recorded): extract fixture $0.0191, draft fixture $0.0226
+=========== sallowfield-dental
+Sallowfield Dental Group's new booking system cuts missed appointments, but Abbey Row lags
+(headline: the model's)
+Sallowfield Dental Group held its monthly operations meeting, where Hana Olund said all three clinics switched to the new booking system on the first of September.  [1, 8]
+Removed by the ground check: 2
+  - no_citation: Olund and Tobias Ferrant disagreed on the response.
+  - unsupported_name ['Abbey', 'Row']: Abbey Row reception is still one person short, and he is interviewing two people next week.
+Model calls (replayed, cost as recorded): extract fixture $0.0148, draft fixture $0.0214
+=========== quillmoor-books
+Quillmoor Books subscription grows to 1,200 subscribers
+(headline: the model's)
+Rafael Dunmore, who founded Quillmoor Books, said the shop now has 1,200 subscribers.  [1, 19]
+Removed by the ground check: 0
+Model calls (replayed, cost as recorded): extract fixture $0.0140, draft fixture $0.0176
+```
+
+Editing one word of a prompt makes the fixture client miss. "short" was changed to "brief" in the first line of the draft prompt, then put back:
+
+```
+$ python -m tools.run_seed korvath-greenhouses
+[stage_started ingest]
+[stage_completed ingest]
+[stage_started extract]
+[stage_completed extract]
+[stage_started draft]
+[run_failed draft]
+
+Run failed: fixture_miss
+```
+
+The extract stage still replayed, because its prompt was not touched; the draft stage missed. With the word restored the run completes. The same behaviour is a test in `make check`: `test_a_request_with_one_word_changed_is_a_loud_miss`. (Shown against the second set of recordings; the mechanism is unchanged in the third.)
+
+The recording runs' spend, from the ledger: $0.1094, $0.1086 and $0.1095.
+
+**Reviewer** (fresh context, run alone, asked to break things and to re-derive the numbers). It reproduced every totals line with its own lead counting, summed the ledger, re-converted every saved raw response and got the stored one, confirmed all twelve final-prompt requests and all recordings carry the prompt in the code, read the removed sentences against the seeds and agreed all are true, attacked the runner (cross-stage ceiling, cancellation, closing the stream) and found one terminal event on every path with no exception text leaking, and confirmed demo mode never loads the live client. Its verdict: three blocking issues and several smaller ones. As reported, and what I did:
+
+Blocking, all fixed, each with a test that failed first:
+
+1. *The first-name rule matches ordinary words and months, so a wrong person's surname gets through:* a speaker called Will supported "Barker" from "We will run the calls"; a speaker called June supported "Okafor" from another person's "in June". **Fixed:** the first name must be written as a name in a cited sentence (inside it, or opening it as a form of address), and a first name that the transcript also uses as an ordinary word, that is a month or a weekday, or that is also a word of another speaker's label supports nothing. Its two smaller cases are stated as limits in `0003` and `0013`.
+2. *Rule 5: the user-supplied title sits outside the delimiters in the extract request,* and could carry line breaks, so a title could pose as an instruction. **Fixed:** the title is collapsed to one line at ingest and sent inside `<title>` tags, escaped like the transcript.
+3. *The spend ledger and the run's cost record undercount billed calls:* a refusal, a truncation or an unusable response is billed, but was recorded nowhere. **Fixed:** the live client reports the cost of every response that arrives before anything can reject it; typed model errors carry what the call cost; the run records failed calls and counts them in its cost; the tools count an unknown cost at the worst case, never at nothing.
+
+Not blocking:
+
+4. *Unknown stop reasons and malformed shapes convert as success or crash.* **Fixed:** only a normal end is accepted; anything else, and any unexpected shape, is a typed `model_output_invalid`.
+5. *The ceiling only fires at an await, and was untested across stages.* **Fixed:** the deadline is also checked before each stage; two tests.
+6. *The prompt-name test missed a name that only opens sentences* ("Odette"). **Fixed.**
+7. *`0013` overstates how neutral the examples are, the rate has wide error bars, and "all Phase 3 tests pass unchanged" is not accurate.* **Fixed in the text:** the examples are called what they are (the seed examples with the names changed), the figure carries its range, and the replaced test is described; the app-wide check that only one module can reach the network is restored and widened.
+8. *The ledger fails open if its file is missing.* **Fixed:** it refuses to run.
+9. *The request key hashes the request object, not the payload sent.* **Fixed:** the key is taken over the API arguments, and a test checks every recording's stored response against its raw response.
+
+It judged the `pyproject.toml` changes: the line-length exemption for the two prompt files and the async-file exemption for the tools justified; the pins in `tests/test_seeds.py` not a weakening; the type-check exemption for the SDK justified but with a cost, since the one module that spends is never type-checked against the SDK in CI. **Left for the owner:** a CI job that installs the live group for the type check only (no calls) would close that; it is a CI change, so it is not made here.
+
+**Verifier** (run alone, after the reviewer's fixes and the last recording; no key, no network, no spend flag).
+
+| # | What it did | Expected | What happened | Result |
+|---|---|---|---|---|
+| 1 | `make check` | Exit 0 | Exit 0; "251 passed, 1 skipped"; frontend 10 passed; build ok | pass |
+| 2 | `python -m tools.run_seed` for the three seeds | Completes; the model's headline; the lead names the organisation; counts as logged and as pinned | All three end `run_completed`; the model's headline in each; each first sentence names the organisation; 20/2, 17/2 and 14/0 kept/removed, equal to the pins and to the block above; both model calls `fixture` | pass |
+| 3 | Read the Korvath article against its transcript: five kept sentences and both removed ones; also Sallowfield's removed and some kept | Cited segments say what the sentences say | Every sentence checked is true, numbers and names included. Both seeds' removed sentences are also true | pass, with a note |
+| 4 | In a throwaway process: the draft request with "short" changed to "brief", then unchanged, through the fixture client | A miss, then a replay | `changed -> FixtureMiss fixture_miss`; `unchanged replays`. No file edited | pass |
+| 5 | The seeds with the key variable unset and under `env -i`; `import anthropic`; what importing the app loads | Seeds complete; the import fails; neither the live client nor the SDK loaded | All six runs `run_completed`; `ModuleNotFoundError: No module named 'anthropic'`; `False False` | pass |
+| 6 | The two paid tools with no spend flag, with `trials/` and `backend/recordings/` checksummed before and after | Nothing sent, nothing changed | "Would make up to 8 calls ... Pass --yes-spend." and "Would record 3 seeds ..."; checksums identical | pass |
+| 7 | `tools.trial_report`, its own tally from the rows, its own sum of the ledger | The figures in `0013` and this log | All five totals lines identical. Its tally: baseline 216 sentences, 34 removed, lead 3, headline 5; neutral 197, 10, 11, 11. Ledger: 82 lines, $1.4820. Neutral 10 plus seeds 4 is 14; 197 plus 55 is 252; 5.56% | pass |
+| 8 | `run_pipeline` with a too-short transcript, an empty one, and a valid one of its own with no recording | One terminal event with a code; the run failed; no stage left running | `transcript_too_short` and `transcript_empty`, each failing in ingest with no model call; `fixture_miss` failing in extract, ingest completed; state failed in all three | pass |
+| 9 | The dev script; `/health`; the frontend root | Demo mode; 200 | `{"status":"ok","mode":"demo","version":"0.1.0"}`; 200; ports free after stopping | pass |
+| 10 | `tools.ground_report` | 186 sentences, 146 kept | 186 and 146 | pass |
+
+(The verifier's baseline tally of 34 removed is with today's check, first-name rule included; the "before" figure of 37 in the table above is with the check as Phase 3 left it.)
+
+No defect blocks the gate. Its observations, and what I did:
+
+- *A pronoun the check cannot see.* In the Korvath recording, "He said a rainwater tank ... is being built at Ellsmoor" follows a sentence about Lindqvist. Its citation is of Vance, so the fact and its source are right, but a reader may take "He" for the wrong person. **Recorded as a limit in `0003`.** It is the kind of thing the judge is for.
+- *The paid tools exit 0 when they refuse to spend.* **Fixed:** they now exit 2.
+- *Event times read a day behind the local date.* They are in UTC, by design.
+
+What the verifier could not exercise: anything live (the live client, a real refusal, the SDK's types); the claim that every removed sentence in all fifteen runs is true, beyond the seeds and what it sampled (the reviewer read the final prompt's twelve runs in full); the first-name rule's edge cases, cancellation and the ceiling, which only the unit tests cover; any HTTP route for the pipeline, since there is none until Phase 5; the frontend beyond a 200.
+
+**Gate: passed, 2026-11-19.** `make check` exits 0 with the three seeds running end to end from recordings. Editing one word of a prompt makes the fixture client fail with a miss, shown twice and confirmed by the verifier without editing a file. The recording runs' spend is stated.
+
+**The owner's bar:** the lead survives (11 of 12 trial runs, 3 of 3 seeds) and the model's headline is accepted on most runs (the same). True sentences removed are at 5.6%, about 1 in 18, with a plausible range of 3% to 9%: at the edge of "roughly one in twenty", not clearly inside it. Every altered-copy test is still caught. The figure is reported as it is, by the owner's instruction.
 
 ---
 
