@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 (the walking skeleton on Vercel) is done on `phase-2-walking-skeleton` and waits for the owner's review of its pull request; one owner step is open (give Vercel's GitHub app access to the repository). Phase 3 is next.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 (the walking skeleton on Vercel) is done on `phase-2-walking-skeleton` and waits for the owner's review of its pull request; Both Vercel projects are connected to the repository. Phase 3 is next.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -21,7 +21,7 @@ This file is the single record of progress. Each phase lands as its own branch a
 
 Whole project: about $3 to $4 on the measured figures (was about $15 before Phase 1 measured them); $0.55 spent so far. Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
 
-**What a merge to `main` does.** Today, nothing: the two Vercel projects exist and are deployed from the command line, but they are not yet connected to the repository (the owner has to give Vercel's GitHub app access to it). Once connected, a merge to `main` deploys the frontend and the backend to Vercel.
+**What a merge to `main` does.** It deploys the frontend and the backend to Vercel (both projects were connected to the repository on 2026-11-18, production branch `main`). A push to any other branch builds a preview deployment of each.
 
 ---
 
@@ -322,7 +322,7 @@ What the verifier could not exercise: anything on the live path (the skip, the s
 Proves the host before anything is built on it. No pipeline yet.
 
 - [x] A dummy event stream route that emits five typed events over about ten seconds and ends with a terminal event.
-- [ ] Ask the owner, then connect two Vercel projects to the repository (`frontend/`, `backend/`) and deploy. Point the old paused frontend project at the new repository or create a new one: owner's choice at that moment. *Deployed, to two new projects. Not yet connected to the repository: Vercel's GitHub app has no access to it, which only the owner can grant (see the log).*
+- [x] Ask the owner, then connect two Vercel projects to the repository (`frontend/`, `backend/`) and deploy. Point the old paused frontend project at the new repository or create a new one: owner's choice at that moment. *Deployed to two new projects, and connected to the repository once the owner had given Vercel's GitHub app access.*
 - [x] Show on the deployed backend: the stream arrives event by event, not in one lump; the cold start time; the `anthropic` package is absent from the deployed dependency set; a scratch SQLite file can be created and read.
 - [x] Frontend calls the deployed `/health` across origins with CORS limited to its own origin.
 
@@ -448,7 +448,14 @@ No defects found. What it could not exercise: the cold start (needs a long idle 
 
 **Gate: passed, 2026-11-18.** Timestamps from real requests to the deployed stream show the events arriving spread over ten seconds (mine and the verifier's two runs); the cold start is measured (1.57 s to first byte after 18.5 minutes idle, about 0.4 s warm); the deployed dependency list is pasted and has no `anthropic`. The stream is not buffered and the runtime fits, so the Fly.io fallback is not needed.
 
-**Open, for the owner, not part of the gate:** give Vercel's GitHub app access to the repository so the two projects can be connected and a merge deploys. That step's box stays unticked until then.
+**Connected, later the same day.** The owner gave Vercel's GitHub app access to the repository, and `vercel git connect` then succeeded for both projects:
+
+```
+article-agent-api | repo: nkanyi-so / article-agent | production branch: main | root: backend
+article-agent-web | repo: nkanyi-so / article-agent | production branch: main | root: frontend
+```
+
+From here a merge to `main` deploys both. The frontend's preview builds were also given the backend's address, because a build on the host without it now fails by design. A preview page will show "API unreachable": the backend allows the production frontend's origin only, and a preview has a different one. That is the CORS rule working, not a fault.
 
 ---
 
