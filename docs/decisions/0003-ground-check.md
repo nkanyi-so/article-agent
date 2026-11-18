@@ -39,3 +39,28 @@ A headline that passes is stored with the kept sentences that supplied its numbe
 - The headline is the one line of the article whose support is derived and not cited. That is stated wherever the claim is stated.
 - Rule 4 depends on extract naming corrections correctly. If it misses one, the judge and the correction case (E6) are the backstop.
 - Revisit if the first live run shows a removal rate that leaves articles unreadable: the fix is then a better draft prompt, not a looser rule.
+
+**As built in Phase 3.** What the rules mean in code (`backend/app/pipeline/ground.py`). Where a choice had to be made, the doubt goes against the sentence.
+
+- **Sentence:** the draft's text blocks joined and split at `.`, `?` or `!` followed by white space. Nothing inside balanced double quotation marks ends a sentence, so a two-sentence quotation stays whole; if the marks do not balance they are ignored. An abbreviation's full stop ends a sentence when a capital follows ("etc. The"), except after a title ("Dr. Okonta"). A sentence of punctuation alone is dropped.
+- **Citations of a sentence:** those of every cited block it overlaps, where the overlap is the whole block or at least three words. A block that spills a word or two into the next sentence lends that sentence nothing.
+- **Invalid citation:** a citation pointing outside the transcript removes its sentence with the reason `invalid_citation`, and the range is checked before it is used. The API promises this cannot happen; a recording edited by hand could do it.
+- **Number:** a run of digits (commas only where they group thousands), or a number word: zero, two to ninety-nine, couple, dozen, hundred, thousand, million, billion. Digits and words match each other.
+- **Name:** a capitalised word, accented letters included, that is not on a short list of ordinary words. A sentence's first word is a name unless the transcript itself uses that word in lower case. Months and weekdays are names, which is how a date is checked beyond its digits. A name must appear in the text of a cited segment or be its speaker.
+- **Quotation:** text in double quotation marks or guillemets, compared ignoring case, spacing and trailing punctuation. It must sit inside one stretch of what one person said without interruption: consecutive cited segments of the same turn. Words from two speakers, or from two separate moments, cannot be stitched into one quotation. A quotation mark that is never closed removes the sentence, since it cannot be checked.
+- **Rule 4, made stricter in the build (for the owner to confirm).** As decided, a sentence fails if it rests only on superseded segments. The reviewer showed that citing one neighbouring segment as well ("Sure.") was enough to keep a sentence stating the old figure. So, in addition: when a sentence cites a superseded segment beside others, every number in it must appear in one of the others. The real sentence "He had first given a figure of 4,800, but corrected himself" still passes, because the correcting segment says "not 4,800".
+- **Source of truth:** the transcript's own segments at the cited indexes, not the copy of the cited text inside the response.
+
+**What the code does not check,** so that nobody reads silence as a pass. These rest on the judge:
+
+- Meaning. "Ellsmoor has 420 sensors" passes on "Across Ellsmoor, 420." And a right number with the wrong unit passes: "two days" against "a couple of weeks".
+- "One", ordinals ("the second of June"), fractions and multiples in words ("a third", "half", "twice", "double").
+- A name written in lower case, and a capitalised ordinary word found in the cited text in lower case.
+- Quotations in single quotation marks, which cannot be told from apostrophes.
+- A sentence with no number, name or quotation: it passes on having a citation.
+- A cited block that spills three or more words into a following uncited sentence lends it its citation. The sentence's numbers and names are still checked against that cited text.
+- A superseded segment's claim restated with no number in it, cited beside another segment.
+- The headline: grounded facts combined into something nobody said (above).
+- Speaker labels the parser misses or invents. A label of more than four words, or one in lower case, is read as a continuation of the turn before it, and a line such as "Note: ..." is read as a speaker called Note. Since a cited segment's speaker counts as support for a name, a wrong label can let a wrong attribution through.
+
+**Measured on the eleven recorded drafts:** 40 of 186 sentences removed, all of them true; 28 because a subject, date or figure sits in a neighbouring block the model did not cite. Every model headline was rejected for the same reason. Both are what the Phase 4 prompt change is for. The stricter rules added after the review changed none of these numbers.
