@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 is built on `phase-0-scaffold` and waits for the owner's review of its pull request, and for one owner step: the allow-list lines in `.claude/settings.json` (see the Phase 0 log).
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 (the citations spike) is done on `phase-1-citations-spike` and waits for the owner's review of its pull request. **Phase 3 is blocked on three decisions** proposed in `decisions/0012` (the ground check's unit, what a name may be checked against, the headline). Phase 2 does not depend on them.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -11,7 +11,7 @@ This file is the single record of progress. Each phase lands as its own branch a
 | Phase | Step | Estimate |
 |---|---|---|
 | 0 | First push to GitHub; branch protection setting | free |
-| 1 | Citations spike, about 16 model calls | about $1, stop at $3 |
+| 1 | Citations spike, about 16 model calls | about $1, stop at $3. **Actual: $0.44, 18 billed calls.** |
 | 2 | Connect two Vercel projects; first deploys | free |
 | 4 | Record the three seeded transcripts | about $1 |
 | 6 | Record the remaining eval cases; first judged live run | about $3 to $5 |
@@ -31,7 +31,7 @@ Whole project: about $15. Recommended guard, an owner action before Phase 1: a s
 - [x] Tests cannot read `.env` or open a socket: env-file loading is off under pytest and sockets are blocked. One test proves each (a socket attempt fails; a planted `.env` value is not seen).
 - [x] `frontend/`: Node pinned to 24 (`.nvmrc`, `engines`); upgrade Next.js 16.2.9 to the current 16.4 patch, after reading the bundled guide per `frontend/AGENTS.md`; if the upgrade breaks the build, stay on 16.2.9 and log why. Fix the three lint errors and the stale directive (fix, not quarantine). Delete `src/app/design-system/`. Add Vitest with one passing test.
 - [x] `Makefile` with `setup` (installs both sides, runs `git config core.hooksPath .githooks`, warns if gitleaks is missing), `dev`, `check`, `format FILE=`.
-- [ ] Harness layer adapted to this stack: allow list in `.claude/settings.json`, `protected-paths.txt` (the generated types file, `backend/recordings/`), CI setup steps for uv and Node with actions pinned by commit. List every change in the log.
+- [x] Harness layer adapted to this stack (the allow-list lines were skipped by the owner's decision on 2026-11-18, not done): allow list in `.claude/settings.json`, `protected-paths.txt` (the generated types file, `backend/recordings/`), CI setup steps for uv and Node with actions pinned by commit. List every change in the log.
 - [x] `.env.example`; `.gitignore` already ignores `.env`.
 - [x] No `*.harness-new` file left.
 - [x] `BRIEF.md` moved to `docs/archive/` as history. `reference/` stays until Phase 6 replaces it.
@@ -184,22 +184,127 @@ The owner had already decided this case: do not pay, carry the item to Phase 9. 
 
 **Gate: passed, 2026-11-18.** `make check` exits 0 with passing tests on both sides; the pre-commit hook refused a failing commit; CI is green on the first run; branch protection was refused and the refusal is pasted, with the owner's decision. One step stays open and is not part of the gate: the allow-list lines in `.claude/settings.json`, which only the owner can add.
 
+### 2026-11-18, after the owner's review
+
+- Pull request #1 merged by squash at the owner's instruction (`a99fe70`).
+- **The real-names search is done, by the owner:** the names from the old repository's fixtures were searched across this folder and none appear. That closes the part of the synthetic-data step the agent could not run.
+- **The allow-list lines are skipped for now** by the owner's decision. The harness box is ticked on that basis; the note stays in `docs/HARNESS_NOTES.md`.
+- From here on the reviewer and the verifier run one after the other, never at the same time in the same folder, since that overlap is the likely cause of the one unexplained build failure.
+
 ---
 
 ## Phase 1: citations spike (paid)
 
 Nobody has seen how citations behave on a transcript with thinking on. This phase finds out before the design depends on it. Throwaway code in `spikes/`, not application code.
 
-- [ ] Write the first seeded transcript (fictional company, about 60 turns) and a short second one in which a speaker corrects a figure. Owner reads both before any call.
-- [ ] Ask the owner, with the estimate. Then run about 16 calls: `claude-sonnet-5-5` and `claude-opus-5-5`, two effort levels each, one block per sentence against one block per turn, both transcripts, two repeats of the main variant.
-- [ ] One request with citations and an output schema together, to confirm the documented 400 (not billed).
-- [ ] Measure and record: whether citations and adaptive thinking combine at all; the share of text blocks that come back uncited; how many sentences one cited block holds; whether a headline line gets cited; what the model does with the corrected figure; whether cited spans are tight enough for the number and name check; tokens, cost and latency per call.
-- [ ] Save every raw request and response. They become the first test fixtures.
-- [ ] Write the findings as a decision record. If they contradict `decisions/0002`, `0003` or `0005`, stop: the records and the spec change first, with the owner's approval.
+- [x] Write the first seeded transcript (fictional company, about 60 turns) and a short second one in which a speaker corrects a figure. Owner reads both before any call.
+- [x] Ask the owner, with the estimate. Then run about 16 calls: `claude-sonnet-5-5` and `claude-opus-5-5`, two effort levels each, one block per sentence against one block per turn, both transcripts, two repeats of the main variant.
+- [x] One request with citations and an output schema together, to confirm the documented 400 (not billed).
+- [x] Measure and record: whether citations and adaptive thinking combine at all; the share of text blocks that come back uncited; how many sentences one cited block holds; whether a headline line gets cited; what the model does with the corrected figure; whether cited spans are tight enough for the number and name check; tokens, cost and latency per call.
+- [x] Save every raw request and response. They become the first test fixtures.
+- [x] Write the findings as a decision record. If they contradict `decisions/0002`, `0003` or `0005`, stop: the records and the spec change first, with the owner's approval.
 
 **Gate:** the findings record exists with real numbers and the saved responses it rests on; total spend is stated from the API's usage figures; each design assumption in `0002`, `0003` and `0005` is marked confirmed or changed.
 
 **Log:**
+
+### 2026-11-18, Phase 1 on `phase-1-citations-spike`
+
+**Transcripts.** `spikes/transcripts/01-korvath-greenhouses.txt` (63 turns, 832 words) and `02-hartwell-lane-correction.txt` (18 turns, 265 words, timestamps, a figure corrected from 4,800 to 4,300). A web search for each invented company name found no business of that name. The owner read and approved both as written before any call.
+
+**Go-ahead.** The owner approved the paid spike: about 16 calls, about $1, hard stop at $3, key added to `.env` by the owner. Refusals: follow `0005`, no fallback model.
+
+**What ran.** `spikes/citations_spike.py`, from `backend/` with the `live` group: 15 draft calls, 2 extract calls, 1 judge call, and 1 unbilled request that must fail. That is 18 billed calls, two more than "about 16": the extract and judge calls were added so the cost of a whole run is measured, which the owner asked for. The script sends nothing without `--yes-spend`, checks the running total before each call, and skips any call whose result is already saved. Afterwards `uv sync --locked` removed the SDK from the backend environment again.
+
+**Library note.** Current Anthropic guidance is to enable a server-side fallback model for declined requests. The spike follows `0005` instead (no fallback), by the owner's decision.
+
+**Findings:** `docs/decisions/0012-citations-spike-findings.md`. In short: citations and thinking combine; pointers are always valid and tight; a cited block is part of a sentence, so the unit of the ground check has to be the sentence; the headline is never cited; the corrected figure was reported correctly in all six drafts; Sonnet is the right writer; one run costs about 7 cents.
+
+**The record proposes changes to `0003` and the spec** (the unit, what a name may be checked against, the headline). Per this phase's last step, those records are **not edited**: the proposals wait for the owner, and Phase 3 does not start until they are decided.
+
+**Gate evidence.**
+
+Spend, from the API's usage figures, summed over the saved results:
+
+```
+$ cd backend && uv run --locked --group live python ../spikes/citations_spike.py draft --yes-spend
+...
+ok    draft/t2-turn-opus-medium: stop=end_turn model=claude-opus-5-5 in=1890 out=1184 $0.0312 11.2s  total=$0.3783
+Total spent so far, from the API's usage figures: $0.3783
+$ ... extract --yes-spend
+ok    extract/t1-sonnet-low: stop=end_turn model=claude-sonnet-5-5 in=3451 out=1041 $0.0173 8.1s  total=$0.3956
+ok    extract/t2-sonnet-low: stop=end_turn model=claude-sonnet-5-5 in=1686 out=460 $0.0080 4.4s  total=$0.4036
+$ ... judge --yes-spend
+ok    judge/t1-opus-medium: stop=end_turn model=claude-opus-5-5 in=2356 out=1171 $0.0328 11.5s  total=$0.4364
+Total spent so far, from the API's usage figures: $0.4364
+```
+
+The request that must fail:
+
+```
+error check400/citations-with-schema: HTTP 400 {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Citations cannot be enabled when output format is set. Please disable citations on uploaded document blocks.'}, ...}
+```
+
+The saved responses the record rests on: 19 files under `spikes/results/` (15 draft, 2 extract, 1 judge, 1 error), each holding the raw request, the raw response, the request id, latency and cost. The numbers in the record are reproduced, with no key and no network, by:
+
+```
+$ python3 spikes/analyze.py
+label | think tok | words | cited | uncited(words) | uncited share | headline cited | ...
+t1-sentence-sonnet-medium-a | 0 | 311 | 22 | 10 | 0.167 | False | ...
+t1-sentence-opus-medium | 481 | 355 | 21 | 22 | 0.473 | False | ...
+...
+total $0.4364
+```
+
+Each assumption in `0002`, `0003` and `0005` is marked in the record's three tables. One row is neither confirmed nor changed: the three typed model errors in `0005` (refusal, truncation, model mismatch) did not occur in 18 calls, so they are marked unverified and carried to Phase 4. **The gate's wording asks for "confirmed or changed"; whether "unverified, carried forward" is acceptable for that one row is the owner's call when reviewing the pull request.**
+
+**Reviewer** (fresh context, over the staged diff, run alone in the folder). Its verdict: "No blocking findings on security, spend or the architecture rules. Several figures and verdicts in the findings record (0012) are wrong or claim more than the data shows. One bug in the analysis script changes a number that appears in the record." It recomputed all 18 costs from usage (total $0.4364), confirmed the headline, quotation, judge and corrected-figure findings from the saved files, and confirmed no key in any saved file, that the script cannot spend without its flag, and that the SDK is still outside the base set. Findings as reported, all non-blocking, and what I did:
+
+1. *Bug in `analyze.py`: the first word of a sentence is never checked as a name.* Two wrongly kept sentences; "Opus medium, per sentence, t2" should read fail names 4, kept 7. **Fixed:** the first word is now checked unless it is on a short list of ordinary sentence openers; the analysis was rerun and the record's table and "worst draft kept" updated. The Sonnet rows the conclusions rest on did not change, except the per-turn row (21 kept, 87%, was 22 and 91%).
+2. *The record says the rules of `0003` were "applied as written"; only rule 1 and a rough rule 2 were.* **Fixed:** the record and the script now say exactly which rules the table applies.
+3. *Wrong or too-narrow figures:* cited text "13 to 17 words" (it is 10 to 19); "two shared a headline" (all three did); the Opus comparison held only at `medium`; "0 cited blocks with more than one sentence" hid 4 Opus drafts with one such block. **Fixed,** each with the full range, and the Opus `low` and per-turn drafts are now in the table.
+4. *The thinking verdicts claim more than the data shows:* seen only on Opus at `medium`, never on the writer. **Fixed:** both rows and finding 1 narrowed.
+5. *The verdict on one block per sentence keeps the decision but swaps its reason for an untested one.* **Fixed:** the row now says the stated reason was not borne out on short turns and is untested on long ones. My claim that per turn cannot tell a correction from its figure was wrong and is removed.
+6. *Missing from the `0003` table: "the fix is a better draft prompt, not a looser rule", which recommendation 2(b) departs from.* **Fixed:** the row is added, option (b) is labelled a departure, and the recommendation is now (a) with (c) measured in Phase 4. Four smaller missing rows added.
+7. *The status line and the conclusion disagree about `0002`.* **Fixed.**
+8. *The gate says "confirmed or changed"; the record adds a third label.* **Not mine to settle:** raised for the owner above.
+9. *A Phase 0 box is ticked for work that was skipped.* **Fixed:** the step text now says so.
+10. *The spike script can undercount spend on a timeout, and a retry can bill twice.* **Fixed:** no retries, and any other failure is recorded at the worst-case cost so the stop counts it. It did not happen in this run.
+11. *"Redgate" in transcript 2 is also a real software company's name; used here as a depot's name, low risk.* **Left as is and raised for the owner:** the owner approved the transcript as written, and renaming it now would mean the 6 saved transcript 2 responses no longer match their transcript (re-running them costs about 12 cents).
+
+**Verifier** (run after the reviewer had finished, alone in the folder; no live call, no `.env`).
+
+| # | What it did | Expected | What happened | Result |
+|---|---|---|---|---|
+| 1 | `make check` | Exit 0, no spike or live access | `EXIT 0`; the output never mentions spikes or the SDK | pass |
+| 2a | `python3 spikes/analyze.py` | Runs clean, `summary.json` byte-identical | Exit 0; `shasum` `cab46683c977...` before and after | pass |
+| 2b | First table of `0012` against the printed rows | Numbers match | Sonnet medium, t1: thinking 0, 0, 0; words 311, 331, 325; cited blocks 22, 23, 22; uncited share 0.167, 0.051, 0.157; cost $0.0207, $0.0211, $0.0210. Headline cited: False in all 15. Opus and transcript 2 columns also match | pass |
+| 2c | Sentence-level table, every row | Match | Sonnet medium, t1: 22/23/22 sentences, 18/20/19 kept, 80%/86%/87%. Opus medium, t2: 12 sentences, 4 name fails, 7 kept, 60%. All other rows match | pass |
+| 2d | Total printed by the analysis | $0.4364 | `total $0.4364` | pass |
+| 3 | Its own sum of `cost_usd` over `spikes/results/*/*.json`, and a file count | $0.4364; 15, 2, 1, 1 | 0.43644 (draft 0.3783, extract 0.0253, judge 0.0328, check400 0); 15 draft, 2 extract, 1 judge, 1 error | pass |
+| 4a | `cd backend && uv run --locked python ../spikes/citations_spike.py plan` | Lists calls, sends nothing | Listed 18 calls, sent nothing | pass |
+| 4b | The same script with `draft` and no spend flag | Nothing sent, no file changes | Exit 0; checksum of every file under `spikes/results/` unchanged | pass |
+| 4c | Does the output show that saved calls would be skipped | Skips shown | **Not shown:** the dry run printed "would send" for calls that already have a result. The skip exists only on the spend path, which it was forbidden to run, so it confirmed the skip by reading the code | **fail (minor)** |
+| 4d | `cd backend && uv run --locked python -c "import anthropic"` | Fails | `ModuleNotFoundError: No module named 'anthropic'` | pass |
+| 5a | Read `draft/t1-sentence-sonnet-medium-b.json` | Headline not in a cited block | The headline block has no citations | pass |
+| 5b | Read `draft/t2-sentence-sonnet-medium.json` and `draft/t2-turn-opus-medium.json` | 4,300 as the fact, 4,800 only as the earlier figure or forecast | Holds in both | pass |
+| 6 | `spikes/results/check400/citations-with-schema.json` | HTTP 400 with the quoted message | `status: 400`, the message as quoted, `cost_usd 0.0` | pass |
+| 7 | `git status --short` and the checksum, before and after | Unchanged | Identical | pass |
+
+Its one finding (4c): the dry run overstated what would be sent. **Fixed:** the listing now marks a call that already has a result as saved and says how many would actually be sent, and `plan` lists the judge call too:
+
+```
+$ cd backend && uv run --locked python ../spikes/citations_spike.py plan | tail -3
+saved      extract/t2-sonnet-low: already has a result, would be skipped
+saved      judge/t1-opus-medium: already has a result, would be skipped
+19 calls listed, 0 would be sent. Spent so far: $0.4364. Pass --yes-spend to send.
+```
+
+It also noted that the gate-evidence block above shows commands with their output abbreviated by `...`; that is deliberate, and the full figures are in the saved files.
+
+What the verifier could not exercise: anything on the live path (the skip, the spend stop, writing results), since it may not spend; whether the saved responses are genuine API output (each carries its request id); the findings that need a reader, namely the 10 exact quotations, the bracket edits and the judge's four verdicts (the reviewer recounted those); and the three typed model errors, which never occurred.
+
+**Gate: passed, 2026-11-18, with one point for the owner.** The findings record exists with real numbers and the saved responses it rests on; total spend is stated from the API's usage figures ($0.44); every assumption in `0002`, `0003` and `0005` is marked. The point for the owner is the one row marked unverified instead of confirmed or changed (above).
 
 ---
 

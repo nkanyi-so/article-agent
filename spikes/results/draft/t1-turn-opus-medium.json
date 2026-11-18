@@ -1,0 +1,800 @@
+{
+  "kind": "draft",
+  "label": "t1-turn-opus-medium",
+  "request": {
+    "model": "claude-opus-5-5",
+    "max_tokens": 16000,
+    "system": "You write short news briefs from meeting and interview transcripts.\n\nThe transcript is attached as a document. Every statement in your brief must come from it.\nDo not add background, context, explanation or opinion that the speakers did not give.\n\nFormat:\n- First line: a headline, on its own line, no trailing full stop.\n- Then three to five short paragraphs, 200 to 350 words in total.\n- Plain news-brief voice, third person. Name the speaker when attributing a statement.\n- If a speaker corrected an earlier statement, report the corrected version as the fact.\n- If speakers disagree, report both positions and who holds each.\n- Plain text only: no markdown, no bullet points, no notes to the reader.",
+    "thinking": {
+      "type": "adaptive",
+      "display": "summarized"
+    },
+    "output_config": {
+      "effort": "medium"
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "document",
+            "source": {
+              "type": "content",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Thanks for making the time, both of you. Can you hear me all right?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: Loud and clear."
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Yes, fine here. Sorry about the fans in the background, I'm in the packing hall."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: No problem at all. For readers who don't know Korvath Greenhouses, give me the short version."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: We grow tomatoes and cucumbers under glass. We have two sites, Ellsmoor and Farrow Bank. Ellsmoor is the bigger one, 14 hectares."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: And you are the operations director."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: I am. Priya is our head grower at Ellsmoor."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: The reason I called is the irrigation project. When did it start?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: We started in March 2025 with a pilot in one block. That block is 2 hectares."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: What were you doing before the pilot?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Fixed timers. Every block got 9 irrigation cycles a day, at set times, whatever the weather was doing."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Whatever the weather."
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: More or less. We would adjust by hand on very hot days, but the schedule was the schedule."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: And what replaced it?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Moisture sensors in the growing substrate. The system waters a row when that row is actually drying out, not when the clock says so."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: How many sensors are we talking about?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: Across Ellsmoor, 420. The pilot block had 60 of them."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: What did the pilot show you?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: That we had been watering at the wrong times. The plants were telling us they were thirsty at eleven, and we were watering them at nine."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: That's a good line. Can I quote that?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Go ahead."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Let's talk numbers. What happened to water use?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: On tomatoes we went from 22 litres of water per kilo of fruit to 15 litres."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: So about a third less."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: About a third, yes. That is the Ellsmoor figure for the season after the full rollout."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: When was the full rollout finished?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: October 2025. Every block at Ellsmoor has been on sensors since then."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Did anything else move? Fertiliser, for example."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: Fertiliser spend is down 11 percent. Less water through the substrate means less feed washed out with it."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: And yield?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: Flat. I would not claim a yield gain from this."
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: I'd put it a bit differently. Cucumber yield was up 4 percent in the sensor blocks."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: It was, but that is one season, and we changed the cucumber variety in the same year."
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: That's fair. I think the sensors helped, but I can't prove it from one season."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: So you two don't fully agree on that one."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: We agree on the water. We disagree a little on the cucumbers."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: What did the whole thing cost?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: 310,000 euros for Ellsmoor, including the sensors, the controllers and the installation."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: And the payback?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: We expect about three years. Most of that comes from water and fertiliser, not from yield."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Did anything go wrong?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Yes. In June a firmware update knocked out 60 sensors for two days."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: What did you do for those two days?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: We put those rows back on the old timers. That's the fallback, and it worked, but it was a nervous couple of days."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: We now test every update on one row before it goes anywhere else."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: What about the people side? Did anyone lose their job to a sensor?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: No. Nobody was laid off."
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Three of our growers were retrained to read the sensor data. Their job changed from walking the rows with a hand meter to checking the rows the system flags."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Do they like it?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Two of them do. One still walks the rows anyway, and honestly I don't mind that."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: What's next?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: Farrow Bank. We plan to install the same system there in spring 2026."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Is that decided or is that a hope?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: The budget is approved. The installation dates are not fixed yet."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Anything beyond the sensors?"
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: We are also building a rainwater tank at Ellsmoor. It will hold 5,000 cubic metres."
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: The idea is that less of what we use comes from the mains in the first place."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: Last question. If another grower asked whether to do this, what would you tell them?"
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Start with one block. We learned more from the pilot than from any brochure."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: And keep the timers. You will need them the day the sensors go down."
+                },
+                {
+                  "type": "text",
+                  "text": "Odalys Brenner: That's a good place to stop. Thank you both."
+                },
+                {
+                  "type": "text",
+                  "text": "Teodor Vance: Thank you."
+                },
+                {
+                  "type": "text",
+                  "text": "Priya Lindqvist: Thanks, Odalys."
+                }
+              ]
+            },
+            "title": "Korvath Greenhouses: interview on the irrigation project",
+            "citations": {
+              "enabled": true
+            }
+          },
+          {
+            "type": "text",
+            "text": "Write the news brief for the attached transcript, citing the transcript for every statement."
+          }
+        ]
+      }
+    ]
+  },
+  "latency_s": 12.56,
+  "request_id": "req_011ChAvAJ5RsL5XQv9Z9oy6m",
+  "cost_usd": 0.047088,
+  "response": {
+    "id": "msg_011ChAvAJFrCstGW12rQCL6z",
+    "container": null,
+    "content": [
+      {
+        "signature": "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",
+        "thinking": "I need to write a headline and 3-5 paragraphs in 200-350 words, plain text with citations. I'm keeping the \"about a third less\" figure since Teodor confirmed it, noting that there's disagreement over the cucumber numbers, and leaving out background. I'm starting the first paragraph on Korvath Greenhouses' tomato water cuts.\n\nI'm drafting the remaining paragraphs now: the pilot details and sensor counts, the fertiliser and cost figures, the firmware rollout with retraining, and the Farrow Bank plans.\n\n",
+        "type": "thinking"
+      },
+      {
+        "text": "Korvath Greenhouses cuts tomato water use by about a third with moisture sensors\n\nKorvath Greenhouses, which ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: We grow tomatoes and cucumbers under glass. We have two sites, Ellsmoor and Farrow Bank. Ellsmoor is the bigger one, 14 hectares.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 5,
+            "start_block_index": 4,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "grows tomatoes and cucumbers under glass",
+        "type": "text"
+      },
+      {
+        "text": ", has reduced water use on tomatoes ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: On tomatoes we went from 22 litres of water per kilo of fruit to 15 litres.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 23,
+            "start_block_index": 22,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "from 22 litres of water per kilo of fruit to 15 litres",
+        "type": "text"
+      },
+      {
+        "text": ", operations director Teodor Vance said. He described it as ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: About a third, yes. That is the Ellsmoor figure for the season after the full rollout.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 25,
+            "start_block_index": 24,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "about a third",
+        "type": "text"
+      },
+      {
+        "text": ", the figure for its Ellsmoor site ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: About a third, yes. That is the Ellsmoor figure for the season after the full rollout.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 25,
+            "start_block_index": 24,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "for the season after the full rollout",
+        "type": "text"
+      },
+      {
+        "text": ", which was completed in ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: October 2025. Every block at Ellsmoor has been on sensors since then.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 27,
+            "start_block_index": 26,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "October 2025",
+        "type": "text"
+      },
+      {
+        "text": ".\n\nThe project ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: We started in March 2025 with a pilot in one block. That block is 2 hectares.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 9,
+            "start_block_index": 8,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "started in March 2025 with a pilot in one block",
+        "type": "text"
+      },
+      {
+        "text": " of 2 hectares. Head grower Priya Lindqvist said the company previously used fixed timers, with ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: Fixed timers. Every block got 9 irrigation cycles a day, at set times, whatever the weather was doing.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 11,
+            "start_block_index": 10,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "9 irrigation cycles a day, at set times, whatever the weather was doing",
+        "type": "text"
+      },
+      {
+        "text": ". Moisture sensors now water a row ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: Moisture sensors in the growing substrate. The system waters a row when that row is actually drying out, not when the clock says so.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 15,
+            "start_block_index": 14,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "when that row is actually drying out, not when the clock says so",
+        "type": "text"
+      },
+      {
+        "text": ". Ellsmoor has ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: Across Ellsmoor, 420. The pilot block had 60 of them.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 17,
+            "start_block_index": 16,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "420",
+        "type": "text"
+      },
+      {
+        "text": " sensors. Lindqvist said of the pilot: ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: That we had been watering at the wrong times. The plants were telling us they were thirsty at eleven, and we were watering them at nine.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 19,
+            "start_block_index": 18,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "\"The plants were telling us they were thirsty at eleven, and we were watering them at nine.\"",
+        "type": "text"
+      },
+      {
+        "text": "\n\nVance said ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: Fertiliser spend is down 11 percent. Less water through the substrate means less feed washed out with it.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 29,
+            "start_block_index": 28,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "fertiliser spend is down 11 percent",
+        "type": "text"
+      },
+      {
+        "text": " and called yield ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: Flat. I would not claim a yield gain from this.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 31,
+            "start_block_index": 30,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "flat",
+        "type": "text"
+      },
+      {
+        "text": ". Lindqvist said ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: I'd put it a bit differently. Cucumber yield was up 4 percent in the sensor blocks.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 32,
+            "start_block_index": 31,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "cucumber yield was up 4 percent in the sensor blocks",
+        "type": "text"
+      },
+      {
+        "text": ", but Vance noted ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: It was, but that is one season, and we changed the cucumber variety in the same year.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 33,
+            "start_block_index": 32,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "that is one season, and we changed the cucumber variety in the same year",
+        "type": "text"
+      },
+      {
+        "text": ". Lindqvist said she believed ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: That's fair. I think the sensors helped, but I can't prove it from one season.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 34,
+            "start_block_index": 33,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "the sensors helped, but I can't prove it from one season",
+        "type": "text"
+      },
+      {
+        "text": ". The system cost ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: 310,000 euros for Ellsmoor, including the sensors, the controllers and the installation.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 38,
+            "start_block_index": 37,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "310,000 euros for Ellsmoor",
+        "type": "text"
+      },
+      {
+        "text": ", with payback expected in ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: We expect about three years. Most of that comes from water and fertiliser, not from yield.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 40,
+            "start_block_index": 39,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "about three years",
+        "type": "text"
+      },
+      {
+        "text": ".\n\n",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: Yes. In June a firmware update knocked out 60 sensors for two days.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 42,
+            "start_block_index": 41,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "In June a firmware update knocked out 60 sensors for two days",
+        "type": "text"
+      },
+      {
+        "text": ", and those rows went ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: We put those rows back on the old timers. That's the fallback, and it worked, but it was a nervous couple of days.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 44,
+            "start_block_index": 43,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "back on the old timers",
+        "type": "text"
+      },
+      {
+        "text": ". Vance said the company ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: We now test every update on one row before it goes anywhere else.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 45,
+            "start_block_index": 44,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "now test every update on one row before it goes anywhere else",
+        "type": "text"
+      },
+      {
+        "text": ". ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: No. Nobody was laid off.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 47,
+            "start_block_index": 46,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "Nobody was laid off",
+        "type": "text"
+      },
+      {
+        "text": "; ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Priya Lindqvist: Three of our growers were retrained to read the sensor data. Their job changed from walking the rows with a hand meter to checking the rows the system flags.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 48,
+            "start_block_index": 47,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "three of our growers were retrained to read the sensor data",
+        "type": "text"
+      },
+      {
+        "text": ", Lindqvist said.\n\nThe company plans ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: Farrow Bank. We plan to install the same system there in spring 2026.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 52,
+            "start_block_index": 51,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "to install the same system",
+        "type": "text"
+      },
+      {
+        "text": " at its Farrow Bank site ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: Farrow Bank. We plan to install the same system there in spring 2026.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 52,
+            "start_block_index": 51,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "in spring 2026",
+        "type": "text"
+      },
+      {
+        "text": ". Vance said ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: The budget is approved. The installation dates are not fixed yet.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 54,
+            "start_block_index": 53,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "the budget is approved. The installation dates are not fixed yet.",
+        "type": "text"
+      },
+      {
+        "text": " A rainwater tank holding ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Teodor Vance: We are also building a rainwater tank at Ellsmoor. It will hold 5,000 cubic metres.",
+            "document_index": 0,
+            "document_title": "Korvath Greenhouses: interview on the irrigation project",
+            "end_block_index": 56,
+            "start_block_index": 55,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "5,000 cubic metres",
+        "type": "text"
+      },
+      {
+        "text": " is also being built at Ellsmoor.",
+        "type": "text"
+      }
+    ],
+    "diagnostics": null,
+    "model": "claude-opus-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 3882,
+      "output_tokens": 1578,
+      "output_tokens_details": {
+        "thinking_tokens": 461
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  }
+}
