@@ -33,3 +33,11 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-18. The skill has one "stop if the findings contradict a decision record" rule and the owner asked for the phase to run through to the pull request. Resolved by writing the findings and the proposed changes, leaving the contradicted records unedited, and marking the dependent phase blocked. The skill could say that this is the expected way to hand over a spike.
 - 2026-11-18. `spikes/` is outside `make check`: no lint, no types, no tests. Right for throwaway code, but the reviewer has nothing mechanical to lean on there.
 
+## Phase 2, harness 0.3.0
+
+- 2026-11-18. The plan says "connect two Vercel projects to the repository" as if the agent can. Connecting needs Vercel's GitHub app to have access to the private repository, which is the owner's setting. The plan template should list it under "owner actions" with the phase that needs it.
+- 2026-11-18. A Vercel project created from the command line has no framework preset, and the first deploy of each side built nothing and served 404 with a green "Ready". A deploy step should always be followed by a request that proves a route answers.
+- 2026-11-18. A cold start cannot be measured right after a deploy: the platform had already started an instance before the first request. It needs an idle wait, which the harness has no patient way to do; a background timer was used, and every other check had to be kept away from the deployed address meanwhile.
+- 2026-11-18. Follow-up work from the previous phase's review (the owner's decisions, a re-run) had no home: the skill is one branch and one pull request per phase. It went in as its own commit at the start of this phase's branch. The skill could name that as the place.
+- 2026-11-18. The reviewer caught that "never `*`" for CORS was only a comment. A rule stated in a comment and not enforced is worth a line in the reviewer's checklist.
+

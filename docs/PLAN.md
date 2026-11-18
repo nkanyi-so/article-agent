@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 is in progress on `phase-2-walking-skeleton`.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 (the walking skeleton on Vercel) is done on `phase-2-walking-skeleton` and waits for the owner's review of its pull request; one owner step is open (give Vercel's GitHub app access to the repository). Phase 3 is next.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -21,7 +21,7 @@ This file is the single record of progress. Each phase lands as its own branch a
 
 Whole project: about $3 to $4 on the measured figures (was about $15 before Phase 1 measured them); $0.55 spent so far. Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
 
-**What a merge to `main` does.** Until Phase 2, nothing. From Phase 2, it deploys the frontend and the backend to Vercel.
+**What a merge to `main` does.** Today, nothing: the two Vercel projects exist and are deployed from the command line, but they are not yet connected to the repository (the owner has to give Vercel's GitHub app access to it). Once connected, a merge to `main` deploys the frontend and the backend to Vercel.
 
 ---
 
@@ -321,14 +321,122 @@ What the verifier could not exercise: anything on the live path (the skip, the s
 
 Proves the host before anything is built on it. No pipeline yet.
 
-- [ ] A dummy event stream route that emits five typed events over about ten seconds and ends with a terminal event.
-- [ ] Ask the owner, then connect two Vercel projects to the repository (`frontend/`, `backend/`) and deploy. Point the old paused frontend project at the new repository or create a new one: owner's choice at that moment.
-- [ ] Show on the deployed backend: the stream arrives event by event, not in one lump; the cold start time; the `anthropic` package is absent from the deployed dependency set; a scratch SQLite file can be created and read.
-- [ ] Frontend calls the deployed `/health` across origins with CORS limited to its own origin.
+- [x] A dummy event stream route that emits five typed events over about ten seconds and ends with a terminal event.
+- [ ] Ask the owner, then connect two Vercel projects to the repository (`frontend/`, `backend/`) and deploy. Point the old paused frontend project at the new repository or create a new one: owner's choice at that moment. *Deployed, to two new projects. Not yet connected to the repository: Vercel's GitHub app has no access to it, which only the owner can grant (see the log).*
+- [x] Show on the deployed backend: the stream arrives event by event, not in one lump; the cold start time; the `anthropic` package is absent from the deployed dependency set; a scratch SQLite file can be created and read.
+- [x] Frontend calls the deployed `/health` across origins with CORS limited to its own origin.
 
 **Gate:** timestamps from a real request to the deployed stream show events arriving spread over time; cold start measured; the deployed dependency list pasted without `anthropic`. If the stream is buffered or the runtime does not fit, stop and write the hosting record's replacement (the Fly.io fallback, about $2.35 a month) for approval.
 
 **Log:**
+
+### 2026-11-18, Phase 2 on `phase-2-walking-skeleton`
+
+**What was built.** Backend: `GET /skeleton/stream` sends five typed events two seconds apart and then a terminal one, as data-only events with the tag in the JSON body, the union one named schema (`SkeletonEvent`); a failure part-way still ends in `run_failed` with a code and no exception text, and the reason is logged on the server. `GET /skeleton/runtime` reports the Python version, the instance's uptime, whether the `anthropic` package can be found, every installed package, and the result of creating, writing and reading back a SQLite file in the scratch folder. CORS is limited to the origins in `APP_CORS_ORIGINS`; a wildcard or a malformed origin is refused when the settings load. Frontend: the top bar shows whether the browser can reach the backend's `/health` and in which mode, a call that only succeeds if CORS allows the page's origin.
+
+**The skeleton routes are off by default** (`APP_SKELETON_ROUTES`), because they are public, unmetered, and one lists what is installed. They are switched on for the hosted backend so this gate can be checked. Phase 5 deletes them (step added there), and Phase 8's gate now requires that none answers.
+
+**Deployment, with the owner's go-ahead.** Two new projects on Vercel Hobby, in the owner's personal scope:
+
+| | Project | Address | Root | Settings |
+|---|---|---|---|---|
+| Backend | `article-agent-api` | https://article-agent-api.vercel.app | `backend/` | framework `fastapi`, Python 3.14 from `.python-version`, region `iad1`, `APP_MODE=demo`, `APP_CORS_ORIGINS=https://article-agent-web.vercel.app`, `APP_SKELETON_ROUTES=1` |
+| Frontend | `article-agent-web` | https://article-agent-web.vercel.app | `frontend/` | framework `nextjs`, Node 24.x, `NEXT_PUBLIC_API_URL=https://article-agent-api.vercel.app` |
+
+- **New projects, not the old one.** The plan left "point the old paused frontend project at this repository, or create a new one" to the owner at that moment; the owner asked for the phase to run without waiting, so the choice that changes nothing existing was taken. The old `article-agent` project is untouched. Renaming or repointing later is a settings change.
+- **Deployed from this machine with the Vercel CLI, not from GitHub.** `vercel git connect` failed for both projects: "Failed to connect nkanyi-so/article-agent to project ... make sure ... you have access to the repository if it's private." Vercel's GitHub app has not been given access to this private repository, and granting it is a GitHub setting only the owner can change. **Until that is done, a merge to `main` deploys nothing**; the line at the top of this file says what is true today. Each project's root folder is already set, so once access is granted, `vercel git connect` (or the dashboard) finishes the job.
+- **A project made from the command line has no framework set**, so the first deploy of each built nothing and served 404. `backend/vercel.json` and `frontend/vercel.json` now name the framework.
+- Nothing here costs money: both projects are on Hobby.
+
+**Gate evidence.** All from the deployed backend, after the final deploy.
+
+```
+$ date -u; curl -sN https://article-agent-api.vercel.app/skeleton/stream   (each line stamped with its arrival time on this machine)
+2026-11-18T19:55:55Z
++ 0.65s  data: {"seq":0,"at":"2026-11-18T19:55:55.909+00:00","type":"run_started"}
++ 2.64s  data: {"seq":1,"at":"2026-11-18T19:55:57.911+00:00","type":"stage_started","stage":"first"}
++ 4.64s  data: {"seq":2,"at":"2026-11-18T19:55:59.912+00:00","type":"stage_completed","stage":"first"}
++ 6.72s  data: {"seq":3,"at":"2026-11-18T19:56:01.914+00:00","type":"stage_started","stage":"second"}
++ 8.66s  data: {"seq":4,"at":"2026-11-18T19:56:03.915+00:00","type":"stage_completed","stage":"second"}
++10.65s  data: {"seq":5,"at":"2026-11-18T19:56:05.916+00:00","type":"run_completed"}
+
+$ curl -s https://article-agent-api.vercel.app/health
+{"status":"ok","mode":"demo","version":"0.1.0"}
+
+$ curl -s https://article-agent-api.vercel.app/skeleton/runtime
+python 3.14.10 | uptime_s 33.937 | anthropic_installed False | scratch_sqlite {'ok': True, 'rows_read': 1}
+28 distributions: annotated-doc==0.0.7, annotated-types==0.8.0, anyio==4.16.0, awslambdaric==4.2.2, boto3==1.42.97, botocore==1.42.97, click==8.5.1, fastapi==0.164.0, h11==0.16.0, idna==3.20, jmespath==1.1.0, opentelemetry-api==1.45.2, pip==26.2.2, pydantic==2.14.3, pydantic-settings==2.16.3, pydantic_core==2.50.4, python-dateutil==2.9.0.post0, python-dotenv==1.2.4, s3transfer==0.16.0, simplejson==4.2.0, six==1.17.0, snapshot-restore-py==1.0.0, starlette==1.10.0, typing-inspection==0.4.5, typing_extensions==4.16.0, urllib3==2.8.0, uvicorn==0.54.0, vercel-runtime==0.25.0
+
+$ curl -s -D - -o /dev/null -H 'Origin: https://article-agent-web.vercel.app' https://article-agent-api.vercel.app/health | grep -i -E '^HTTP|access-control'
+HTTP/2 200 
+access-control-allow-origin: https://article-agent-web.vercel.app
+$ the same with Origin: https://elsewhere.example.com
+HTTP/2 200 
+```
+
+- **The stream arrives event by event:** six events, each reaching this machine about two seconds after the one before, matching the server's own `at` times. It is not buffered.
+- **The deployed dependency set has no `anthropic`** and no development tools either: 28 packages, which are the base set (`fastapi`, `pydantic`, `pydantic-settings`, `uvicorn`), their dependencies, and what Vercel's Python runtime adds (`vercel-runtime`, `awslambdaric`, `boto3` and its dependencies, `opentelemetry-api`, `pip`). Vercel's build log says "Installing required dependencies from uv.lock" with uv 0.13.5; it installed neither the `dev` nor the `live` group. That is observed behaviour, not something this repository configures, so Phase 8's gate checks the list again.
+- **A scratch SQLite file can be created, written and read back** on the host.
+- **CORS:** the frontend's origin gets `access-control-allow-origin`; another origin gets none, so a browser would block it.
+- **In a real browser:** headless Chrome loading https://article-agent-web.vercel.app shows `API demo · 0.1.0` in the top bar, so the cross-origin call from the deployed page succeeds.
+- **With the switch off the skeleton routes do not exist on the host:** one deploy went out before the switch was set, and `/skeleton/runtime` answered 404 while `/health` answered 200.
+
+**Cold start.** A request straight after a deploy is not cold: the platform had already started an instance (its uptime was 12 s at the first request). So the backend was left with no traffic from 19:56:25Z, and one request was timed at 20:14:57Z, 18.5 minutes later:
+
+```
+first request: status=200 connect=0.022267s tls=0.096286s first_byte=1.565094s total=1.565666s
+instance uptime at that request: 0.214 s
+warm request: first_byte=0.374555s total=0.374930s
+warm request: first_byte=0.466571s total=0.467027s
+warm request: first_byte=0.367900s total=0.368227s
+```
+
+The instance was 0.2 seconds old when it answered, so this was a cold start. **A cold request took 1.57 s to the first byte against 0.37 to 0.47 s warm: a cold start costs about 1.1 to 1.2 seconds**, measured once, from the owner's machine to the `iad1` region, with only `/health`-sized work to import. It will grow when the app seeds its runs at startup (Phase 5), so Phase 8 measures it again.
+
+**Verdict on the host: Vercel Hobby holds.** The stream is not buffered, the cold start is about a second, the SDK is absent, and the scratch disk works. The Fly.io fallback in `0009` is not needed.
+
+**Reviewer** (fresh context, over the first deploy's code and the decisions commit, run alone and told not to touch the deployed address). Its verdict: "There are no blocking findings for the Phase 2 code." It confirmed for itself that the stream cannot leak exception text, that only `Exception` is caught so a client that has gone is not sent anything, that each test fails without the behaviour it names, that importing the app reads no `.env` under test, and that no check was weakened. Findings as reported, and what I did:
+
+1. *The CORS "never `*`" rule is only a comment:* a host variable set to `*` would allow every origin. **Fixed:** the setting refuses a wildcard, a path or a bare host when it loads, with tests.
+2. *The failure path drops the exception instead of keeping it on the server.* **Fixed:** it is logged; the test asserts the reason is in the server log and not in the event.
+3. *The skeleton routes are public, unmetered, and the plan never says when they go.* **Fixed:** they are registered only when `APP_SKELETON_ROUTES` is on (default off, tested), a Phase 5 step deletes them, and Phase 8's gate requires that none answers. They are on for the hosted backend for now, so this gate can be checked and re-checked by the owner; switching them off is one setting.
+4. *The `dev` group may be installed on the host; check the measured list.* **Checked:** the deployed list has no pytest, mypy, ruff or httpx. No change needed; recorded above as observed behaviour.
+5. *`backend/.vercelignore` does not exclude env files.* **Fixed,** and a root `.vercelignore` added for deploys from the repository root.
+6. *The frontend silently falls back to localhost in production if the backend's address is unset.* **Fixed:** a build on the host without it fails (`next.config.ts`), and a trailing slash is stripped.
+7. *`0012`'s status line contradicts itself after the owner's decisions.* **Fixed.**
+8. *The headline rule's "superseded figure" has no definition code can apply,* and the spike shows the obvious one fails. **Fixed in `0003` and the spec:** no number in the headline may appear in the text of a segment extract named as superseded. Blunt on purpose; it can reject a correct headline, which then falls back to the title. Also stated: a headline with no number, date or name is judged against the whole kept body; a fallback title is not scored; the architecture's `ground` row now lists the headline's failure record. **This refines the owner's headline decision to make it checkable; flagged for the owner in the pull request.**
+9. *The depot's old name, also a real company's, is still in `main`'s history.* **Recorded** under the Phase 9 history-check step: rewrite `main` or accept it explicitly before the repository goes public.
+
+After these fixes both projects were redeployed, and every figure in the evidence above is from that final deploy.
+
+**Verifier** (run alone, after the cold-start measurement; GET and OPTIONS only against the deployed addresses). A is the deployed backend, F the deployed frontend.
+
+| # | What it did | Expected | What happened | Result |
+|---|---|---|---|---|
+| 1 | `make check` | Exit 0 | `EXIT=0`; 19 backend tests, 10 frontend tests, build ok | pass |
+| 2a | `curl -sN A/skeleton/stream`, lines stamped on arrival | Spread over about 10 s, terminal event last | +0.40, 2.39, 4.39, 6.39, 8.39, 10.39 s; six events ending `run_completed`; `content-type: text/event-stream` | pass |
+| 2b | The same again | The same | +0.38, 2.63, 4.38, 6.43, 8.47, 10.42 s | pass |
+| 2c | Event format | Data-only, `type` in the JSON | Every event one `data: {...}` line, no `event:` line | pass |
+| 3 | `curl -s A/skeleton/runtime` | No `anthropic`, no dev tools, SQLite ok | Python 3.14.10; `anthropic_installed` false; 28 packages, none of `anthropic`, pytest, mypy, ruff, httpx; `scratch_sqlite` ok. List identical to the log's | pass |
+| 4 | `curl -s -D - A/health` | 200, demo | `{"status":"ok","mode":"demo","version":"0.1.0"}` | pass |
+| 5a | GET with the frontend's origin | Allow-origin for it | `access-control-allow-origin: https://article-agent-web.vercel.app` | pass |
+| 5b | GET with `https://elsewhere.example.com` and with `http://localhost:3000` | Header absent | Absent for both | pass |
+| 5c | OPTIONS preflight from each | Allowed origin accepted, others refused | Frontend origin: 200 with allow-origin, `GET, POST`; the other two: 400, no allow-origin | pass |
+| 5d | Was `*` ever returned | Never | Never | pass |
+| 6a | `curl -s F/` | 200, real HTML with the status element | 200, `data-testid="backend-status"` present | pass |
+| 6b | The page's script files | Contain the backend's address, not localhost | Backend address 2 times, `localhost:8000` 0 times | pass |
+| 6c | Headless Chrome on F | Status shows the backend reached | `API demo · 0.1.0` | pass |
+| 7 | Unknown route, wrong method on A | 404, 405 | `{"detail":"Not Found"}`, `{"detail":"Method Not Allowed"}` | pass |
+| 8a | `make dev` as documented | Up; skeleton routes 404 by default | `/health` 200 demo; both skeleton routes 404; frontend 200 | pass |
+| 8b | Stopped by signalling the process group | Ports free | 0 listeners, no leftover processes | pass |
+| 8c | `APP_SKELETON_ROUTES=1 APP_MODE=live make dev` | Stream works; still demo | `/health` demo; stream at +0.02, 2.02, 4.02, 6.02, 8.02, 10.03 s ending `run_completed` | pass |
+| 9 | Compared with the evidence above | Agreement | Stream, health, runtime list, CORS and browser text all agree | pass |
+
+No defects found. What it could not exercise: the cold start (needs a long idle wait; its own first requests were warm); deploys from GitHub (not connected); the status element's failure state and any browser other than headless Chrome; the stream's `run_failed` path on the host (covered by a unit test only); the skeleton routes switched off on the host (seen once above, by accident, before the switch was set). It also noted that `make dev` reporting demo under `APP_MODE=live` shows the script forcing demo, not the app refusing live; there is nothing live to construct until Phase 4.
+
+**Gate: passed, 2026-11-18.** Timestamps from real requests to the deployed stream show the events arriving spread over ten seconds (mine and the verifier's two runs); the cold start is measured (1.57 s to first byte after 18.5 minutes idle, about 0.4 s warm); the deployed dependency list is pasted and has no `anthropic`. The stream is not buffered and the runtime fits, so the Fly.io fallback is not needed.
+
+**Open, for the owner, not part of the gate:** give Vercel's GitHub app access to the repository so the two projects can be connected and a merge deploys. That step's box stays unticked until then.
 
 ---
 
@@ -368,6 +476,7 @@ Pure code, test-first. Uses the Phase 1 responses as fixtures.
 
 First working draft.
 
+- [ ] Delete the Phase 2 skeleton: the `/skeleton/*` routes, `app/skeleton.py`'s routes and the `APP_SKELETON_ROUTES` setting, on the host too. A test asserts no `/skeleton` path is in `app.openapi()`. The event shapes move to the real stream.
 - [ ] `Store` over SQLite: the four tables, seeded runs created at startup through the real pipeline.
 - [ ] Replay from a stage: a new run, earlier stages copied and marked, later stages re-executed from stored input.
 - [ ] The HTTP routes in the architecture, the typed event union, uniform error mapping with no upstream text.
@@ -420,7 +529,7 @@ Read `frontend/AGENTS.md` and the bundled Next.js guide first.
 - [ ] A fourth, clearly labelled demo run built from a hand-altered recording, so a visitor sees the ground check remove a wrong number and an uncited sentence.
 - [ ] Verifier against the public address, read-only requests and seeded runs only.
 
-**Gate:** verifier table against the hosted address: page loads with no key, seeded run streams, claim click works, replay works, removed units visible. The deployed backend's dependency list has no `anthropic`.
+**Gate:** verifier table against the hosted address: page loads with no key, seeded run streams, claim click works, replay works, removed units visible. The deployed backend's dependency list has no `anthropic`. No `/skeleton` route answers on the hosted address.
 
 **Log:**
 
@@ -430,7 +539,7 @@ Read `frontend/AGENTS.md` and the bundled Next.js guide first.
 
 - [ ] README with the seven profile sections; every claim traced to code or to a result file.
 - [ ] Reviewer in security mode over the whole repository; fix every blocking finding.
-- [ ] History check against the synthetic-data rule and a full-history secret scan.
+- [ ] History check against the synthetic-data rule and a full-history secret scan. Known already: a depot in the second spike transcript carried a name that is also a real software company's, in commits `74f3425` and `1cee60f` on `main` (replaced in `0effa8c`). Before the repository is made public, either `main` is rewritten to remove it or the owner explicitly accepts it as a depot's name.
 - [ ] Ask the owner, then make the repository public. Turn on branch protection on `main` (no force-push, the `check` and `secrets` jobs must pass) and show it is on: carried from Phase 0, where GitHub refused it on the private repository.
 - [ ] Walkthrough video (owner).
 

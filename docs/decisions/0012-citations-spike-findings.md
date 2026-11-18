@@ -1,6 +1,6 @@
 # 0012: what the citations spike found
 
-**Status:** findings recorded 2026-11-18; **the owner decided its three proposals the same day** (see "The owner's decisions" at the end), and `0003` and the spec now carry them. The changes it proposes to `0003` and the spec are **proposed, waiting for the owner**; those records are not edited until then. It proposes no change to `0002` or `0005`. Corrected the same day after the reviewer found a bug in the analysis and several overstated figures (see the Phase 1 log).
+**Status:** findings recorded 2026-11-18; **the owner decided its three proposals the same day** (see "The owner's decisions" at the end), and `0003` and the spec now carry them. It proposed no change to `0002` or `0005`. Corrected the same day after the reviewer found a bug in the analysis and several overstated figures (see the Phase 1 log).
 
 **Context.** Phase 1 ran the draft call for real before the design depended on it. Code: `spikes/citations_spike.py`. Every raw request and response: `spikes/results/`. The numbers below come from `python3 spikes/analyze.py`, which reads those files and needs no key (`spikes/results/summary.json`).
 
@@ -149,7 +149,7 @@ Per call, from usage. Prices: Sonnet $2 and $10, Opus $4 and $20 per million inp
 4. **The judged threshold (J1) is not changed.** The 0.82 above is on a draft before the ground check and is one call. It is recorded here because it is the likeliest first real failure in Phase 6, which the plan wants.
 5. **The plan's estimates** for Phases 4 and 6 can come down to about $0.20 and about $0.60 a run. The stops stay where they are.
 
-**Consequence.** `0002` and `0005` stand as written, with two caveats recorded above: the reason given for one block per sentence was not borne out on transcripts with short turns, and the three typed model errors are unverified. `0003` needs the unit stated and two decisions (names, headline) before Phase 3 builds the ground check. The saved responses in `spikes/results/draft/` become Phase 3's first fixtures: they already contain an uncited sentence, a name outside its cited text, a date outside its cited text, and a sentence that mentions a superseded figure correctly inside a sentence citing its correction.
+**Consequence.** `0002` and `0005` stand as written, with two caveats recorded above: the reason given for one block per sentence was not borne out on transcripts with short turns, and the three typed model errors are unverified. `0003` needed the unit stated and two decisions (names, headline) before Phase 3 builds the ground check; all three have since been decided (below). The saved responses in `spikes/results/draft/` become Phase 3's first fixtures: they already contain an uncited sentence, a name outside its cited text, a date outside its cited text, and a sentence that mentions a superseded figure correctly inside a sentence citing its correction.
 
 ## The owner's decisions, 2026-11-18
 

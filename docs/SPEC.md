@@ -30,7 +30,7 @@ It is a rebuild on synthetic data. Every transcript is about fictional people at
 
 Every stage stores its input and output, and every model call stores its raw request and response. A saved run, a replay and a demo recording are the same records.
 
-**The article:** a headline and three to five short paragraphs, 200 to 350 words, plain news-brief voice, third person, speakers named when attributing. The model writes the headline. A headline carries no citation of its own, so it is checked against the body that has already passed the ground check: every number, date and name in it must appear in a kept sentence, a quotation must be verbatim, and it must not state a superseded figure as current. A headline that passes links to the kept sentences that support it. If it fails, the article takes the transcript's own title and the failure is recorded in the trace. This check is weaker than a sentence's (it cannot catch grounded facts combined into something nobody said), so the judge also scores the headline, and the README says which line of the article is checked this way.
+**The article:** a headline and three to five short paragraphs, 200 to 350 words, plain news-brief voice, third person, speakers named when attributing. The model writes the headline. A headline carries no citation of its own, so it is checked against the body that has already passed the ground check: every number, date and name in it must appear in a kept sentence, a quotation must be verbatim, and no number in it may appear in a segment that a correction superseded. A headline that passes links to the kept sentences that support it. If it fails, the article takes the transcript's own title and the failure is recorded in the trace. This check is weaker than a sentence's (it cannot catch grounded facts combined into something nobody said), so the judge also scores the headline, and the README says which line of the article is checked this way.
 
 **Two meanings of replay, kept apart in the UI and the README:** *showing* a stored run is a read. *Re-running from a stage* executes the pipeline code from that stage with the stored input, and creates a new run linked to its parent.
 
@@ -89,7 +89,7 @@ In demo mode everything except the model's words runs for real on every request:
 
 | # | Check | Passing |
 |---|---|---|
-| J1 | Groundedness: for each surviving claim, does its cited text support it; and for the headline, do its supporting sentences' cited text support it. Claims that failed a code check are scored unsupported without asking. | mean ≥ 0.90, no case under 0.80 |
+| J1 | Groundedness: for each surviving claim, does its cited text support it; and for a model-written headline, do its supporting sentences' cited text support it (the whole kept body when the headline has no number, date or name; a fallback title is not scored). Claims that failed a code check are scored unsupported without asking. | mean ≥ 0.90, no case under 0.80 |
 | J2 | Judge calibration: agreement with about 24 hand-labelled (claim, cited text) pairs, including known negatives (wrong number, inference nobody stated, empty claim) | agreement ≥ 0.90, every known negative failed |
 
 ### Must be refused

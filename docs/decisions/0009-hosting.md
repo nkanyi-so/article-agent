@@ -1,6 +1,6 @@
 # 0009: hosting on Vercel Hobby, backend in demo mode
 
-**Status:** accepted by the owner on 2026-11-18: Vercel Hobby for both, Fly.io as the fallback if Phase 2 shows the stream buffering. Phase 2 proves it before anything depends on it.
+**Status:** accepted by the owner on 2026-11-18: Vercel Hobby for both, Fly.io as the fallback if Phase 2 shows the stream buffering. **Phase 2 proved it** (see "What Phase 2 found" below).
 
 **Context.** The owner chose design A: a real backend in demo mode, so the hosted site runs the real pipeline. The host must not stop, must be free or close to it, and must never be a trial plan. The old deployment died because its backend host was on a trial and stopped the service a month after the last deploy, while the frontend stayed up pointing at nothing. The workload is tiny: no outbound calls, a few requests a day, an event stream that lasts seconds.
 
@@ -37,3 +37,14 @@ So on the hosted site, "saved runs" is true of the seeded runs and of the store 
 **Not verified, so Phase 2 tests it.** That the stream arrives unbuffered through Vercel; a normal Python cold start time; that the base dependency set installs from the uv lockfile without the `live` group. Vercel's terms also reserve the right to remove Hobby projects and to close accounts "inactive for an extended period"; pushing to the repository counts as activity, but a demo left untouched for a year carries that risk.
 
 **Consequence.** No Dockerfile is needed. The app stays a plain ASGI application so it runs unchanged under Uvicorn locally and on Fly.io if this record is ever replaced. Revisit if Phase 2 fails, or if the owner wants durable hosted runs.
+
+**What Phase 2 found, 2026-11-18.** Measured on the deployed skeleton (`docs/PLAN.md`, Phase 2 log):
+
+- The event stream arrives event by event through Vercel: six events two seconds apart reached the client two seconds apart. Not buffered.
+- A cold start, after 18.5 minutes with no traffic, took 1.57 s to the first byte against about 0.4 s warm. One measurement, with a nearly empty app.
+- The build installs from `uv.lock` without the `dev` or `live` groups: 28 packages on the host, no `anthropic`. Observed, not configured here.
+- A SQLite file in the scratch folder can be created and read back.
+- Python 3.14.10, region `iad1`.
+
+The decision stands and the fallback is not needed. Two things this record did not anticipate: a project created from the command line needs its framework named in `vercel.json`, or it deploys nothing; and connecting a project to a private repository needs the owner to give Vercel's GitHub app access to it.
+
