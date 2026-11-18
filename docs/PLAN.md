@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 (the citations spike) is done on `phase-1-citations-spike` and waits for the owner's review of its pull request. **Phase 3 is blocked on three decisions** proposed in `decisions/0012` (the ground check's unit, what a name may be checked against, the headline). Phase 2 does not depend on them.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 is in progress on `phase-2-walking-skeleton`.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -11,15 +11,15 @@ This file is the single record of progress. Each phase lands as its own branch a
 | Phase | Step | Estimate |
 |---|---|---|
 | 0 | First push to GitHub; branch protection setting | free |
-| 1 | Citations spike, about 16 model calls | about $1, stop at $3. **Actual: $0.44, 18 billed calls.** |
+| 1 | Citations spike, about 16 model calls | about $1, stop at $3. **Actual: $0.55, 25 billed calls** (18 in the spike, 7 re-run after a name change). |
 | 2 | Connect two Vercel projects; first deploys | free |
-| 4 | Record the three seeded transcripts | about $1 |
-| 6 | Record the remaining eval cases; first judged live run | about $3 to $5 |
-| 6 | Second judged run after the first real failure is fixed | about $3 to $5 |
+| 4 | Record the three seeded transcripts, and try the draft prompt change from `0012` | about $0.30 (measured: about 4 cents a transcript for extract and draft; a few repeats for the prompt change). Stop at $1. |
+| 6 | Record the remaining eval cases; first judged live run | about $1 (measured: about 7 cents a full run, about 60 cents an eval run). Stop at $3. |
+| 6 | Second judged run after the first real failure is fixed | about $1. Stop at $3. |
 | 8 | Production deploy of the demo | free |
 | 9 | Make the repository public | free |
 
-Whole project: about $15. Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
+Whole project: about $3 to $4 on the measured figures (was about $15 before Phase 1 measured them); $0.55 spent so far. Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
 
 **What a merge to `main` does.** Until Phase 2, nothing. From Phase 2, it deploys the frontend and the backend to Vercel.
 
@@ -270,7 +270,7 @@ Each assumption in `0002`, `0003` and `0005` is marked in the record's three tab
 8. *The gate says "confirmed or changed"; the record adds a third label.* **Not mine to settle:** raised for the owner above.
 9. *A Phase 0 box is ticked for work that was skipped.* **Fixed:** the step text now says so.
 10. *The spike script can undercount spend on a timeout, and a retry can bill twice.* **Fixed:** no retries, and any other failure is recorded at the worst-case cost so the stop counts it. It did not happen in this run.
-11. *"Redgate" in transcript 2 is also a real software company's name; used here as a depot's name, low risk.* **Left as is and raised for the owner:** the owner approved the transcript as written, and renaming it now would mean the 6 saved transcript 2 responses no longer match their transcript (re-running them costs about 12 cents).
+11. *A depot's name in transcript 2 is also a real software company's name; used here as a depot's name, low risk.* **Left as is and raised for the owner:** the owner approved the transcript as written, and renaming it now would mean the 6 saved transcript 2 responses no longer match their transcript (re-running them costs about 12 cents).
 
 **Verifier** (run after the reviewer had finished, alone in the folder; no live call, no `.env`).
 
@@ -306,6 +306,15 @@ What the verifier could not exercise: anything on the live path (the skip, the s
 
 **Gate: passed, 2026-11-18, with one point for the owner.** The findings record exists with real numbers and the saved responses it rests on; total spend is stated from the API's usage figures ($0.44); every assumption in `0002`, `0003` and `0005` is marked. The point for the owner is the one row marked unverified instead of confirmed or changed (above).
 
+### 2026-11-18, after the owner's review of Phase 1
+
+- Pull request #2 merged by squash at the owner's instruction (`1cee60f`).
+- **The owner's decisions** on the points `0012` raised are recorded at the end of `0012`. `decisions/0003` and `docs/SPEC.md` are edited to match: the unit is the sentence; rule 2 stays strict, with the prompt change tried in Phase 4; the model writes the headline and it is checked against the kept body, falling back to the transcript's title with the failure in the trace.
+- **The headline rule, assessed before writing it in.** It is sound and practical, and weaker than a sentence's check: a headline has no citation of its own, so code derives its support from the body. It stops a headline introducing a number, date or name the grounded body lacks; it cannot stop grounded facts being combined into something nobody said. The judge (J1) and the correction case (E6) are extended to the headline to cover that, and the spec says which line is checked this way.
+- **The depot's name in transcript 2** was changed to an invented one (a web search found no use of the new name) and the seven calls that used transcript 2 were re-run: $0.12, total Phase 1 spend $0.55. The findings did not change in kind; the transcript 2 figures in `0012` are updated, and its rule 4 row now says the rule was not exercised by a real response. The SDK was removed from the backend environment again afterwards.
+- **The gate's wording:** the owner accepted "unverified, carried to Phase 4" for the three typed model errors.
+- The cost table at the top of this file now carries the measured figures.
+
 ---
 
 ## Phase 2: walking skeleton on the host
@@ -329,7 +338,7 @@ Pure code, test-first. Uses the Phase 1 responses as fixtures.
 
 - [ ] Schemas: segment, claim, citation, removed unit, stage record, typed errors (the old hierarchy's shape, new members).
 - [ ] Ingest: turn parser, sentence splitter, segment numbering with speaker and source line, the four code refusals.
-- [ ] Ground: draft blocks to claims; the four removal rules; removed units recorded with a reason; the fewer-than-three failure; headline handling as Phase 1 settled it.
+- [ ] Ground: draft blocks joined and split into sentences, each with the citations of the blocks it overlaps; the four removal rules; removed sentences recorded with a reason; the fewer-than-three failure; the headline checked against the kept body, with the title as fallback and the failure in the trace (`0003`).
 - [ ] Tests on real recorded responses and on hand-altered ones (a wrong number, an uncited sentence, a misquote, a claim resting only on a corrected segment). Each must be removed with the right reason.
 
 **Gate:** `make check` exits 0. The test list shows each removal rule failing a hand-altered response and passing the real one. No module in this phase imports a model client.
@@ -343,6 +352,8 @@ Pure code, test-first. Uses the Phase 1 responses as fixtures.
 - [ ] `ModelClient` interface and its request and response models; the request hash; `FixtureModelClient` (loud miss); `LiveModelClient` with explicit timeout and retries, cost and latency from usage, typed errors for refusal, truncation and a model mismatch.
 - [ ] A test that only the live client module imports `anthropic`, and that demo mode cannot construct it.
 - [ ] Extract stage (structured output, validated segment indexes) and draft stage (citable document, no schema). Transcript text only as document blocks or delimited data.
+- [ ] Try the draft prompt change from `0012` (ask the model to cite every sentence it drew on, including the one naming the subject) and measure the removal rate with and without it. Asks first, a few cents.
+- [ ] The three typed model errors (refusal, truncation, model mismatch) tested against hand-built responses: Phase 1 never saw one.
 - [ ] The runner: stage order, stage records in memory, events, the terminal-event guarantee, the run ceiling.
 - [ ] Write the other two seeded transcripts. Ask the owner, then record all three with the live client (about $1).
 - [ ] A command that runs a seeded transcript end to end in fixture mode and prints the article with its citations and removed units.

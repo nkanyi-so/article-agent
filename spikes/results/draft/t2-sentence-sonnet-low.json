@@ -71,7 +71,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "Samir Vale: Mostly the Redgate depot."
+                  "text": "Samir Vale: Mostly the Pellowmere depot."
                 },
                 {
                   "type": "text",
@@ -111,7 +111,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "Dana Whitlock: What are we doing about Redgate?"
+                  "text": "Dana Whitlock: What are we doing about Pellowmere?"
                 },
                 {
                   "type": "text",
@@ -164,15 +164,15 @@
       }
     ]
   },
-  "latency_s": 4.98,
-  "request_id": "req_011ChAvC2eJWvjn6GCG9jQUi",
-  "cost_usd": 0.01112,
+  "latency_s": 4.35,
+  "request_id": "req_011ChAwruqUHUBVYiDJ1DsUj",
+  "cost_usd": 0.011258,
   "response": {
-    "id": "msg_011ChAvC2pDmMMyfiPe9dzHR",
+    "id": "msg_011ChAwrv29JLcAbRuYtD6zV",
     "container": null,
     "content": [
       {
-        "text": "Hartwell Lane Bakery Supply ships 4,300 pallets in third quarter, a record but short of forecast\n\n",
+        "text": "Hartwell Lane Bakery Supply posts best quarter despite shipments falling short of forecast\n\n",
         "type": "text"
       },
       {
@@ -196,31 +196,23 @@
       {
         "citations": [
           {
-            "cited_text": "Samir Vale: We shipped 4,800 pallets in the quarter, which is our best quarter so far.",
+            "cited_text": "Samir Vale: Sorry, I need to correct something.Samir Vale: I gave you the wrong shipment number.",
             "document_index": 0,
             "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
-            "end_block_index": 5,
-            "start_block_index": 4,
+            "end_block_index": 16,
+            "start_block_index": 14,
             "type": "content_block_location"
           }
         ],
-        "text": "He first gave the figure as 4,800 pallets",
+        "text": "He corrected an earlier figure he had given wrongly.",
         "type": "text"
       },
       {
-        "text": ", but ",
+        "text": " ",
         "type": "text"
       },
       {
         "citations": [
-          {
-            "cited_text": "Samir Vale: I gave you the wrong shipment number.",
-            "document_index": 0,
-            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
-            "end_block_index": 16,
-            "start_block_index": 15,
-            "type": "content_block_location"
-          },
           {
             "cited_text": "Samir Vale: The 4,800 was the forecast.",
             "document_index": 0,
@@ -230,7 +222,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "corrected himself, saying he had given the wrong number and that 4,800 was the forecast.",
+        "text": "The 4,800 figure he first stated was the forecast.",
         "type": "text"
       },
       {
@@ -270,6 +262,24 @@
         "type": "text"
       },
       {
+        "text": " ",
+        "type": "text"
+      },
+      {
+        "citations": [
+          {
+            "cited_text": "Samir Vale: The second quarter was 3,900 pallets.",
+            "document_index": 0,
+            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+            "end_block_index": 8,
+            "start_block_index": 7,
+            "type": "content_block_location"
+          }
+        ],
+        "text": "The second quarter total was 3,900 pallets.",
+        "type": "text"
+      },
+      {
         "text": "\n\n",
         "type": "text"
       },
@@ -294,7 +304,7 @@
       {
         "citations": [
           {
-            "cited_text": "Samir Vale: Mostly the Redgate depot.Samir Vale: It was short of two drivers for most of August.",
+            "cited_text": "Samir Vale: Mostly the Pellowmere depot.Samir Vale: It was short of two drivers for most of August.",
             "document_index": 0,
             "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
             "end_block_index": 14,
@@ -302,7 +312,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "He blamed mostly the Redgate depot, which was short of two drivers for most of August.",
+        "text": "He said the main cause was the Pellowmere depot, which was short of two drivers for most of August.",
         "type": "text"
       },
       {
@@ -320,7 +330,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Vale said both driver positions were filled in September.",
+        "text": "Vale said both driver positions at Pellowmere were filled in September.",
         "type": "text"
       },
       {
@@ -338,11 +348,11 @@
             "type": "content_block_location"
           }
         ],
-        "text": "He expects on-time delivery to return to 95 percent or better this quarter.",
+        "text": "He said he expects on-time delivery to return to 95 percent or better this quarter.",
         "type": "text"
       },
       {
-        "text": "\n\nOn flour pricing, ",
+        "text": "\n\nOn flour prices, ",
         "type": "text"
       },
       {
@@ -360,7 +370,7 @@
         "type": "text"
       },
       {
-        "text": "\n\nJoss Tennant asked questions during the review. ",
+        "text": "\n\n",
         "type": "text"
       },
       {
@@ -374,7 +384,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "After the correction, Tennant said the revised figure made more sense against the invoices he had seen.",
+        "text": "Joss Tennant said the corrected shipment figure made more sense against the invoices he had seen.",
         "type": "text"
       },
       {
@@ -411,8 +421,8 @@
       "cache_creation_input_tokens": 0,
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
-      "input_tokens": 2305,
-      "output_tokens": 651,
+      "input_tokens": 2309,
+      "output_tokens": 664,
       "output_tokens_details": {
         "thinking_tokens": 0
       },

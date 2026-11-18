@@ -1,6 +1,6 @@
 # 0009: hosting on Vercel Hobby, backend in demo mode
 
-**Status:** proposed, 2026-11-18. The owner chooses between this and the paid alternative below. Phase 2 proves it before anything depends on it.
+**Status:** accepted by the owner on 2026-11-18: Vercel Hobby for both, Fly.io as the fallback if Phase 2 shows the stream buffering. Phase 2 proves it before anything depends on it.
 
 **Context.** The owner chose design A: a real backend in demo mode, so the hosted site runs the real pipeline. The host must not stop, must be free or close to it, and must never be a trial plan. The old deployment died because its backend host was on a trial and stopped the service a month after the last deploy, while the frontend stayed up pointing at nothing. The workload is tiny: no outbound calls, a few requests a day, an event stream that lasts seconds.
 

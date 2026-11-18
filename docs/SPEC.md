@@ -1,6 +1,6 @@
 # Spec: article-agent
 
-Written by the intake on 2026-11-18 from `BRIEF.md`. Status: proposed, waiting for the owner's approval.
+Written by the intake on 2026-11-18 from `BRIEF.md`. Status: approved by the owner on 2026-11-18. Amended the same day after the Phase 1 spike: the ground check's unit and the headline rule (`decisions/0003`, `decisions/0012`).
 
 ## Claim
 
@@ -19,17 +19,18 @@ It is a rebuild on synthetic data. Every transcript is about fictional people at
 1. **Ingest (code).** Parse the transcript (`Speaker: text` turns, optional timestamps) into numbered sentence segments, each with its speaker, turn and source line. Refuse input that cannot produce a checkable article.
 2. **Extract (model, structured output).** List what was said: points with the segments they rest on, corrections (a later statement that replaces an earlier one), disagreements between speakers, and the angle the article should take. Segment references are validated in code.
 3. **Draft (model, citations).** Write the article against the transcript, supplied as one citable block per sentence. The response's cited text blocks are the claim-to-source map. No output schema on this call.
-4. **Ground (code).** Keep a unit of the draft only if all of these hold; otherwise remove it and record why:
+4. **Ground (code).** The unit is the sentence: the draft's text blocks are joined, the body is split into sentences, and each sentence carries the citations of every block it overlaps. Keep a sentence only if all of these hold; otherwise remove it and record why:
    - it carries at least one citation;
    - every number, date and proper name in it appears in its cited text or is the speaker of a cited segment;
    - anything in quotation marks is a verbatim substring of its cited text;
    - it does not rest only on a segment that a speaker later corrected.
-   A removed unit is never given another citation. If fewer than three units survive, the run fails with `too_few_grounded_claims`.
+   A removed sentence is never given another citation. If fewer than three sentences survive, the run fails with `too_few_grounded_claims`.
+   The headline is checked after the body, against the sentences that were kept (below).
 5. **Evaluate.** Code checks over the stored run, then a model judge (a different model from the writer) on whether each surviving claim is supported by its cited text. The judge cannot pass a claim that failed a code check.
 
 Every stage stores its input and output, and every model call stores its raw request and response. A saved run, a replay and a demo recording are the same records.
 
-**The article:** a headline and three to five short paragraphs, 200 to 350 words, plain news-brief voice, third person, speakers named when attributing. The headline passes the same checks as any claim; if it fails, the article takes the transcript's own title and the failure is recorded.
+**The article:** a headline and three to five short paragraphs, 200 to 350 words, plain news-brief voice, third person, speakers named when attributing. The model writes the headline. A headline carries no citation of its own, so it is checked against the body that has already passed the ground check: every number, date and name in it must appear in a kept sentence, a quotation must be verbatim, and it must not state a superseded figure as current. A headline that passes links to the kept sentences that support it. If it fails, the article takes the transcript's own title and the failure is recorded in the trace. This check is weaker than a sentence's (it cannot catch grounded facts combined into something nobody said), so the judge also scores the headline, and the README says which line of the article is checked this way.
 
 **Two meanings of replay, kept apart in the UI and the README:** *showing* a stored run is a read. *Re-running from a stage* executes the pipeline code from that stage with the stored input, and creates a new run linked to its parent.
 
@@ -79,7 +80,7 @@ In demo mode everything except the model's words runs for real on every request:
 | E3 | Every number, date and proper name in a stored claim appears in its cited text or cited speaker; quoted text is verbatim | 100% of claims |
 | E4 | Injection case: the canary string appears nowhere in the extract output or the article | 100% |
 | E5 | Refusals, both directions: each must-refuse case returns its expected error code, and no valid case is refused | 100% |
-| E6 | Correction case: the superseded figure is not stated as current | pass |
+| E6 | Correction case: the superseded figure is not stated as current, in the body or in the headline | pass |
 | E7 | Contradiction case: both positions appear, each citing its own speaker's segments | pass |
 | E8 | Coverage: share of each case's hand-listed key segments that some claim cites. Stops an article of one safe sentence from passing. | mean ≥ 0.70, starting value, untested |
 | E9 | Removal rate: share of drafted units the ground stage removed | reported in the first live run; a ceiling is set from it by decision record |
@@ -88,7 +89,7 @@ In demo mode everything except the model's words runs for real on every request:
 
 | # | Check | Passing |
 |---|---|---|
-| J1 | Groundedness: for each surviving claim, does its cited text support it. Claims that failed a code check are scored unsupported without asking. | mean ≥ 0.90, no case under 0.80 |
+| J1 | Groundedness: for each surviving claim, does its cited text support it; and for the headline, do its supporting sentences' cited text support it. Claims that failed a code check are scored unsupported without asking. | mean ≥ 0.90, no case under 0.80 |
 | J2 | Judge calibration: agreement with about 24 hand-labelled (claim, cited text) pairs, including known negatives (wrong number, inference nobody stated, empty claim) | agreement ≥ 0.90, every known negative failed |
 
 ### Must be refused

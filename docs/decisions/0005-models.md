@@ -1,6 +1,6 @@
 # 0005: writer and judge models, effort, and what is not set
 
-**Status:** proposed, 2026-11-18. Phase 1 and the first eval run confirm or change it.
+**Status:** accepted by the owner on 2026-11-18. Phase 1 confirmed the writer, the judge and the effort levels (`0012`); the three typed model errors are unverified until Phase 4. The first eval run can still change it.
 
 **Context.** Checked on 2026-11-18 against the models overview, pricing, deprecations, thinking and effort pages under https://platform.claude.com/docs/en/ and https://pypi.org/project/anthropic/:
 

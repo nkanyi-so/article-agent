@@ -51,7 +51,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "Samir Vale: Mostly the Redgate depot. It was short of two drivers for most of August."
+                  "text": "Samir Vale: Mostly the Pellowmere depot. It was short of two drivers for most of August."
                 },
                 {
                   "type": "text",
@@ -71,7 +71,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "Dana Whitlock: What are we doing about Redgate?"
+                  "text": "Dana Whitlock: What are we doing about Pellowmere?"
                 },
                 {
                   "type": "text",
@@ -108,15 +108,15 @@
       }
     ]
   },
-  "latency_s": 4.21,
-  "request_id": "req_011ChAvDj7QvkJnifksVJDGN",
-  "cost_usd": 0.010126,
+  "latency_s": 4.83,
+  "request_id": "req_011ChAwtQYR3132BC3ytn5aJ",
+  "cost_usd": 0.009884,
   "response": {
-    "id": "msg_011ChAvDjJa7ypog9aMjwMRp",
+    "id": "msg_011ChAwtQk4Nvuqgr2yTm2s4",
     "container": null,
     "content": [
       {
-        "text": "Hartwell Lane Bakery Supply ships record 4,300 pallets in third quarter\n\n",
+        "text": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet\n\n",
         "type": "text"
       },
       {
@@ -130,7 +130,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Samir Vale told the third-quarter operations review that Hartwell Lane Bakery Supply shipped 4,300 pallets in the quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
+        "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
         "type": "text"
       },
       {
@@ -148,7 +148,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Dana Whitlock noted that this left shipments 500 pallets under forecast.",
+        "text": "Dana Whitlock noted that left the company 500 pallets under forecast.",
         "type": "text"
       },
       {
@@ -166,7 +166,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Vale said it is still the company's best quarter, because 4,300 is above the 3,900 pallets shipped in the second quarter.",
+        "text": "Vale said it is still the company's best quarter, because 4,300 is above the 3,900 from the second quarter.",
         "type": "text"
       },
       {
@@ -184,7 +184,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "That second-quarter figure was 3,900 pallets.",
+        "text": "The second quarter total was 3,900 pallets.",
         "type": "text"
       },
       {
@@ -202,7 +202,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "On-time delivery was 94 percent against a target of 95, which Vale said leaves the company just under.",
+        "text": "On-time delivery was 94 percent against a target of 95, Vale said, leaving the company just under.",
         "type": "text"
       },
       {
@@ -212,7 +212,7 @@
       {
         "citations": [
           {
-            "cited_text": "Samir Vale: Mostly the Redgate depot. It was short of two drivers for most of August.",
+            "cited_text": "Samir Vale: Mostly the Pellowmere depot. It was short of two drivers for most of August.",
             "document_index": 0,
             "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
             "end_block_index": 8,
@@ -220,7 +220,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Asked what held it back, Vale pointed mostly to the Redgate depot, which was short of two drivers for most of August.",
+        "text": "He attributed the shortfall mostly to the Pellowmere depot, which was short of two drivers for most of August.",
         "type": "text"
       },
       {
@@ -242,7 +242,7 @@
         "type": "text"
       },
       {
-        "text": "\n\n",
+        "text": "\n\nOn flour prices, ",
         "type": "text"
       },
       {
@@ -256,7 +256,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "On flour pricing, Whitlock said the new contract starts on the first of November and fixes the price for twelve months.",
+        "text": "Whitlock said the new contract starts on the first of November and fixes the price for twelve months.",
         "type": "text"
       },
       {
@@ -292,7 +292,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Tennant said he had what he needed at the close of the review.",
+        "text": "Tennant said he had what he needed after the review.",
         "type": "text"
       },
       {
@@ -329,8 +329,8 @@
       "cache_creation_input_tokens": 0,
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
-      "input_tokens": 1973,
-      "output_tokens": 618,
+      "input_tokens": 1977,
+      "output_tokens": 593,
       "output_tokens_details": {
         "thinking_tokens": 0
       },

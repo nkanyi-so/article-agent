@@ -1,5 +1,5 @@
 {
-  "total_cost_usd": 0.4364,
+  "total_cost_usd": 0.4254,
   "drafts": [
     {
       "label": "t1-sentence-opus-low",
@@ -527,40 +527,47 @@
       "thinking_requested": "adaptive",
       "thinking_blocks": 0,
       "thinking_tokens": 0,
-      "input_tokens": 2222,
-      "output_tokens": 587,
-      "cost_usd": 0.020628,
-      "latency_s": 5.57,
-      "article_words": 197,
+      "input_tokens": 2226,
+      "output_tokens": 647,
+      "cost_usd": 0.021844,
+      "latency_s": 5.41,
+      "article_words": 187,
       "paragraphs": 4,
-      "text_blocks": 18,
-      "cited_blocks": 9,
-      "uncited_blocks_with_words": 7,
-      "uncited_blocks_whitespace_only": 2,
-      "share_of_words_uncited": 0.411,
+      "text_blocks": 28,
+      "cited_blocks": 14,
+      "uncited_blocks_with_words": 14,
+      "uncited_blocks_whitespace_only": 0,
+      "share_of_words_uncited": 0.476,
       "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in record third quarter",
       "headline_cited": false,
-      "sentences_per_cited_block_max": 2,
-      "cited_blocks_with_more_than_one_sentence": 1,
+      "sentences_per_cited_block_max": 1,
+      "cited_blocks_with_more_than_one_sentence": 0,
       "citations_per_cited_block_mean": 1,
-      "span_blocks_max": 2,
-      "span_blocks_mean": 1.56,
-      "cited_text_words_mean": 15.3,
-      "cited_text_words_max": 22,
+      "span_blocks_max": 1,
+      "span_blocks_mean": 1,
+      "cited_text_words_mean": 10.2,
+      "cited_text_words_max": 18,
       "cited_blocks_failing_number_check": [],
       "cited_blocks_failing_quote_check": [],
       "cited_blocks_failing_name_check": [],
       "uncited_text": [
-        "Hartwell Lane Bakery Supply ships 4,300 pallets in record third quarter\n\nHartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, according to Samir Vale, speaking at the company's operations review led by Dana Whitlock. Vale initially gave a higher figure but corrected it, saying",
-        "Whitlock noted that this left the company",
-        ", which Vale confirmed.\n\nVale said",
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in record third quarter\n\nSamir Vale told Hartwell Lane Bakery Supply's third-quarter operations review that",
+        ". He first gave a figure of 4,800, then corrected himself, saying",
+        "Dana Whitlock noted the company was",
+        ". Vale said",
         "Joss Tennant said the corrected figure",
-        "Asked by Tennant what held it back, Vale pointed",
-        "He said",
-        "On flour prices, Whitlock said"
+        "he had seen.\n\nVale reported that",
+        ", adding that",
+        "He attributed the shortfall",
+        "to the Pellowmere depot, which",
+        "According to Vale,",
+        ", and he said he",
+        "Asked by Tennant about the flour price, Whitlock said",
+        "and",
+        "Whitlock said the group"
       ],
       "mentions_4800": [
-        "Vale initially gave a higher figure but corrected it, saying \"We shipped 4,300 pallets in the quarter, not 4,800.\" \"The 4,800 was the forecast.\" Whitlock noted that this left the company 500 pallets under forecast, which Vale confirmed."
+        "He first gave a figure of 4,800, then corrected himself, saying the 4,800 was the forecast."
       ]
     },
     {
@@ -570,50 +577,50 @@
       "effort": "medium",
       "thinking_requested": "adaptive",
       "thinking_blocks": 1,
-      "thinking_tokens": 644,
-      "input_tokens": 2222,
-      "output_tokens": 1421,
-      "cost_usd": 0.037308,
-      "latency_s": 12.42,
-      "article_words": 242,
+      "thinking_tokens": 490,
+      "input_tokens": 2226,
+      "output_tokens": 1252,
+      "cost_usd": 0.033944,
+      "latency_s": 10.45,
+      "article_words": 222,
       "paragraphs": 5,
-      "text_blocks": 31,
-      "cited_blocks": 15,
+      "text_blocks": 32,
+      "cited_blocks": 16,
       "uncited_blocks_with_words": 16,
       "uncited_blocks_whitespace_only": 0,
-      "share_of_words_uncited": 0.599,
-      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter to date",
+      "share_of_words_uncited": 0.536,
+      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in third quarter, 500 short of forecast",
       "headline_cited": false,
       "sentences_per_cited_block_max": 1,
       "cited_blocks_with_more_than_one_sentence": 0,
       "citations_per_cited_block_mean": 1,
       "span_blocks_max": 1,
       "span_blocks_mean": 1,
-      "cited_text_words_mean": 10.4,
+      "cited_text_words_mean": 10.2,
       "cited_text_words_max": 18,
       "cited_blocks_failing_number_check": [],
       "cited_blocks_failing_quote_check": [],
       "cited_blocks_failing_name_check": [],
       "uncited_text": [
-        "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter to date\n\nHartwell Lane Bakery Supply",
-        ", Samir Vale told",
-        ", which Dana Whitlock opened. Vale first gave a figure of 4,800 pallets, then corrected it, saying",
-        ". Whitlock said the company was therefore",
-        ", and Vale confirmed this.\n\nVale said",
-        ". Joss Tennant, who had asked for the second-quarter figure, said the corrected number",
-        ".\n\nOn-time delivery for the quarter",
-        ", according to Vale, who said",
-        ". Asked by Tennant what held it back, Vale said the cause was",
-        ", which",
-        ".\n\nIn response to a question from Whitlock about what is being done at Redgate, Vale said",
-        ". He added that he expects",
-        ".\n\nTennant also raised the price of flour. Whitlock said",
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in third quarter, 500 short of forecast\n\nHartwell Lane Bakery Supply shipped",
+        ", Samir Vale told the company's",
+        ". Vale had first given a figure of 4,800 pallets but later corrected it, explaining that",
+        "Dana Whitlock noted that the company was therefore",
+        ", which Vale confirmed.\n\nVale said the result",
+        "Joss Tennant said the corrected figure",
+        "On-time delivery fell slightly short of its goal. Vale reported that",
+        ", adding that",
+        "Asked by Tennant what held it back, Vale pointed",
+        "to the Pellowmere depot, which",
+        "Vale said",
         "and that",
-        ". Tennant said that answered the outstanding questions, and Whitlock closed the review by saying the group",
-        "."
+        "On flour costs, raised by Tennant, Whitlock said",
+        "According to Whitlock,",
+        "Tennant said",
+        ", and Whitlock closed the review by saying the group would"
       ],
       "mentions_4800": [
-        "Vale first gave a figure of 4,800 pallets, then corrected it, saying the 4,800 was the forecast."
+        "Vale had first given a figure of 4,800 pallets but later corrected it, explaining that the 4,800 was the forecast."
       ]
     },
     {
@@ -624,25 +631,25 @@
       "thinking_requested": "adaptive",
       "thinking_blocks": 0,
       "thinking_tokens": 0,
-      "input_tokens": 2305,
-      "output_tokens": 651,
-      "cost_usd": 0.01112,
-      "latency_s": 4.98,
-      "article_words": 198,
+      "input_tokens": 2309,
+      "output_tokens": 664,
+      "cost_usd": 0.011258,
+      "latency_s": 4.35,
+      "article_words": 195,
       "paragraphs": 5,
-      "text_blocks": 24,
-      "cited_blocks": 12,
-      "uncited_blocks_with_words": 4,
-      "uncited_blocks_whitespace_only": 8,
-      "share_of_words_uncited": 0.141,
-      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in third quarter, a record but short of forecast",
+      "text_blocks": 26,
+      "cited_blocks": 13,
+      "uncited_blocks_with_words": 2,
+      "uncited_blocks_whitespace_only": 11,
+      "share_of_words_uncited": 0.082,
+      "headline": "Hartwell Lane Bakery Supply posts best quarter despite shipments falling short of forecast",
       "headline_cited": false,
       "sentences_per_cited_block_max": 1,
       "cited_blocks_with_more_than_one_sentence": 0,
-      "citations_per_cited_block_mean": 1.08,
+      "citations_per_cited_block_mean": 1,
       "span_blocks_max": 2,
-      "span_blocks_mean": 1.31,
-      "cited_text_words_mean": 13.9,
+      "span_blocks_mean": 1.38,
+      "cited_text_words_mean": 12.8,
       "cited_text_words_max": 19,
       "cited_blocks_failing_number_check": [],
       "cited_blocks_failing_quote_check": [],
@@ -655,16 +662,20 @@
             "Bakery",
             "Supply"
           ]
+        },
+        {
+          "text": "Vale said both driver positions at Pellowmere were filled in September.",
+          "missing": [
+            "Pellowmere"
+          ]
         }
       ],
       "uncited_text": [
-        "Hartwell Lane Bakery Supply ships 4,300 pallets in third quarter, a record but short of forecast",
-        ", but",
-        "On flour pricing,",
-        "Joss Tennant asked questions during the review."
+        "Hartwell Lane Bakery Supply posts best quarter despite shipments falling short of forecast",
+        "On flour prices,"
       ],
       "mentions_4800": [
-        "He first gave the figure as 4,800 pallets, but corrected himself, saying he had given the wrong number and that 4,800 was the forecast."
+        "The 4,800 figure he first stated was the forecast."
       ]
     },
     {
@@ -675,25 +686,25 @@
       "thinking_requested": "adaptive",
       "thinking_blocks": 0,
       "thinking_tokens": 0,
-      "input_tokens": 2305,
-      "output_tokens": 633,
-      "cost_usd": 0.01094,
-      "latency_s": 4.91,
-      "article_words": 192,
+      "input_tokens": 2309,
+      "output_tokens": 604,
+      "cost_usd": 0.010658,
+      "latency_s": 4.18,
+      "article_words": 191,
       "paragraphs": 5,
-      "text_blocks": 24,
-      "cited_blocks": 12,
-      "uncited_blocks_with_words": 4,
-      "uncited_blocks_whitespace_only": 8,
-      "share_of_words_uncited": 0.099,
-      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet",
+      "text_blocks": 20,
+      "cited_blocks": 10,
+      "uncited_blocks_with_words": 3,
+      "uncited_blocks_whitespace_only": 7,
+      "share_of_words_uncited": 0.136,
+      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter, just under on-time target",
       "headline_cited": false,
       "sentences_per_cited_block_max": 1,
       "cited_blocks_with_more_than_one_sentence": 0,
-      "citations_per_cited_block_mean": 1.08,
+      "citations_per_cited_block_mean": 1.1,
       "span_blocks_max": 2,
-      "span_blocks_mean": 1.38,
-      "cited_text_words_mean": 14.5,
+      "span_blocks_mean": 1.45,
+      "cited_text_words_mean": 14.9,
       "cited_text_words_max": 22,
       "cited_blocks_failing_number_check": [],
       "cited_blocks_failing_quote_check": [],
@@ -709,13 +720,12 @@
         }
       ],
       "uncited_text": [
-        "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet",
-        ", but",
-        "On flour prices,",
-        "after the review."
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter, just under on-time target",
+        "He had first given a figure of 4,800, but",
+        "On flour prices,"
       ],
       "mentions_4800": [
-        "He first gave the figure as 4,800, but corrected himself, saying he had given the wrong number and that 4,800 was the forecast."
+        "He had first given a figure of 4,800, but corrected himself, saying the 4,800 was the forecast."
       ]
     },
     {
@@ -725,22 +735,22 @@
       "effort": "medium",
       "thinking_requested": "adaptive",
       "thinking_blocks": 1,
-      "thinking_tokens": 528,
-      "input_tokens": 1890,
-      "output_tokens": 1184,
-      "cost_usd": 0.03124,
-      "latency_s": 11.23,
-      "article_words": 220,
+      "thinking_tokens": 74,
+      "input_tokens": 1894,
+      "output_tokens": 755,
+      "cost_usd": 0.022676,
+      "latency_s": 6.86,
+      "article_words": 237,
       "paragraphs": 5,
       "text_blocks": 20,
       "cited_blocks": 10,
       "uncited_blocks_with_words": 10,
       "uncited_blocks_whitespace_only": 0,
-      "share_of_words_uncited": 0.486,
-      "headline": "Hartwell Lane Bakery Supply reports best quarter yet despite missing shipment forecast",
+      "share_of_words_uncited": 0.561,
+      "headline": "Hartwell Lane Bakery Supply reports best quarter despite missing shipment forecast",
       "headline_cited": false,
       "sentences_per_cited_block_max": 2,
-      "cited_blocks_with_more_than_one_sentence": 1,
+      "cited_blocks_with_more_than_one_sentence": 4,
       "citations_per_cited_block_mean": 1,
       "span_blocks_max": 1,
       "span_blocks_mean": 1,
@@ -750,20 +760,20 @@
       "cited_blocks_failing_quote_check": [],
       "cited_blocks_failing_name_check": [],
       "uncited_text": [
-        "Hartwell Lane Bakery Supply reports best quarter yet despite missing shipment forecast\n\nHartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, Samir Vale told the company's third-quarter operations review, chaired by Dana Whitlock. Vale corrected an earlier figure during the meeting, saying",
-        "Whitlock noted that",
-        "Vale said",
+        "Hartwell Lane Bakery Supply reports best quarter despite missing shipment forecast\n\nHartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, according to Samir Vale, who presented shipment figures at the company's third-quarter operations review chaired by Dana Whitlock. Vale initially gave a figure of 4,800 pallets but corrected himself, saying the company",
+        "Whitlock noted that this left the company",
+        "Vale said the result was",
         "Joss Tennant said the corrected figure",
         "On-time delivery fell just short of its goal. Vale reported that",
         "Asked by Tennant what held it back, Vale pointed",
-        "Responding to Whitlock's question about the depot, Vale said",
-        "and that",
-        "On flour costs, Whitlock said",
-        "Tennant said that answer provided everything needed from the review.\n\nWhitlock closed the meeting by saying"
+        "When Whitlock asked what was being done about Pellowmere, Vale said",
+        "He added that he expects",
+        "Responding to a question from Tennant about the flour price, Whitlock said",
+        "Tennant said he had what he needed, and Whitlock said the group would"
       ],
       "mentions_4800": [
-        "Vale corrected an earlier figure during the meeting, saying \"We shipped 4,300 pallets in the quarter, not 4,800.",
-        "The 4,800 was the forecast.\""
+        "Vale initially gave a figure of 4,800 pallets but corrected himself, saying the company shipped 4,300 pallets in the quarter, not 4,800.",
+        "The 4,800 was the forecast."
       ]
     },
     {
@@ -774,18 +784,18 @@
       "thinking_requested": "adaptive",
       "thinking_blocks": 0,
       "thinking_tokens": 0,
-      "input_tokens": 1973,
-      "output_tokens": 618,
-      "cost_usd": 0.010126,
-      "latency_s": 4.21,
-      "article_words": 200,
+      "input_tokens": 1977,
+      "output_tokens": 593,
+      "cost_usd": 0.009884,
+      "latency_s": 4.83,
+      "article_words": 188,
       "paragraphs": 5,
       "text_blocks": 22,
       "cited_blocks": 11,
-      "uncited_blocks_with_words": 1,
-      "uncited_blocks_whitespace_only": 10,
-      "share_of_words_uncited": 0.055,
-      "headline": "Hartwell Lane Bakery Supply ships record 4,300 pallets in third quarter",
+      "uncited_blocks_with_words": 2,
+      "uncited_blocks_whitespace_only": 9,
+      "share_of_words_uncited": 0.074,
+      "headline": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet",
       "headline_cited": false,
       "sentences_per_cited_block_max": 1,
       "cited_blocks_with_more_than_one_sentence": 0,
@@ -798,7 +808,7 @@
       "cited_blocks_failing_quote_check": [],
       "cited_blocks_failing_name_check": [
         {
-          "text": "Samir Vale told the third-quarter operations review that Hartwell Lane Bakery Supply shipped 4,300 pallets in the quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
+          "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
           "missing": [
             "Hartwell",
             "Lane",
@@ -808,10 +818,11 @@
         }
       ],
       "uncited_text": [
-        "Hartwell Lane Bakery Supply ships record 4,300 pallets in third quarter"
+        "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet",
+        "On flour prices,"
       ],
       "mentions_4800": [
-        "Samir Vale told the third-quarter operations review that Hartwell Lane Bakery Supply shipped 4,300 pallets in the quarter, correcting an earlier figure of 4,800, which he said was the forecast."
+        "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, correcting an earlier figure of 4,800, which he said was the forecast."
       ]
     }
   ],
@@ -830,12 +841,12 @@
     {
       "kind": "extract",
       "label": "t2-sonnet-low",
-      "cost_usd": 0.007972,
-      "latency_s": 4.37,
+      "cost_usd": 0.00808,
+      "latency_s": 4.06,
       "model_served": "claude-sonnet-5-5",
       "stop_reason": "end_turn",
-      "input_tokens": 1686,
-      "output_tokens": 460,
+      "input_tokens": 1690,
+      "output_tokens": 470,
       "thinking_tokens": 0
     },
     {
@@ -1288,43 +1299,29 @@
     },
     {
       "label": "t2-sentence-opus-low",
-      "sentences": 11,
-      "sentences_with_no_citation": 1,
+      "sentences": 10,
+      "sentences_with_no_citation": 0,
       "sentences_failing_numbers": 0,
       "sentences_failing_names": 2,
-      "sentences_failing_names_if_title_counts": 2,
+      "sentences_failing_names_if_title_counts": 1,
       "kept_strict": 8,
-      "kept_if_title_counts": 8,
-      "words_kept_strict_share": 0.661,
-      "words_kept_if_title_counts_share": 0.661,
+      "kept_if_title_counts": 9,
+      "words_kept_strict_share": 0.75,
+      "words_kept_if_title_counts_share": 0.858,
       "removed_strict": [
         {
-          "text": "Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, according to Samir Vale, speaking at the company's operations review led by Dana Whitlock.",
-          "cited": false,
-          "missing_numbers": [
-            "4,300"
-          ],
+          "text": "Samir Vale told Hartwell Lane Bakery Supply's third-quarter operations review that the company shipped 4,300 pallets in the quarter.",
+          "cited": true,
+          "missing_numbers": [],
           "missing_names": [
             "Hartwell",
             "Lane",
             "Bakery",
-            "Supply",
-            "Samir",
-            "Vale",
-            "Dana",
-            "Whitlock"
+            "Supply"
           ]
         },
         {
-          "text": "Whitlock noted that this left the company 500 pallets under forecast, which Vale confirmed.",
-          "cited": true,
-          "missing_numbers": [],
-          "missing_names": [
-            "Vale"
-          ]
-        },
-        {
-          "text": "Asked by Tennant what held it back, Vale pointed mostly to the Redgate depot, which was short of two drivers for most of August.",
+          "text": "Asked by Tennant about the flour price, Whitlock said the new contract starts on the first of November and fixes the price for twelve months.",
           "cited": true,
           "missing_numbers": [],
           "missing_names": [
@@ -1338,15 +1335,15 @@
       "sentences": 12,
       "sentences_with_no_citation": 1,
       "sentences_failing_numbers": 0,
-      "sentences_failing_names": 4,
-      "sentences_failing_names_if_title_counts": 4,
-      "kept_strict": 7,
-      "kept_if_title_counts": 7,
-      "words_kept_strict_share": 0.604,
-      "words_kept_if_title_counts_share": 0.604,
+      "sentences_failing_names": 3,
+      "sentences_failing_names_if_title_counts": 3,
+      "kept_strict": 8,
+      "kept_if_title_counts": 8,
+      "words_kept_strict_share": 0.692,
+      "words_kept_if_title_counts_share": 0.692,
       "removed_strict": [
         {
-          "text": "Whitlock said the company was therefore 500 pallets under forecast, and Vale confirmed this.",
+          "text": "Dana Whitlock noted that the company was therefore 500 pallets under forecast, which Vale confirmed.",
           "cited": true,
           "missing_numbers": [],
           "missing_names": [
@@ -1354,32 +1351,21 @@
           ]
         },
         {
-          "text": "Asked by Tennant what held it back, Vale said the cause was mostly the Redgate depot, which was short of two drivers for most of August.",
-          "cited": true,
-          "missing_numbers": [],
-          "missing_names": [
-            "Tennant"
-          ]
-        },
-        {
-          "text": "In response to a question from Whitlock about what is being done at Redgate, Vale said both driver positions were filled in September.",
-          "cited": true,
-          "missing_numbers": [],
-          "missing_names": [
-            "Whitlock",
-            "Redgate"
-          ]
-        },
-        {
-          "text": "Tennant also raised the price of flour.",
+          "text": "On-time delivery fell slightly short of its goal.",
           "cited": false,
           "missing_numbers": [],
+          "missing_names": []
+        },
+        {
+          "text": "Asked by Tennant what held it back, Vale pointed mostly to the Pellowmere depot, which was short of two drivers for most of August.",
+          "cited": true,
+          "missing_numbers": [],
           "missing_names": [
             "Tennant"
           ]
         },
         {
-          "text": "Tennant said that answered the outstanding questions, and Whitlock closed the review by saying the group will meet again in January.",
+          "text": "On flour costs, raised by Tennant, Whitlock said the new contract starts on the first of November.",
           "cited": true,
           "missing_numbers": [],
           "missing_names": [
@@ -1390,15 +1376,15 @@
     },
     {
       "label": "t2-sentence-sonnet-low",
-      "sentences": 12,
-      "sentences_with_no_citation": 1,
+      "sentences": 13,
+      "sentences_with_no_citation": 0,
       "sentences_failing_numbers": 0,
-      "sentences_failing_names": 1,
-      "sentences_failing_names_if_title_counts": 0,
-      "kept_strict": 10,
-      "kept_if_title_counts": 11,
-      "words_kept_strict_share": 0.885,
-      "words_kept_if_title_counts_share": 0.962,
+      "sentences_failing_names": 2,
+      "sentences_failing_names_if_title_counts": 1,
+      "kept_strict": 11,
+      "kept_if_title_counts": 12,
+      "words_kept_strict_share": 0.863,
+      "words_kept_if_title_counts_share": 0.94,
       "removed_strict": [
         {
           "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter.",
@@ -1412,26 +1398,25 @@
           ]
         },
         {
-          "text": "Joss Tennant asked questions during the review.",
-          "cited": false,
+          "text": "Vale said both driver positions at Pellowmere were filled in September.",
+          "cited": true,
           "missing_numbers": [],
           "missing_names": [
-            "Joss",
-            "Tennant"
+            "Pellowmere"
           ]
         }
       ]
     },
     {
       "label": "t2-sentence-sonnet-medium",
-      "sentences": 11,
+      "sentences": 10,
       "sentences_with_no_citation": 0,
       "sentences_failing_numbers": 0,
       "sentences_failing_names": 1,
       "sentences_failing_names_if_title_counts": 0,
-      "kept_strict": 10,
-      "kept_if_title_counts": 11,
-      "words_kept_strict_share": 0.923,
+      "kept_strict": 9,
+      "kept_if_title_counts": 10,
+      "words_kept_strict_share": 0.921,
       "words_kept_if_title_counts_share": 1.0,
       "removed_strict": [
         {
@@ -1449,18 +1434,18 @@
     },
     {
       "label": "t2-turn-opus-medium",
-      "sentences": 13,
-      "sentences_with_no_citation": 3,
+      "sentences": 16,
+      "sentences_with_no_citation": 2,
       "sentences_failing_numbers": 0,
-      "sentences_failing_names": 2,
-      "sentences_failing_names_if_title_counts": 2,
-      "kept_strict": 8,
-      "kept_if_title_counts": 8,
-      "words_kept_strict_share": 0.543,
-      "words_kept_if_title_counts_share": 0.543,
+      "sentences_failing_names": 4,
+      "sentences_failing_names_if_title_counts": 4,
+      "kept_strict": 10,
+      "kept_if_title_counts": 10,
+      "words_kept_strict_share": 0.531,
+      "words_kept_if_title_counts_share": 0.531,
       "removed_strict": [
         {
-          "text": "Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, Samir Vale told the company's third-quarter operations review, chaired by Dana Whitlock.",
+          "text": "Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, according to Samir Vale, who presented shipment figures at the company's third-quarter operations review chaired by Dana Whitlock.",
           "cited": false,
           "missing_numbers": [
             "4,300"
@@ -1483,7 +1468,7 @@
           "missing_names": []
         },
         {
-          "text": "Asked by Tennant what held it back, Vale pointed mostly to the Redgate depot, which was short of two drivers for most of August.",
+          "text": "Asked by Tennant what held it back, Vale pointed mostly the Pellowmere depot.",
           "cited": true,
           "missing_numbers": [],
           "missing_names": [
@@ -1491,16 +1476,25 @@
           ]
         },
         {
-          "text": "Responding to Whitlock's question about the depot, Vale said both driver positions were filled in September and that he expects on-time delivery back at 95 percent or better this quarter.",
+          "text": "When Whitlock asked what was being done about Pellowmere, Vale said both driver positions were filled in September.",
           "cited": true,
           "missing_numbers": [],
           "missing_names": [
-            "Whitlock"
+            "Whitlock",
+            "Pellowmere"
           ]
         },
         {
-          "text": "Tennant said that answer provided everything needed from the review.",
-          "cited": false,
+          "text": "Responding to a question from Tennant about the flour price, Whitlock said the new contract starts on the first of November.",
+          "cited": true,
+          "missing_numbers": [],
+          "missing_names": [
+            "Tennant"
+          ]
+        },
+        {
+          "text": "Tennant said he had what he needed, and Whitlock said the group would meet again in January.",
+          "cited": true,
           "missing_numbers": [],
           "missing_names": [
             "Tennant"
@@ -1517,11 +1511,11 @@
       "sentences_failing_names_if_title_counts": 0,
       "kept_strict": 10,
       "kept_if_title_counts": 11,
-      "words_kept_strict_share": 0.841,
+      "words_kept_strict_share": 0.853,
       "words_kept_if_title_counts_share": 1.0,
       "removed_strict": [
         {
-          "text": "Samir Vale told the third-quarter operations review that Hartwell Lane Bakery Supply shipped 4,300 pallets in the quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
+          "text": "Samir Vale said Hartwell Lane Bakery Supply shipped 4,300 pallets in the third quarter, correcting an earlier figure of 4,800, which he said was the forecast.",
           "cited": true,
           "missing_numbers": [],
           "missing_names": [

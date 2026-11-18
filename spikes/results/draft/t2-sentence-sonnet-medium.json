@@ -71,7 +71,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "Samir Vale: Mostly the Redgate depot."
+                  "text": "Samir Vale: Mostly the Pellowmere depot."
                 },
                 {
                   "type": "text",
@@ -111,7 +111,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "Dana Whitlock: What are we doing about Redgate?"
+                  "text": "Dana Whitlock: What are we doing about Pellowmere?"
                 },
                 {
                   "type": "text",
@@ -164,15 +164,15 @@
       }
     ]
   },
-  "latency_s": 4.91,
-  "request_id": "req_011ChAvBfgUERYXjeEyBVxSd",
-  "cost_usd": 0.01094,
+  "latency_s": 4.18,
+  "request_id": "req_011ChAwrcHYdHQoBK3tkfsFp",
+  "cost_usd": 0.010658,
   "response": {
-    "id": "msg_011ChAvBfquNm8oN2p97JDVx",
+    "id": "msg_011ChAwrcnZ6jqsjHSoYWEDi",
     "container": null,
     "content": [
       {
-        "text": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter yet\n\n",
+        "text": "Hartwell Lane Bakery Supply ships 4,300 pallets in best quarter, just under on-time target\n\n",
         "type": "text"
       },
       {
@@ -190,35 +190,17 @@
         "type": "text"
       },
       {
-        "text": " ",
+        "text": " He had first given a figure of 4,800, but ",
         "type": "text"
       },
       {
         "citations": [
           {
-            "cited_text": "Samir Vale: We shipped 4,800 pallets in the quarter, which is our best quarter so far.",
+            "cited_text": "Samir Vale: Sorry, I need to correct something.",
             "document_index": 0,
             "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
-            "end_block_index": 5,
-            "start_block_index": 4,
-            "type": "content_block_location"
-          }
-        ],
-        "text": "He first gave the figure as 4,800",
-        "type": "text"
-      },
-      {
-        "text": ", but ",
-        "type": "text"
-      },
-      {
-        "citations": [
-          {
-            "cited_text": "Samir Vale: I gave you the wrong shipment number.",
-            "document_index": 0,
-            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
-            "end_block_index": 16,
-            "start_block_index": 15,
+            "end_block_index": 15,
+            "start_block_index": 14,
             "type": "content_block_location"
           },
           {
@@ -230,7 +212,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "corrected himself, saying he had given the wrong number and that 4,800 was the forecast.",
+        "text": "corrected himself, saying the 4,800 was the forecast.",
         "type": "text"
       },
       {
@@ -248,7 +230,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Dana Whitlock noted that left the company 500 pallets under forecast, and Vale agreed.",
+        "text": "Dana Whitlock noted that left shipments 500 pallets under forecast, and Vale agreed.",
         "type": "text"
       },
       {
@@ -266,7 +248,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Vale said it is still the best quarter, because 4,300 is above the 3,900 from the second quarter.",
+        "text": "Vale said it is still the company's best quarter, because 4,300 is above the 3,900 pallets shipped in the second quarter.",
         "type": "text"
       },
       {
@@ -294,7 +276,7 @@
       {
         "citations": [
           {
-            "cited_text": "Samir Vale: Mostly the Redgate depot.Samir Vale: It was short of two drivers for most of August.",
+            "cited_text": "Samir Vale: Mostly the Pellowmere depot.Samir Vale: It was short of two drivers for most of August.",
             "document_index": 0,
             "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
             "end_block_index": 14,
@@ -302,7 +284,7 @@
             "type": "content_block_location"
           }
         ],
-        "text": "He blamed mostly the Redgate depot, which was short of two drivers for most of August.",
+        "text": "He said the shortfall was mostly due to the Pellowmere depot, which was short of two drivers for most of August.",
         "type": "text"
       },
       {
@@ -356,29 +338,11 @@
             "type": "content_block_location"
           }
         ],
-        "text": "Joss Tennant said the corrected shipment figure made more sense against the invoices he had seen.",
+        "text": "Joss Tennant, who asked about the figures, said the corrected shipment number made more sense against the invoices he had seen.",
         "type": "text"
       },
       {
         "text": " ",
-        "type": "text"
-      },
-      {
-        "citations": [
-          {
-            "cited_text": "Joss Tennant: Then I have what I need.",
-            "document_index": 0,
-            "document_title": "Hartwell Lane Bakery Supply: third-quarter operations review",
-            "end_block_index": 29,
-            "start_block_index": 28,
-            "type": "content_block_location"
-          }
-        ],
-        "text": "He said he had what he needed",
-        "type": "text"
-      },
-      {
-        "text": " after the review. ",
         "type": "text"
       },
       {
@@ -411,8 +375,8 @@
       "cache_creation_input_tokens": 0,
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
-      "input_tokens": 2305,
-      "output_tokens": 633,
+      "input_tokens": 2309,
+      "output_tokens": 604,
       "output_tokens_details": {
         "thinking_tokens": 0
       },
