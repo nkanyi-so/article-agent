@@ -2,7 +2,7 @@
  * docs/decisions/0015. Kept in one place. */
 
 export const CLAIM =
-  "Every sentence of the article points at the transcript lines behind it. Code removes any sentence whose numbers, dates, names or quotations are not in those lines or their speaker labels. A judge model then reads each sentence that is left against its lines and flags the ones it finds unsupported, and every flag is shown to the reader.";
+  "Every sentence of the article points at the transcript lines behind it. Code removes any sentence in which a number, date, name or quotation it can read is not in those lines or their speaker labels. A judge model then reads each sentence that is left against its lines and flags the ones it finds unsupported, and every flag is shown to the reader.";
 
 /**
  * Whether an address may start a run by itself (`?start=`, `?rerun=`). Only on a server

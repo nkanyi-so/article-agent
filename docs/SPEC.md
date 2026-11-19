@@ -4,7 +4,7 @@ Written by the intake on 2026-11-18 from `BRIEF.md`. Status: approved by the own
 
 ## Claim
 
-Given a meeting or interview transcript, it writes a short article of which this is true: **Every sentence of the article points at the transcript lines behind it. Code removes any sentence whose numbers, dates, names or quotations are not in those lines or their speaker labels. A judge model then reads each sentence that is left against its lines and flags the ones it finds unsupported, and every flag is shown to the reader.**
+Given a meeting or interview transcript, it writes a short article of which this is true: **Every sentence of the article points at the transcript lines behind it. Code removes any sentence in which a number, date, name or quotation it can read is not in those lines or their speaker labels. A judge model then reads each sentence that is left against its lines and flags the ones it finds unsupported, and every flag is shown to the reader.**
 
 What that does and does not say (`decisions/0015`). It does not say the model added nothing. Code can only see what is missing from the cited lines: a figure, a date, a name, quoted words. It cannot see a role nobody stated, a cause the speaker did not give, or a comparison in a headline; in the third judged run the judge flagged about one sentence in twenty-five for reasons of that kind (`decisions/0014`). Those sentences stay in the article, marked, with the judge's reason beside them. The headline cites no lines of its own: code checks it against the sentences that were kept, and the judge reads it against the whole kept article. Sentences that code removed are listed with the reason.
 

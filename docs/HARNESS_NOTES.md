@@ -93,3 +93,8 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-19. A phase whose gate is "verified on the hosted address" cannot pass before its own merge when a merge is the only way to deploy. The plan should either allow a preview that the check can run against (the preview frontend cannot call the preview backend here: CORS and the API address are production's) or word the gate as "after merge".
 - 2026-11-19. A real-browser check written as a small script over the DevTools protocol, with no dependency, found two faults the screenshots and the logic tests had not: the run that could not be opened, and a page wider than a phone's screen. It also had four faults of its own first (clicking the middle of a wrapped sentence, reading capitals as mixed case). A check needs checking against a page known to be right.
 
+## Phase 9, harness 0.3.0
+
+- 2026-11-19. Asking the reviewer to find any README sentence the code does not back found six, one of them the claim's own reach. A README is a deliverable with claims in it; it should get the same adversarial read as code, as a standing step.
+- 2026-11-19. A test now holds the claim's wording to the decision record in three places (the screen, the README, the record). Wording that matters should be pinned the way a threshold is.
+

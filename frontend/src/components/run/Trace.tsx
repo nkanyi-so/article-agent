@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
 import { CodeWell } from "@/components/primitives/CodeWell";
+import { stageSummary } from "@/lib/article";
 import { formatDuration } from "@/lib/format";
 import type { RunDetail, StageName } from "@/lib/types";
 import { STAGE_WORDS } from "./LiveStages";
@@ -35,6 +36,7 @@ export function Trace({
         {run.stages.map((stage, position) => {
           const call = run.model_calls.find((c) => c.stage === stage.name);
           const expanded = open === stage.name;
+          const summary = stageSummary(stage);
           return (
             <li key={stage.name} style={{ border: "1px solid var(--border)", borderRadius: 8, background: "var(--surface2)" }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, padding: "10px 12px" }}>
@@ -55,14 +57,15 @@ export function Trace({
                       : ""}
                 </span>
                 <Button variant="ghost" onClick={() => setOpen(expanded ? null : stage.name)} aria-expanded={expanded}>
-                  {expanded ? "Hide" : "Show"} input and output
+                  {expanded ? "Hide" : "Show"} the raw record
                 </Button>
                 <Button variant="secondary" disabled={busy} onClick={() => onReplay(stage.name)}>
                   Re-run from here
                 </Button>
               </div>
-              {(stage.copied_from_run_id || call) && (
+              {(stage.copied_from_run_id || call || summary) && (
                 <div style={{ padding: "0 12px 10px 36px", fontSize: 12.5, color: "var(--text3)", lineHeight: 1.6 }}>
+                  {summary && <div style={{ color: "var(--text2)" }}>{summary}</div>}
                   {stage.copied_from_run_id && <div>Copied from run {stage.copied_from_run_id}; not run again.</div>}
                   {call && (
                     <div>
