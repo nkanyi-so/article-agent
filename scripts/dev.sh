@@ -19,7 +19,10 @@ stop_all() {
 trap stop_all INT TERM EXIT
 
 set -m
-(cd "$root/backend" && APP_MODE=demo exec uv run --locked uvicorn app.main:create_app --factory --reload --port 8000) &
+# Demo mode replays recordings instantly. Locally it waits a quarter of the time each
+# recorded call really took, so a run's stages can be watched as they arrive.
+(cd "$root/backend" && APP_MODE=demo APP_REPLAY_LATENCY="${APP_REPLAY_LATENCY:-0.25}" \
+  exec uv run --locked uvicorn app.main:create_app --factory --reload --port 8000) &
 pids+=("$!")
 (cd "$root/frontend" && exec "$root/scripts/with-node.sh" npm run dev) &
 pids+=("$!")
