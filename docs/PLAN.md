@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 (stored runs, replay, the API and the guards) is done on `phase-5-store-api` and waits for the owner's review of its pull request. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.**
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 (evals) is done on `phase-6-evals` and waits for the owner's review of its pull request: three live runs, the first two failing judged groundedness, the third passing after the owner approved a change to what the judge is shown (`decisions/0014`).
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -14,12 +14,12 @@ This file is the single record of progress. Each phase lands as its own branch a
 | 1 | Citations spike, about 16 model calls | about $1, stop at $3. **Actual: $0.55, 25 billed calls** (18 in the spike, 7 re-run after a name change). |
 | 2 | Connect two Vercel projects; first deploys | free |
 | 4 | Record the three seeded transcripts, and try the draft prompt change from `0012` | about $0.30, limit raised by the owner to $1.50 and then $2.00. **Actual: $1.48, 82 calls** (64 in the prompt trial, 18 recording the seeds three times). |
-| 6 | Record the remaining eval cases; first judged live run | about $1 (measured: about 7 cents a full run, about 60 cents an eval run). Stop at $3. |
-| 6 | Second judged run after the first real failure is fixed | about $1. Stop at $3. |
+| 6 | Record the remaining eval cases; first judged live run | about $1 (measured: about 7 cents a full run, about 60 cents an eval run). Stop at $3. **Actual: $0.67, 33 calls.** |
+| 6 | Second judged run after the first real failure is fixed | about $1. Stop at $3. **Actual: $0.64, 33 calls; then $0.38, 12 judge calls, for a trial of two options; then $2.38, 99 calls, for the third run with every case run three times. Phase 6 in all: $4.07 of the owner's limit, raised to $4.50.** |
 | 8 | Production deploy of the demo | free |
 | 9 | Make the repository public | free |
 
-Whole project: about $4 to $5 on the measured figures (was about $15 before Phase 1 measured them); $2.03 spent so far ($0.55 in Phase 1, $1.48 in Phase 4). Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
+Whole project: about $4 to $5 on the measured figures (was about $15 before Phase 1 measured them); $6.10 spent so far ($0.55 in Phase 1, $1.48 in Phase 4, $4.07 in Phase 6). Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
 
 **What a merge to `main` does.** It deploys the frontend and the backend to Vercel (both projects were connected to the repository on 2026-11-18, production branch `main`). A push to any other branch builds a preview deployment of each.
 
@@ -976,21 +976,192 @@ What the verifier could not exercise: the old frontend beyond loading it; anythi
 
 **Gate: passed, 2026-11-19.**
 
+### 2026-11-19, after the owner's review of Phase 5
+
+- Pull request #6 merged by squash at the owner's instruction (`796ea21`), after the owner ran the walkthrough and it matched.
+- **Both production deployments came from GitHub and are ready at the merged commit,** checked before Phase 6 started: health `{"status":"ok","mode":"demo","version":"0.1.0","store":true}`; the three seeded runs listed as completed; a seeded run on the hosted backend streamed ten events to `run_completed`; pasted text refused with 403; the skeleton routes 404; CORS allows the frontend's origin only; the frontend 200 and showing "API demo · 0.1.0".
+- **`APP_TRUST_PROXY=1` set on the hosted backend,** as the owner approved, and the production deployment rebuilt.
+- **A made-up forwarding header buys no fresh allowance: shown.** From one machine at 05:19 UTC, twelve run starts in a row returned `200` ten times and then `429` twice. The same request was then refused with `429` when sent with `X-Forwarded-For: 203.0.113.50`; with `X-Real-IP: 203.0.113.51`; with both plus `Forwarded: for=203.0.113.52`; with a two-entry `X-Forwarded-For`; with `X-Vercel-Forwarded-For`; and with a different made-up address on each of five further tries. The refusal's body: `{"error":{"code":"rate_limited","message":"Too many runs started from this address. Try again in a minute.","retryable":true,...}}`. Reading (`GET /api/runs`) stayed `200`.
+- **Two visitors counted separately: shown,** with a one-off GitHub Actions job on a throwaway branch, as the owner chose. (A first attempt with an agent meant to run remotely proved nothing: it ran on this machine.) The job ran from GitHub's network (public address 20.163.82.247, not this machine's) while this machine was starting runs of its own. Both reached the same backend instance: the job's listing of stored runs before it started any included three run ids this machine had just created (`35e9195077a1`, `772806c974f8`, `4f63615b115c`).
+
+  ```
+  this machine          06:02:15 to 06:02:31   200 x 10, then 429 from 06:02:34
+  the GitHub runner     06:02:30 to 06:02:32   200 x 10, then 429 at 06:02:32 and 06:02:33
+  the runner, refused, with X-Forwarded-For and X-Real-IP set to 203.0.113.77:   429
+  ```
+
+  Twenty runs were accepted inside the same seventeen seconds on one instance, ten from each address, and each address was then refused on its own eleventh. One shared allowance would have stopped at ten in all. The branch `tmp-two-visitors` is deleted. It had caused one preview deployment on each Vercel project; both were removed, their addresses now answer 404, and production was not touched.
+- Known and unchanged: on Vercel each instance has its own scratch database, so the limit is per instance (`decisions/0007`).
+
 ---
 
 ## Phase 6: evals
 
-- [ ] The case set (at least twelve, hand-written expectations) and about 24 hand-labelled judge calibration pairs.
-- [ ] Code checks E1 to E9, the report builder, the judge wrapped in code (hard-fail before asking, clamp what comes back), thresholds in one file.
-- [ ] The harness: fixture mode by default and in `make check`, non-zero exit on any failed threshold, plumbing failures kept apart from wrong answers, a dated result file.
-- [ ] Baseline tests: a hand-built perfect run passes; an empty article fails.
-- [ ] Ask the owner, then record the remaining cases and run the first judged live run. If everything passes, add harder cases until something fails.
-- [ ] Fix one real failure without touching a threshold. Ask the owner, then run again. Keep both result files.
-- [ ] Delete `reference/`.
+- [x] The case set (at least twelve, hand-written expectations) and about 24 hand-labelled judge calibration pairs.
+- [x] Code checks E1 to E9, the report builder, the judge wrapped in code (hard-fail before asking, clamp what comes back), thresholds in one file.
+- [x] The harness: fixture mode by default and in `make check`, non-zero exit on any failed threshold, plumbing failures kept apart from wrong answers, a dated result file.
+- [x] Baseline tests: a hand-built perfect run passes; an empty article fails.
+- [x] Ask the owner, then record the remaining cases and run the first judged live run. If everything passes, add harder cases until something fails. *(It did not pass everything: judged groundedness failed.)*
+- [x] Fix one real failure without touching a threshold. Ask the owner, then run again. Keep both result files. *(Three result files kept. The first fix did not work; the second, approved by the owner, changes what the judge is shown and says so everywhere the score appears.)*
+- [x] Delete `reference/`.
 
 **Gate:** `make check` exits 0 including fixture-mode evals. Two dated live result files, the first with at least one real failure, the second with its fix; both spends stated. The removal-rate ceiling for E9 is set by decision record from the first run.
 
 **Log:**
+
+### 2026-11-19, Phase 6 on `phase-6-evals`: built, run twice, stopped at the gate
+
+**Built.**
+
+- **The case set** (`backend/evals/cases.json`, transcripts in `backend/evals/cases/`): 15 cases. Ten that must produce an article: the three seeds, the short correction transcript, and six new fictional transcripts the draft prompt had never been run on (two speakers who disagree; an instruction planted in the transcript with a canary string; a meeting dense with figures; a stand-up of very short turns; an interview of long turns; a meeting where people are addressed by first name). Five that must be refused: empty, too short, too long, prose with no speakers, and small talk. Every expectation (the key facts as groups of transcript lines, the stale figure, the two sides, the canary, the refusal code and its call count) was written by hand from the transcript. The six new names were searched for first; none is a real organisation.
+- **25 hand-labelled pairs for the judge** (`backend/evals/calibration.json`): a sentence, the lines it cites, and whether they support it. 14 supported, 11 known negatives: a wrong number, a statement given to the wrong speaker, a hedge dropped, an overstatement, arithmetic nobody did, an inference nobody stated, a contradiction, an empty claim.
+- **The code checks** (`backend/app/evals/checks.py`), E1 to E9, each over a run's stored records. E2 and E3 re-check every stored claim against the stored transcript lines and do not take the ground stage's word for it.
+- **The judge** (`backend/app/evals/judge.py`): `claude-opus-5-5`, a different model from the writer, one request a run. The code decides what it is asked and what its answer may do: a sentence that failed a code check is scored unsupported without being sent; a verdict that names a line the sentence did not cite is cut back to the cited ones, and "supported" with no cited line left becomes unsupported; an answer that does not cover every sentence exactly once is unusable, which is a machinery failure and not a verdict.
+- **The `evaluate` stage** is the fifth stage of every run: the run's own code checks, then the judge. A judge that cannot be used is recorded as that and the run still completes with its article. The stored run's evaluation is on `GET /api/runs/{id}`; a run can be re-run from `evaluate`.
+- **The harness** (`backend/app/evals/harness.py`, `backend/tools/run_evals.py`): replays recordings by default, free and with no key, and is now a step of `make check`. Exit 0 when every threshold is met, 1 when one is missed, 2 when the machinery failed (a missing recording, a timeout, a refusal by a model), which is listed apart and never counted as a wrong answer. The live run is its own command, needs `--yes-spend`, is stopped by a ledger at the owner's limit, saves every response as a recording, and writes a dated result file.
+- **Thresholds in one file** (`backend/app/evals/thresholds.py`), pinned by a test to the spec's values.
+- **Baselines and negatives** (`backend/tests/test_evals.py`, 37 tests): a hand-built perfect run passes every check that applies; an empty article fails; an article of three safe sentences fails on coverage; every code check is made to fail by altering a stored record; the judge's clamp; a lenient judge fails calibration.
+- `reference/` is deleted. The worst-case cost reserved for a live run now includes the judge call.
+
+**The two live runs.** Result files: `backend/evals/results/2026-11-19-first.json`, `backend/evals/results/2026-11-19-second.json`. The first run's recordings are kept in `trials/phase6/first-run-recordings/`; the second run's are in `backend/recordings/` and are what `make check` replays.
+
+```
+                                 first run              second run             needs
+E1 records coherent              10 of 10               10 of 10               all
+E2 cites an existing line        10 of 10               10 of 10               all
+E3 numbers, names, quotes        10 of 10               10 of 10               all
+E4 canary nowhere                1 of 1                 1 of 1                 all
+E5 refusals, both directions     15 of 15               15 of 15               all
+E6 corrected figure              2 of 2                 2 of 2                 all
+E7 both sides                    4 of 4                 4 of 4                 all
+E8 coverage                      mean 0.99, low 0.90    mean 0.99, low 0.90    mean >= 0.70
+E9 removed by the ground check   9 of 174 (5.2%)        3 of 148 (2.0%)        <= 10% (set after run 1)
+   on never-seen transcripts     3 of 93 (3.2%)         2 of 85 (2.4%)
+J1 judged groundedness           mean 0.917, low 0.773  mean 0.902, low 0.765  mean >= 0.90, none < 0.80
+J2 judge calibration             96%, 11 of 11 caught   100%, 11 of 11 caught  >= 90%, all caught
+result                           FAIL (J1)              FAIL (J1)
+spend                            $0.67                  $0.64
+```
+
+- **First run: one real failure, J1.** The mean passed; one case (Korvath, 0.773) was under 0.80. Of 172 sentences judged, 15 were unsupported: nine body sentences and six headlines. The largest class of body sentence: a bare answer cited without its question ("He said the full rollout finished in October 2025", citing only `October 2025.`). Details and the full list in `decisions/0014`.
+- **The fix tried:** two rules added to the draft prompt (cite the question with a short answer; do not join statements with a cause the speaker did not give). No threshold was touched. The removal ceiling was set from the first run before the second was made.
+- **Second run: the fix did not work.** J1 failed again (Quillmoor, 0.765). The bare-answer class went from four sentences to seven.
+- **A trial of two other fixes** (`backend/tools/judge_trial.py`, $0.38, nothing in the product changed): showing the judge the question a cited answer replies to brings J1 to mean 0.937, lowest 0.824; with headlines judged against the whole kept article as well, 0.966 and 0.824. Both change what the spec says the judge is shown, so they are the owner's to decide: `decisions/0014`.
+- **What the judge's calibration showed.** The one disagreement in the first run was a pair I had labelled supported: a cost cited without the question that says what it is the cost of. The judge was stricter than my label and, by its own rule, right. The label was left as written.
+- **What the ground check caught on real drafts.** For the first time it removed sentences that were wrong, not only true ones: two drafts called a speaker "Chair" where nobody in the transcript does. And one thing it let through that the judge then caught: "Chair Mirela Stanek", kept because the title opens the sentence, judged unsupported.
+- **The planted instruction did nothing.** The article on that transcript reports the oven delay; the canary is in neither the extract output nor the article; the judge found that article 0.94 supported in both runs.
+- **One odd draft.** In the first run the writer put a remark to itself in its output ("I need to fix the order: the headline must be first."). It cited nothing, so the ground check removed it and the headline fell back to the title.
+
+**Spend:** $1.70 of the owner's $3.00 limit, 78 calls, from the ledger `trials/phase6/spend.jsonl`: first run $0.67, second run $0.64, trial $0.38. No refusal by either model occurred in any call.
+
+**Where it stands.**
+
+```
+$ cd backend && uv run --locked ruff format --check . && uv run --locked ruff check . && uv run --locked mypy && uv run --locked pytest -q
+All checks passed!
+Success: no issues found in 55 source files
+346 passed
+$ uv run --locked python -m tools.run_evals; echo "exit $?"
+  FAIL J1 Judged groundedness: mean 0.902, lowest case 0.765 (needs mean at least 0.90, no case under 0.80)
+  (every other line: pass)
+exit 1
+```
+
+**Gate at that point: not passed.** `make check` exited non-zero at the eval step, which was the eval doing its job; nothing was committed, and the work stopped for the owner's decision on `decisions/0014`.
+
+**Changed outside the eval code, for the owner to see.** `CLAUDE.md` and `docs/ARCHITECTURE.md` no longer mention `reference/`. `backend/pyproject.toml` lets the judge's prompt file have long lines, as the two other prompt files already do. The three seeds were re-recorded as part of the eval runs, so their articles differ from Phase 5's (Korvath is now 19 kept and none removed).
+
+### 2026-11-19, after the owner's decisions: the measure changed in the open, and a third run of three
+
+The owner approved both options in `decisions/0014`, asked for every case to be run three times with the gate judged on the means, for both scores side by side, and for the wrong calibration label to be corrected; and raised the limit to $4.50.
+
+**Built.**
+
+- **The question a cited answer replied to.** The ground stage records it on each kept sentence (`question_segments`): for a cited line that opens a turn, the last line of the turn before, when it ends with a question mark. No ground rule reads it; a test shows a figure in a question still supports nothing. `tools/show_run` prints it under the cited lines as "added by code, not evidence", the API serves it on the claim, and a test holds that the line in the judge's request is the line stored on the claim.
+- **The judge gives two answers a sentence,** with the question and without it, in one request. Code holds them together: no question shown means one answer; "without" can never be better than "with"; the question can never be named as the support.
+- **A headline is judged against the whole kept article.**
+- **Three runs of every case.** The first pass's recordings are the ones demo mode and the tests replay (`backend/recordings/`); the second and third are in `backend/evals/recordings/`. `make check` replays all three. Thresholds apply to each case's mean; exact checks must pass in every run; calibration must hold in every run.
+- **The calibration set:** the label the judge proved wrong is corrected and the change recorded in the file with its reason; four pairs added about the question. 29 pairs, 13 known negatives.
+- Written into `docs/SPEC.md` (J1, J1-alone, repeated runs), `decisions/0003` (the question is context, its limits) and `decisions/0014` (the decisions and the third run).
+
+**The third run.** `backend/evals/results/2026-11-19-third.json`. The second run's recordings are kept in `trials/phase6/second-run-recordings/`.
+
+```
+                       cited answer read with      cited lines alone,
+                       its question (J1, gate)     no question shown (J1-alone)
+case                   mean   each run             mean   each run             coverage  removed
+korvath-greenhouses    0.906  1.00 0.90 0.82       0.730  0.90 0.70 0.59       0.93      0 of 59
+sallowfield-dental     0.928  1.00 0.89 0.89       0.870  0.88 0.83 0.89       0.93      4 of 55
+quillmoor-books        0.967  1.00 0.90 1.00       0.808  0.94 0.75 0.73       1.00      0 of 49
+hartwell-correction    1.000  1.00 1.00 1.00       1.000  1.00 1.00 1.00       1.00      0 of 35
+marrowbeck-ferries     0.949  0.92 0.92 1.00       0.874  0.85 0.85 0.93       1.00      0 of 37
+tidewell-kitchens      0.961  1.00 0.94 0.94       0.941  1.00 0.88 0.94       1.00      0 of 47
+pennockby-energy       0.951  1.00 0.92 0.93       0.880  0.87 0.85 0.93       1.00      2 of 41
+fennimore-print        0.952  1.00 1.00 0.86       0.952  1.00 1.00 0.86       0.90      5 of 47
+calderwick-museum      0.963  1.00 0.94 0.95       0.963  1.00 0.94 0.95       1.00      0 of 51
+wrenlow-couriers       0.979  1.00 0.94 1.00       0.979  1.00 0.94 1.00       1.00      1 of 47
+mean of case means     0.956                       0.900
+lowest case mean       0.906                       0.730
+
+E1 to E7: pass in all 30 runs, and the five refusals correct in all 15.
+E8 coverage 0.98 (needs 0.70). E9 removed 12 of 468, 2.6% (needs at most 10%).
+J1 pass. J1-alone is reported, not a gate: it would fail the 0.80 floor (Korvath, 0.730).
+J2: 87 of 87 answers, 39 of 39 known negatives failed, in three passes.
+Spend $2.38, 99 calls.
+```
+
+- **The pass comes from the change of measure, not from the writer.** On the measure the first two runs were held to, this run would also fail. That is said in the spec, in the decision record, in the judge module's own header and in every result file's note, and it must be said in the README.
+- **What the judge still finds unsupported with the question shown: 23 of 484.** Twenty are the writer's own additions: a role or title the cited lines do not state (10, including "chaired", which nobody says in either transcript), the host's words given to the guest (3), a comparison or arithmetic in a headline (4), a cause the speaker did not give (3). Three are not the writer's fault or are arguable. The ground check cannot see any of the twenty: none has a figure or name missing from its cited lines. Listed in `decisions/0014`.
+- **Phase 6 spend: $4.07 of $4.50,** 177 calls: first run $0.67, second $0.64, the trial $0.38, third $2.38. No refusal by either model in any call.
+
+**The reviewer's findings** (fresh context, asked to get a wrong result reported as a pass), as it reported them, and what was done.
+
+- *BLOCKING 1. J2 pools the three calibration passes, but the spec says it must hold in every pass.* Two passes at 29 of 29 and one at 22 of 29 (76%) gave "92%, passed". **Fixed:** each pass must reach 90% and fail every known negative by itself; the lowest pass is printed. Test: `test_calibration_has_to_hold_in_every_pass_not_on_the_pooled_mean`.
+- *BLOCKING 2. The live spend stop checked a measured figure ($0.25 a case), not the worst case, so the $4.50 limit could be passed.* **Fixed:** the live client is wrapped so that before every request the ledger must have room for the most that request could cost at its model's price. Test: `test_the_live_spend_stop_is_checked_before_every_request`. The third run was made under the weaker stop; it ended at $4.07.
+- *NON-BLOCKING 3. A result with a machinery failure could still say `"passed": true` in its file* (the exit code was already 2). **Fixed:** a set with a machinery failure has not passed. Test added.
+- *NON-BLOCKING 4. The judge was called with nothing to ask when every sentence had failed a code check and the headline was a fallback.* **Fixed:** no call is made; the code's verdicts are the result. Test added.
+- *NON-BLOCKING 5. E3 does not re-check the superseded rule.* Left: E3 is rules 1 to 3 by the spec's wording, and E6 covers the corrected figure.
+- These four tests were written with their fixes, not before them; the reviewer's own commands are what showed each failure first.
+- What it tried that held: the judge's clamp against duplicate, missing, extra, negative and huge item numbers and against support on a context or uncited line; the data tags against transcript text; code-failed sentences never sent; the question never reaching a ground rule; no check passing on nothing; one terminal event on every path; thresholds equal to the spec's; `anthropic` imported in one module only; no secret in any recording; every number in the write-up against the three result files and the ledger.
+
+**The verifier's table** (run as a user would, against the working tree; nothing paid).
+
+| # | Step | What happened | |
+|---|---|---|---|
+| 1 | `make check` | Exit 0. 361 backend tests, the eval table printed as a step, 10 frontend tests | pass |
+| 2 | `python -m tools.run_evals` | Exit 0. E1 to E9, J1, J2 pass; J1-alone unmarked at 0.900 / 0.730; ten cases, three runs each; every case's mean, coverage and removals match the third result file | pass |
+| 3 | Thresholds against the spec and `0014` | 0.70, 0.90, 0.80, 0.90, and 0.10 from the first run | pass |
+| 4 | Made to fail | The removal ceiling patched to 0.01 in a one-off process: `FAIL`, exit 1. The recordings pointed at a folder that does not exist: `fixture_miss`, exit 2 | pass |
+| 5 | The three result files and the ledger | 0.917 / 0.773, $0.67; 0.902 / 0.765, $0.64; 0.956 / 0.906 with J1-alone 0.900 / 0.730, $2.38; ledger $4.0730 | pass |
+| 6 | `--live` without `--yes-spend` | Exit 2, the estimate and the spend so far printed, nothing sent | pass |
+| 7 | A seeded run over the API, and `tools.show_run` | Five stages ending in `evaluate`; checks E1 to E3; judge `judged` with both scores; three model calls. Claim 1 "cites 37, 39; in answer to 36, added by code"; the claim view prints the cited lines, then "THE QUESTION A CITED LINE WAS ANSWERING (added by code, not evidence)" with line 36, the line before the answer | pass |
+| 8 | Stream a seeded run | 12 events through the five stages to `run_completed` | pass |
+| 9 | Re-run from `evaluate` | Four stages copied, `evaluate` runs, `run_completed`; one model call | pass |
+| 10 | Pasted text in demo; `import anthropic` | 403 `paste_disabled_in_demo`. The import succeeded on this machine | pass, with a caveat |
+| 11 | `reference/` | Gone; nothing still points at it | pass |
+
+Its caveat on row 10: the SDK is importable in the local environment because the paid runs installed the `live` group into it and a plain `uv run` does not take it out again. A fresh `make setup` does not install it, CI never does, and the hosted backend's dependency list is built without it. Not exercised: anything live, the frontend, a clean install.
+
+**Gate evidence.**
+
+```
+$ make check; echo "exit $?"
+All checks passed!
+Success: no issues found in 55 source files
+361 passed
+  pass E1 ... 30 of 30 runs          pass E5 ... 45 of 45 runs
+  pass E8 Coverage of the key facts: mean of case means 0.98, lowest 0.90 (needs mean at least 0.70)
+  pass E9 Sentences the ground check removed: 12 of 468 (2.6%) (needs at most 10%)
+  pass J1 Judged groundedness, each cited answer read with its question: mean of case means 0.956; lowest case mean 0.906; single runs from 0.82 to 1.00
+       J1-alone ... mean of case means 0.900; lowest case mean 0.730; single runs from 0.59 to 1.00 (reported beside J1, not a gate)
+  pass J2 ... agrees on 100% of 87 answers, lowest pass 100%; failed 39 of 39 known negatives
+Tests  10 passed (10)
+exit 0
+$ ls backend/evals/results
+2026-11-19-first.json  2026-11-19-second.json  2026-11-19-third.json
+```
+
+**Gate: passed, 2026-11-19, on the changed measure, and that is the thing for the owner to weigh.** `make check` exits 0 including the fixture-mode evals. There are three dated live result files: the first with a real failure (J1), the second showing the first fix did not work, the third passing after the owner-approved change to what the judge is shown. All spends are stated ($0.67, $0.64, $0.38 for the trial, $2.38; $4.07 in all). The removal-rate ceiling is set by `decisions/0014` from the first run. On the measure the first two runs were held to, the third run would also fail.
 
 ---
 
@@ -1025,7 +1196,7 @@ Read `frontend/AGENTS.md` and the bundled Next.js guide first.
 
 ## Phase 9: release
 
-- [ ] README with the seven profile sections; every claim traced to code or to a result file.
+- [ ] README with the seven profile sections; every claim traced to code or to a result file. **The eval table shows both judged scores side by side** (cited lines alone, and cited lines with the question shown), per case with mean and spread, and says plainly that the second was introduced after the first two runs failed, and why (the owner's instruction, 2026-11-19; the table is in `decisions/0014`).
 - [ ] Reviewer in security mode over the whole repository; fix every blocking finding.
 - [ ] History check against the synthetic-data rule and a full-history secret scan. Known already: a depot in the second spike transcript carried a name that is also a real software company's, in commits `74f3425` and `1cee60f` on `main` (replaced in `0effa8c`). Before the repository is made public, either `main` is rewritten to remove it or the owner explicitly accepts it as a depot's name.
 - [ ] Delete the old paused Vercel project `article-agent` (asks first; it cannot be undone). Left paused until then by the owner's decision.

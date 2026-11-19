@@ -24,6 +24,8 @@ check-backend:
 	cd backend && uv run --locked ruff check .
 	cd backend && uv run --locked mypy
 	cd backend && uv run --locked pytest -q
+	@# The eval set, replayed from recordings: free, no key. Fails on any missed threshold.
+	cd backend && uv run --locked python -m tools.run_evals
 
 check-frontend:
 	cd frontend && $(NODE) npm run lint

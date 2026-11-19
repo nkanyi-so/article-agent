@@ -12,7 +12,9 @@ from app.errors import ModelRefused
 from app.events import TERMINAL, AnyRunEvent, RunCompleted, RunFailed
 from app.model.convert import response_from_api
 from app.model.types import ModelRequest, ModelResponse
+from app.pipeline.config import JUDGE_MODEL
 from app.pipeline.runner import RunState, run_pipeline
+from tests.evalkit import judge_response
 
 FIXTURES = Path(__file__).parent / "fixtures"
 TRANSCRIPT = (FIXTURES / "transcripts" / "01-korvath-greenhouses.txt").read_text()
@@ -27,7 +29,8 @@ def saved(kind: str, name: str) -> dict[str, Any]:
 
 
 class FakeClient:
-    """Answers an extract request and a draft request with real recorded responses."""
+    """Answers an extract request and a draft request with real recorded responses, and a
+    judge request with "supported" for every sentence."""
 
     source: Literal["fixture"] = "fixture"
 
@@ -37,6 +40,13 @@ class FakeClient:
 
     async def complete(self, request: ModelRequest) -> ModelResponse:
         self.calls.append(request)
+        if request.model == JUDGE_MODEL:
+            behaviour = self.overrides.get("judge")
+            if isinstance(behaviour, BaseException):
+                raise behaviour
+            if behaviour == "hang":
+                await asyncio.sleep(60)
+            return judge_response(request)
         kind = "extract" if request.output_schema else "draft"
         behaviour = self.overrides.get(kind)
         if isinstance(behaviour, BaseException):
@@ -68,7 +78,7 @@ def types(events: list[AnyRunEvent]) -> list[str]:
 # ------------------------------------------------------------------ the happy path
 
 
-async def test_a_run_goes_through_the_four_stages_in_order_and_completes() -> None:
+async def test_a_run_goes_through_the_five_stages_in_order_and_completes() -> None:
     events, state = await collect(FakeClient())
 
     assert types(events) == [
@@ -77,11 +87,12 @@ async def test_a_run_goes_through_the_four_stages_in_order_and_completes() -> No
         "stage_started", "stage_completed",
         "stage_started", "stage_completed",
         "stage_started", "stage_completed",
+        "stage_started", "stage_completed",
         "run_completed",
     ]  # fmt: skip
     stages = [e.stage for e in events if e.type == "stage_started"]
-    assert stages == ["ingest", "extract", "draft", "ground"]
-    assert [event.seq for event in events] == list(range(10))
+    assert stages == ["ingest", "extract", "draft", "ground", "evaluate"]
+    assert [event.seq for event in events] == list(range(12))
     assert state.status == "completed"
     assert state.result is not None and len(state.result.claims) >= 3
 
@@ -90,9 +101,11 @@ async def test_every_stage_stores_its_input_and_its_output() -> None:
     _, state = await collect(FakeClient())
 
     assert [(r.name, r.status) for r in state.stages] == [
-        ("ingest", "completed"), ("extract", "completed"), ("draft", "completed"), ("ground", "completed"),  # noqa: E501
+        ("ingest", "completed"), ("extract", "completed"), ("draft", "completed"), ("ground", "completed"), ("evaluate", "completed"),  # noqa: E501
     ]  # fmt: skip
-    ingest_record, extract_record, draft_record, ground_record = state.stages
+    ingest_record, extract_record, draft_record, ground_record, evaluate_record = state.stages
+    assert evaluate_record.input == {"claims": len(ground_record.output["claims"])}  # type: ignore[index]
+    assert evaluate_record.output["judge"]["outcome"] == "judged"  # type: ignore[index]
     assert ingest_record.input == {"title": TITLE, "transcript": TRANSCRIPT}
     assert len(ingest_record.output["segments"]) == 100  # type: ignore[index]
     assert extract_record.output["angle"]  # type: ignore[index]
@@ -107,13 +120,14 @@ async def test_every_model_call_is_recorded_with_its_request_response_and_cost()
 
     _, state = await collect(client)
 
-    assert [call.stage for call in state.model_calls] == ["extract", "draft"]
+    assert [call.stage for call in state.model_calls] == ["extract", "draft", "evaluate"]
+    assert state.model_calls[2].model_requested == "claude-opus-5-5"
     draft_call = state.model_calls[1]
     assert draft_call.request == client.calls[1]
     assert draft_call.source == "fixture"
     assert draft_call.model_requested == draft_call.model_served == "claude-sonnet-5-5"
     assert (draft_call.input_tokens, draft_call.output_tokens) == (4886, 1089)
-    assert state.cost_usd() == pytest.approx(0.017312 + 0.020662)
+    assert state.cost_usd() == pytest.approx(0.017312 + 0.020662 + 0.001)
 
 
 async def test_the_draft_request_is_built_from_the_extract_output() -> None:
@@ -303,28 +317,60 @@ async def test_a_replay_from_draft_copies_the_earlier_stages_and_runs_the_rest_a
         "stage_completed", "stage_completed",
         "stage_started", "stage_completed",
         "stage_started", "stage_completed",
+        "stage_started", "stage_completed",
         "run_completed",
     ]  # fmt: skip
     copied = [e for e in events if e.type == "stage_completed" and e.copied_from_run_id]
     assert [e.stage for e in copied] == ["ingest", "extract"]
     assert [(r.name, r.copied_from_run_id) for r in state.stages] == [
-        ("ingest", "run-1"), ("extract", "run-1"), ("draft", None), ("ground", None),
+        ("ingest", "run-1"), ("extract", "run-1"), ("draft", None), ("ground", None), ("evaluate", None),  # noqa: E501
     ]  # fmt: skip
     assert state.stages[1].output == parent.stages[1].output
-    # Only the draft was asked of the model again.
-    assert [bool(r.output_schema) for r in client.calls] == [False]
+    # The draft was asked of the writer again, and the new article of the judge. Not the extract.
+    assert [r.model for r in client.calls] == ["claude-sonnet-5-5", "claude-opus-5-5"]
+    assert client.calls[0].output_schema is None
     assert state.status == "completed" and state.result is not None
 
 
-async def test_a_replay_from_ground_calls_no_model_at_all() -> None:
+async def test_a_replay_from_ground_calls_only_the_judge() -> None:
     _, parent = await collect(FakeClient())
     client = FakeClient()
 
     _, state = await replay("ground", client, parent)
 
-    assert client.calls == []
+    assert [r.model for r in client.calls] == ["claude-opus-5-5"]
     assert state.result == parent.result
-    assert [r.copied_from_run_id for r in state.stages] == ["run-1", "run-1", "run-1", None]
+    assert [r.copied_from_run_id for r in state.stages] == ["run-1", "run-1", "run-1", None, None]
+
+
+async def test_a_replay_from_evaluate_copies_the_article_and_judges_it_again() -> None:
+    _, parent = await collect(FakeClient())
+    client = FakeClient()
+
+    _, state = await replay("evaluate", client, parent)
+
+    assert [r.model for r in client.calls] == ["claude-opus-5-5"]
+    assert state.status == "completed" and state.result == parent.result
+    assert [r.copied_from_run_id for r in state.stages] == ["run-1"] * 4 + [None]
+    assert state.stages[4].output == parent.stages[4].output
+
+
+async def test_a_judge_that_cannot_be_used_does_not_fail_the_run() -> None:
+    # The article was written and checked. A judge that refuses or times out is recorded on
+    # the evaluation, with what it cost, and the run completes.
+    refusal = ModelRefused("unspecified")
+    refusal.cost_usd = 0.03
+
+    events, state = await collect(FakeClient(judge=refusal))
+
+    assert types(events)[-1] == "run_completed"
+    assert state.stages[4].output["judge"] == {  # type: ignore[index]
+        "outcome": "failed", "error": "model_refused", "model": "claude-opus-5-5",
+        "verdicts": [], "score": None, "score_alone": None,
+    }  # fmt: skip
+    assert [(c.stage, c.error, c.cost_usd) for c in state.failed_calls] == [
+        ("evaluate", "model_refused", 0.03)
+    ]
 
 
 async def test_a_replay_re_executes_from_the_stored_input_not_from_memory() -> None:

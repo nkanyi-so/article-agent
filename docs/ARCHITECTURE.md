@@ -1,6 +1,6 @@
 # Architecture: article-agent
 
-Written by the intake on 2026-11-18. Status: proposed. Nothing here is built yet; `frontend/` is ported code from the old project and `reference/` is to read, not to run.
+Written by the intake on 2026-11-18. Status: proposed. Nothing here is built yet; `frontend/` is ported code from the old project. (`reference/`, the old eval code kept to read, was deleted in Phase 6 when the new evals replaced it.)
 
 ## Shape
 
@@ -37,7 +37,7 @@ A straight pipeline of plain async functions, one per stage. No agent framework 
 | `ingest` | code | transcript text, title | segments: `index`, `turn`, `speaker`, `line`, `text`; or a refusal |
 | `extract` | model, structured output | segments as delimited data | points (text, segment indexes, kind), corrections (superseded index, by index), disagreements, angle |
 | `draft` | model, citations, no schema | custom-content document with one text block per segment, plus the extract result as instructions | the raw response blocks |
-| `ground` | code | draft blocks, segments, corrections | claims, one per kept sentence (text, citations, segment indexes, paragraph, and any name kept by the first-name rule); removed sentences with reasons; the headline with its supporting sentences, or the fallback title with the headline's failure and its reason |
+| `ground` | code | draft blocks, segments, corrections | claims, one per kept sentence (text, citations, segment indexes, paragraph, any name kept by the first-name rule, and the question each cited answer replied to, added by code as context); removed sentences with reasons; the headline with its supporting sentences, or the fallback title with the headline's failure and its reason |
 | `evaluate` | code, then model with structured output | the stored run | an eval report: code verdicts and the judge's per-claim verdicts |
 
 Segment `index` is the block index in the citable document, so a citation's `start_block_index` and `end_block_index` (exclusive) map straight onto segments with no lookup table.

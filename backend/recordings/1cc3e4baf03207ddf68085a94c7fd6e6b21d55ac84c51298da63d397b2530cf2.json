@@ -99,23 +99,22 @@
   "response": {
     "blocks": [
       {
-        "text": "{\"points\":[{\"text\":\"Quillmoor Books is a bookshop on Tanner's Quay, founded by Rafael Dunmore and opened in 2019, selling new books.\",\"segments\":[1,5,6,7]},{\"text\":\"The subscription costs 18 pounds a month; subscribers get one book posted, chosen by a bookseller based on three books they loved and one they hated.\",\"segments\":[10,11,13]},{\"text\":\"The subscription launched in March 2025 with 60 subscribers, all regular shop customers, and now has 1,200.\",\"segments\":[16,17,19]},{\"text\":\"About 40 percent of subscriptions are bought as gifts, which usually run three or six months and retain less well than self-purchased subscriptions.\",\"segments\":[22,23,25,26]},{\"text\":\"About 4 percent of subscribers cancel each month; Dunmore says he does not know whether that is good or bad as he has no comparison figures.\",\"segments\":[28,30,31]},{\"text\":\"Five booksellers each look after a list of subscribers; Odette Marsh has been there since the start and has the longest list. Choosing takes about ten minutes for a new subscriber and two to three for a known one, and fills most of Monday and Tuesday.\",\"segments\":[33,34,36,39]},{\"text\":\"The subscription is now a little over half of the shop's income, which makes the business more exposed to postage costs.\",\"segments\":[42,43,46]},{\"text\":\"Postage is about 3 pounds 20 a parcel, up from 2 pounds 85 at launch; the price has been held at 18 pounds and will probably rise next year by an undecided amount.\",\"segments\":[48,49,52,54,55]},{\"text\":\"The most common complaint is sending a book the customer already owns, about once in 50 parcels; Quillmoor sends a replacement free and asks them to pass the first book on to a friend.\",\"segments\":[57,58,60]},{\"text\":\"Dunmore says the hard part of copying the model is having booksellers who read.\",\"segments\":[64]},{\"text\":\"Plans: a second shop in Lowther Arcade in the spring and a children's subscription in September at 12 pounds a month.\",\"segments\":[66,67,70]}],\"corrections\":[],\"disagreements\":[],\"angle\":\"Quillmoor Books' subscription has grown from 60 to 1,200 subscribers since March 2025 and now makes up over half its income, but rising postage costs and 4 percent monthly cancellations pose pressures as it expands with a second shop and a children's subscription.\"}",
+        "text": "{\"points\":[{\"text\":\"Quillmoor Books is a bookshop on Tanner's Quay, opened in 2019, selling new books and running a subscription since last year.\",\"segments\":[5,6,7]},{\"text\":\"The subscription costs 18 pounds a month for one book posted, chosen by a bookseller based on three books the subscriber loved and one they hated.\",\"segments\":[10,11,13]},{\"text\":\"The subscription launched in March 2025 with 60 subscribers, all regular shop customers, and now has 1,200.\",\"segments\":[16,17,19]},{\"text\":\"About 40 percent of subscriptions are bought as gifts, which usually run three or six months and retain less well than self-purchased ones.\",\"segments\":[23,25,26]},{\"text\":\"About 4 percent of subscribers cancel each month; Dunmore does not know whether that is good or bad as he has no comparison figures.\",\"segments\":[28,30,31]},{\"text\":\"Five booksellers each look after a list of subscribers; Odette Marsh, there since the start, has the longest list. Choosing takes about ten minutes for a new subscriber and two or three for a known one, and fills most of Monday and Tuesday.\",\"segments\":[33,34,36,39]},{\"text\":\"The subscription is now a little over half of the shop's income, making Quillmoor more exposed to postage changes.\",\"segments\":[42,43,46]},{\"text\":\"Postage costs about 3 pounds 20 a parcel, up from 2 pounds 85 at launch; the price has been held at 18 pounds and will probably rise next year by an undecided amount.\",\"segments\":[48,49,52,54,55]},{\"text\":\"The most common complaint is sending a book the customer already owns, about once in every 50 parcels; Quillmoor sends a free replacement and asks them to pass the first book on to a friend.\",\"segments\":[57,58,60]},{\"text\":\"Dunmore says the hard part of copying the model is having booksellers who read.\",\"segments\":[64]},{\"text\":\"Quillmoor will open a second shop in Lowther Arcade in the spring and start a children's subscription in September at 12 pounds a month.\",\"segments\":[66,67,70]}],\"corrections\":[],\"disagreements\":[],\"angle\":\"A year-old book subscription has grown from 60 to 1,200 subscribers and now brings in over half of Quillmoor Books' income, leaving the shop exposed to rising postage costs as it prepares a second shop and a children's subscription.\"}",
         "citations": []
       }
     ],
     "parsed": {
       "points": [
         {
-          "text": "Quillmoor Books is a bookshop on Tanner's Quay, founded by Rafael Dunmore and opened in 2019, selling new books.",
+          "text": "Quillmoor Books is a bookshop on Tanner's Quay, opened in 2019, selling new books and running a subscription since last year.",
           "segments": [
-            1,
             5,
             6,
             7
           ]
         },
         {
-          "text": "The subscription costs 18 pounds a month; subscribers get one book posted, chosen by a bookseller based on three books they loved and one they hated.",
+          "text": "The subscription costs 18 pounds a month for one book posted, chosen by a bookseller based on three books the subscriber loved and one they hated.",
           "segments": [
             10,
             11,
@@ -131,16 +130,15 @@
           ]
         },
         {
-          "text": "About 40 percent of subscriptions are bought as gifts, which usually run three or six months and retain less well than self-purchased subscriptions.",
+          "text": "About 40 percent of subscriptions are bought as gifts, which usually run three or six months and retain less well than self-purchased ones.",
           "segments": [
-            22,
             23,
             25,
             26
           ]
         },
         {
-          "text": "About 4 percent of subscribers cancel each month; Dunmore says he does not know whether that is good or bad as he has no comparison figures.",
+          "text": "About 4 percent of subscribers cancel each month; Dunmore does not know whether that is good or bad as he has no comparison figures.",
           "segments": [
             28,
             30,
@@ -148,7 +146,7 @@
           ]
         },
         {
-          "text": "Five booksellers each look after a list of subscribers; Odette Marsh has been there since the start and has the longest list. Choosing takes about ten minutes for a new subscriber and two to three for a known one, and fills most of Monday and Tuesday.",
+          "text": "Five booksellers each look after a list of subscribers; Odette Marsh, there since the start, has the longest list. Choosing takes about ten minutes for a new subscriber and two or three for a known one, and fills most of Monday and Tuesday.",
           "segments": [
             33,
             34,
@@ -157,7 +155,7 @@
           ]
         },
         {
-          "text": "The subscription is now a little over half of the shop's income, which makes the business more exposed to postage costs.",
+          "text": "The subscription is now a little over half of the shop's income, making Quillmoor more exposed to postage changes.",
           "segments": [
             42,
             43,
@@ -165,7 +163,7 @@
           ]
         },
         {
-          "text": "Postage is about 3 pounds 20 a parcel, up from 2 pounds 85 at launch; the price has been held at 18 pounds and will probably rise next year by an undecided amount.",
+          "text": "Postage costs about 3 pounds 20 a parcel, up from 2 pounds 85 at launch; the price has been held at 18 pounds and will probably rise next year by an undecided amount.",
           "segments": [
             48,
             49,
@@ -175,7 +173,7 @@
           ]
         },
         {
-          "text": "The most common complaint is sending a book the customer already owns, about once in 50 parcels; Quillmoor sends a replacement free and asks them to pass the first book on to a friend.",
+          "text": "The most common complaint is sending a book the customer already owns, about once in every 50 parcels; Quillmoor sends a free replacement and asks them to pass the first book on to a friend.",
           "segments": [
             57,
             58,
@@ -189,7 +187,7 @@
           ]
         },
         {
-          "text": "Plans: a second shop in Lowther Arcade in the spring and a children's subscription in September at 12 pounds a month.",
+          "text": "Quillmoor will open a second shop in Lowther Arcade in the spring and start a children's subscription in September at 12 pounds a month.",
           "segments": [
             66,
             67,
@@ -199,26 +197,26 @@
       ],
       "corrections": [],
       "disagreements": [],
-      "angle": "Quillmoor Books' subscription has grown from 60 to 1,200 subscribers since March 2025 and now makes up over half its income, but rising postage costs and 4 percent monthly cancellations pose pressures as it expands with a second shop and a children's subscription."
+      "angle": "A year-old book subscription has grown from 60 to 1,200 subscribers and now brings in over half of Quillmoor Books' income, leaving the shop exposed to rising postage costs as it prepares a second shop and a children's subscription."
     },
     "stop_reason": "end_turn",
     "model": "claude-sonnet-5-5",
     "usage": {
       "input_tokens": 2862,
-      "output_tokens": 827,
+      "output_tokens": 811,
       "thinking_tokens": 0
     },
-    "cost_usd": 0.013994,
-    "latency_ms": 6704,
+    "cost_usd": 0.013834,
+    "latency_ms": 6181,
     "attempts": 1,
-    "request_id": "req_011ChBBrmdVLUpmCiomYZRPf"
+    "request_id": "req_011ChBnjeM5cChvdZQy3pkAX"
   },
   "raw_response": {
-    "id": "msg_011ChBBrmpejgNUAAJ8QYgL8",
+    "id": "msg_011ChBnjeWjnL5WKnc7JyKMZ",
     "container": null,
     "content": [
       {
-        "text": "{\"points\":[{\"text\":\"Quillmoor Books is a bookshop on Tanner's Quay, founded by Rafael Dunmore and opened in 2019, selling new books.\",\"segments\":[1,5,6,7]},{\"text\":\"The subscription costs 18 pounds a month; subscribers get one book posted, chosen by a bookseller based on three books they loved and one they hated.\",\"segments\":[10,11,13]},{\"text\":\"The subscription launched in March 2025 with 60 subscribers, all regular shop customers, and now has 1,200.\",\"segments\":[16,17,19]},{\"text\":\"About 40 percent of subscriptions are bought as gifts, which usually run three or six months and retain less well than self-purchased subscriptions.\",\"segments\":[22,23,25,26]},{\"text\":\"About 4 percent of subscribers cancel each month; Dunmore says he does not know whether that is good or bad as he has no comparison figures.\",\"segments\":[28,30,31]},{\"text\":\"Five booksellers each look after a list of subscribers; Odette Marsh has been there since the start and has the longest list. Choosing takes about ten minutes for a new subscriber and two to three for a known one, and fills most of Monday and Tuesday.\",\"segments\":[33,34,36,39]},{\"text\":\"The subscription is now a little over half of the shop's income, which makes the business more exposed to postage costs.\",\"segments\":[42,43,46]},{\"text\":\"Postage is about 3 pounds 20 a parcel, up from 2 pounds 85 at launch; the price has been held at 18 pounds and will probably rise next year by an undecided amount.\",\"segments\":[48,49,52,54,55]},{\"text\":\"The most common complaint is sending a book the customer already owns, about once in 50 parcels; Quillmoor sends a replacement free and asks them to pass the first book on to a friend.\",\"segments\":[57,58,60]},{\"text\":\"Dunmore says the hard part of copying the model is having booksellers who read.\",\"segments\":[64]},{\"text\":\"Plans: a second shop in Lowther Arcade in the spring and a children's subscription in September at 12 pounds a month.\",\"segments\":[66,67,70]}],\"corrections\":[],\"disagreements\":[],\"angle\":\"Quillmoor Books' subscription has grown from 60 to 1,200 subscribers since March 2025 and now makes up over half its income, but rising postage costs and 4 percent monthly cancellations pose pressures as it expands with a second shop and a children's subscription.\"}",
+        "text": "{\"points\":[{\"text\":\"Quillmoor Books is a bookshop on Tanner's Quay, opened in 2019, selling new books and running a subscription since last year.\",\"segments\":[5,6,7]},{\"text\":\"The subscription costs 18 pounds a month for one book posted, chosen by a bookseller based on three books the subscriber loved and one they hated.\",\"segments\":[10,11,13]},{\"text\":\"The subscription launched in March 2025 with 60 subscribers, all regular shop customers, and now has 1,200.\",\"segments\":[16,17,19]},{\"text\":\"About 40 percent of subscriptions are bought as gifts, which usually run three or six months and retain less well than self-purchased ones.\",\"segments\":[23,25,26]},{\"text\":\"About 4 percent of subscribers cancel each month; Dunmore does not know whether that is good or bad as he has no comparison figures.\",\"segments\":[28,30,31]},{\"text\":\"Five booksellers each look after a list of subscribers; Odette Marsh, there since the start, has the longest list. Choosing takes about ten minutes for a new subscriber and two or three for a known one, and fills most of Monday and Tuesday.\",\"segments\":[33,34,36,39]},{\"text\":\"The subscription is now a little over half of the shop's income, making Quillmoor more exposed to postage changes.\",\"segments\":[42,43,46]},{\"text\":\"Postage costs about 3 pounds 20 a parcel, up from 2 pounds 85 at launch; the price has been held at 18 pounds and will probably rise next year by an undecided amount.\",\"segments\":[48,49,52,54,55]},{\"text\":\"The most common complaint is sending a book the customer already owns, about once in every 50 parcels; Quillmoor sends a free replacement and asks them to pass the first book on to a friend.\",\"segments\":[57,58,60]},{\"text\":\"Dunmore says the hard part of copying the model is having booksellers who read.\",\"segments\":[64]},{\"text\":\"Quillmoor will open a second shop in Lowther Arcade in the spring and start a children's subscription in September at 12 pounds a month.\",\"segments\":[66,67,70]}],\"corrections\":[],\"disagreements\":[],\"angle\":\"A year-old book subscription has grown from 60 to 1,200 subscribers and now brings in over half of Quillmoor Books' income, leaving the shop exposed to rising postage costs as it prepares a second shop and a children's subscription.\"}",
         "type": "text"
       }
     ],
@@ -238,7 +236,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 2862,
-      "output_tokens": 827,
+      "output_tokens": 811,
       "output_tokens_details": {
         "thinking_tokens": 0
       },

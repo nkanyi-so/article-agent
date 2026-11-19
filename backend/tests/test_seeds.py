@@ -1,12 +1,16 @@
 """The three seeded transcripts run end to end from recordings: no key, no network."""
 
+from pathlib import Path
+from typing import Literal
+
 import pytest
 
-from app.model.fixture import RECORDINGS_DIR, FixtureModelClient, load_recording
+from app.evals import thresholds
+from app.evals.cases import EVALS_DIR, recordings_dir
+from app.evals.harness import run_set
+from app.model.fixture import RECORDINGS_DIR, FixtureModelClient
 from app.model.payload import request_key
-from app.pipeline.draft import build_draft_request
-from app.pipeline.extract import build_extract_request, parse_extract
-from app.pipeline.ingest import ingest
+from app.model.types import ModelRequest, ModelResponse
 from app.pipeline.runner import RunState, run_pipeline
 from app.seeds import SEEDS, Seed
 
@@ -25,7 +29,11 @@ async def test_a_seed_runs_end_to_end_from_its_recordings(seed: Seed) -> None:
     state = await run_seed(seed)
 
     assert (state.status, state.error) == ("completed", None)
-    assert [call.source for call in state.model_calls] == ["fixture", "fixture"]
+    assert [(call.stage, call.source) for call in state.model_calls] == [
+        ("extract", "fixture"),
+        ("draft", "fixture"),
+        ("evaluate", "fixture"),
+    ]
     assert state.result is not None
     assert len(state.result.claims) >= 3
 
@@ -51,9 +59,9 @@ async def test_a_seeds_article_keeps_its_lead_and_its_own_headline(seed: Seed) -
 # threshold for the model. Each seed was recorded once and the run was not chosen; when a
 # prompt change forces a new recording these numbers are replaced with what it shows.
 RECORDED = {
-    "korvath-greenhouses": (20, 2),
-    "sallowfield-dental": (17, 2),
-    "quillmoor-books": (14, 0),
+    "korvath-greenhouses": (19, 0),
+    "sallowfield-dental": (16, 1),
+    "quillmoor-books": (16, 0),
 }
 
 
@@ -65,23 +73,40 @@ async def test_a_seeds_recording_keeps_and_removes_what_it_did_when_recorded(see
     assert (len(state.result.claims), len(state.result.removed)) == RECORDED[seed.id]
 
 
-def test_every_recording_is_one_the_pipeline_asks_for() -> None:
-    # A recording nothing asks for is dead weight, and usually a prompt that was edited
-    # without re-recording.
-    wanted: set[str] = set()
-    for seed in SEEDS:
-        ingested = ingest(seed.text(), seed.title)
-        extract_request = build_extract_request(ingested)
-        wanted.add(request_key(extract_request))
-        response = load_recording(RECORDINGS_DIR / f"{request_key(extract_request)}.json").response
-        extract = parse_extract(response, len(ingested.segments))
-        wanted.add(request_key(build_draft_request(ingested, extract)))
+class Noting:
+    """The fixture client, noting the key of every request it is asked for."""
 
-    assert {path.stem for path in RECORDINGS_DIR.glob("*.json")} == wanted
+    source: Literal["fixture"] = "fixture"
+
+    def __init__(self, folder: Path) -> None:
+        self.asked: set[str] = set()
+        self.inner = FixtureModelClient(folder)
+
+    async def complete(self, request: ModelRequest) -> ModelResponse:
+        self.asked.add(request_key(request))
+        return await self.inner.complete(request)
+
+
+async def test_every_recording_is_one_the_eval_set_asks_for() -> None:
+    # A recording nothing asks for is dead weight, and usually a prompt that was edited
+    # without re-recording. The eval set includes the three seeds, and its first pass
+    # replays the folder that demo mode and the tests replay.
+    clients: dict[int, Noting] = {}
+
+    def client_for(repeat: int) -> Noting:
+        return clients.setdefault(repeat, Noting(recordings_dir(repeat)))
+
+    await run_set(client_for, repeats=thresholds.REPEATS)
+
+    assert sorted(clients) == [1, 2, 3]
+    assert recordings_dir(1) == RECORDINGS_DIR
+    for repeat, client in clients.items():
+        assert {path.stem for path in recordings_dir(repeat).glob("*.json")} == client.asked
 
 
 def test_no_recording_contains_a_key_or_an_authorisation_header() -> None:
-    for path in RECORDINGS_DIR.glob("*.json"):
+    folders = [RECORDINGS_DIR, EVALS_DIR / "recordings"]
+    for path in (p for folder in folders for p in folder.rglob("*.json")):
         text = path.read_text().lower()
         assert "sk-ant" not in text
         assert "x-api-key" not in text

@@ -20,9 +20,10 @@ from app.pipeline.runner import FailedModelCall, ModelCallRecord, RunState
 from app.schemas import StageName, StageRecord
 
 # What a live run that is still going is assumed to cost until its calls are recorded: two
-# writer calls at a full max_tokens of output each. Reserved against the daily budget, so
-# runs started together cannot all read the same recorded total and all be let through.
-WORST_RUN_USD = 2 * (16_000 * 10.0 + 20_000 * 2.0) / 1_000_000
+# writer calls and one judge call, each at a full max_tokens of output. Reserved against the
+# daily budget, so runs started together cannot all read the same recorded total and all be
+# let through.
+WORST_RUN_USD = (2 * (16_000 * 10.0 + 20_000 * 2.0) + (16_000 * 20.0 + 20_000 * 4.0)) / 1_000_000
 
 Admission = Literal["ok", "rate_limited", "budget_exhausted"]
 RunSource = Literal["seed", "paste", "replay"]

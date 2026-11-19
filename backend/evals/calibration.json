@@ -1,0 +1,362 @@
+{
+  "note": "Each pair is a sentence, the transcript lines it cites, and whether those lines support it. The answers were written by a person. `supported` is the answer when a cited answer is read with the question it replied to (the question is found by code, as in a run); `supported_alone` is the answer for the cited lines with no question shown. The pairs where `supported` is false are the known negatives: the judge must fail every one.",
+  "pairs": [
+    {
+      "id": "m-plain",
+      "kind": "plain",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        10
+      ],
+      "sentence": "Marrowbeck Ferries cancelled 14 sailings in October, Farraday said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "m-two-lines",
+      "kind": "two lines",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        15,
+        16
+      ],
+      "sentence": "Oxley said his log shows weather closed the harbour on two days, which accounts for 5 of the 14 sailings.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "m-wrong-speaker",
+      "kind": "wrong speaker",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        12,
+        13
+      ],
+      "sentence": "Oxley blamed the cancellations on gusts of over 40 knots.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "m-hedge-dropped",
+      "kind": "hedge dropped",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        18,
+        19
+      ],
+      "sentence": "The other 9 sailings were cancelled because the Eilean had no master, Oxley confirmed.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "m-refunds",
+      "kind": "two lines",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        29,
+        30
+      ],
+      "sentence": "Marrowbeck refunded 312 passengers in October, and everyone who asked was repaid within a week, Farraday said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "m-inference",
+      "kind": "inference nobody stated",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        32,
+        33
+      ],
+      "sentence": "The new master's arrival on the first of December will put an end to the cancellations.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "m-both-sides",
+      "kind": "two speakers",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        22,
+        24
+      ],
+      "sentence": "Farraday said weather was the main cause, while Oxley said crew was.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "m-overstated",
+      "kind": "overstated",
+      "case": "marrowbeck-ferries",
+      "segments": [
+        20
+      ],
+      "sentence": "The Eilean's master was off sick for the whole of October, Farraday said.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "t-plain",
+      "kind": "plain",
+      "case": "tidewell-kitchens",
+      "segments": [
+        4
+      ],
+      "sentence": "Tidewell ordered 48 ovens for the Harbour Row flats and 30 have arrived, Pell said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "t-number-word",
+      "kind": "number written as a word",
+      "case": "tidewell-kitchens",
+      "segments": [
+        4,
+        5
+      ],
+      "sentence": "Eighteen ovens are still outstanding.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "t-contract",
+      "kind": "plain",
+      "case": "tidewell-kitchens",
+      "segments": [
+        11
+      ],
+      "sentence": "The contract lets Tidewell claim 2 percent of the order value for each week of delay, up to 10 percent, Faro said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "t-wrong-number",
+      "kind": "wrong number",
+      "case": "tidewell-kitchens",
+      "segments": [
+        11
+      ],
+      "sentence": "The contract lets Tidewell claim 5 percent of the order value for each week of delay, Faro said.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "t-cost",
+      "kind": "answer cited without its question",
+      "case": "tidewell-kitchens",
+      "segments": [
+        32
+      ],
+      "sentence": "A second visit to the 18 flats would cost 1,620 pounds, at about 90 pounds a flat, Faro said.",
+      "supported": true,
+      "supported_alone": false
+    },
+    {
+      "id": "t-opinion",
+      "kind": "inference nobody stated",
+      "case": "tidewell-kitchens",
+      "segments": [
+        7,
+        8
+      ],
+      "sentence": "The supplier is unreliable and Tidewell should find another one.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "p-plain",
+      "kind": "two lines",
+      "case": "pennockby-energy",
+      "segments": [
+        4,
+        5
+      ],
+      "sentence": "The turbine generated 3,120 megawatt hours in the year, up from 2,870 the year before, Ruhl said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "p-arithmetic",
+      "kind": "arithmetic nobody did",
+      "case": "pennockby-energy",
+      "segments": [
+        12,
+        13
+      ],
+      "sentence": "Income from electricity was 412,000 pounds against running costs of 148,000 pounds, leaving 264,000 pounds.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "p-members",
+      "kind": "number written as a word",
+      "case": "pennockby-energy",
+      "segments": [
+        25,
+        26
+      ],
+      "sentence": "The co-operative has 1,840 members, 95 of whom joined during the year, Ruhl said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "p-contradicts",
+      "kind": "contradicts the lines",
+      "case": "pennockby-energy",
+      "segments": [
+        31,
+        32
+      ],
+      "sentence": "The repair reserve already covers the cost of a new gearbox.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "c-funding",
+      "kind": "two lines",
+      "case": "calderwick-museum",
+      "segments": [
+        12,
+        13
+      ],
+      "sentence": "The work cost 2.4 million pounds, of which the insurers paid 1.1 million, Banks said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "c-cause",
+      "kind": "inference nobody stated",
+      "case": "calderwick-museum",
+      "segments": [
+        3,
+        4
+      ],
+      "sentence": "The flood was caused by years of neglected maintenance.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "c-empty",
+      "kind": "empty claim",
+      "case": "calderwick-museum",
+      "segments": [
+        21
+      ],
+      "sentence": "It is worth noting what comes next.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "w-swapped",
+      "kind": "wrong speaker",
+      "case": "wrenlow-couriers",
+      "segments": [
+        23,
+        25,
+        26
+      ],
+      "sentence": "Pryce said he wants a spare van, while Olsen would rather hire one when it is needed.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "w-costs",
+      "kind": "two speakers",
+      "case": "wrenlow-couriers",
+      "segments": [
+        30,
+        31
+      ],
+      "sentence": "A hire van costs about 85 pounds a day, Pryce said, while Olsen put a second-hand van at about 14,000 pounds plus insurance.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "f-assembled",
+      "kind": "short turns put together",
+      "case": "fennimore-print",
+      "segments": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "sentence": "Press two has been down since six this morning after the feeder jammed, Hesp said.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "f-brochures",
+      "kind": "short turns put together",
+      "case": "fennimore-print",
+      "segments": [
+        15,
+        16,
+        18,
+        19
+      ],
+      "sentence": "Dunne said 2,000 of the 4,000 school brochures have been printed.",
+      "supported": true,
+      "supported_alone": true
+    },
+    {
+      "id": "w-two-days",
+      "kind": "answer cited without its question",
+      "case": "wrenlow-couriers",
+      "segments": [
+        13,
+        14
+      ],
+      "sentence": "Pryce said it was off the road for two days and was back on Thursday.",
+      "supported": true,
+      "supported_alone": false
+    },
+    {
+      "id": "q-started",
+      "kind": "answer cited without its question",
+      "case": "quillmoor-books",
+      "segments": [
+        16
+      ],
+      "sentence": "Dunmore said he started it in March 2025.",
+      "supported": true,
+      "supported_alone": false
+    },
+    {
+      "id": "q-question-not-evidence",
+      "kind": "only the question says it",
+      "case": "quillmoor-books",
+      "segments": [
+        30
+      ],
+      "sentence": "Dunmore said the cancellation rate is bad.",
+      "supported": false,
+      "supported_alone": false
+    },
+    {
+      "id": "w-absorb",
+      "kind": "contradicts the lines",
+      "case": "wrenlow-couriers",
+      "segments": [
+        41
+      ],
+      "sentence": "Olsen said the rounds can absorb the new parcels.",
+      "supported": false,
+      "supported_alone": false
+    }
+  ],
+  "changes": [
+    {
+      "date": "2026-11-19",
+      "pair": "t-cost",
+      "change": "`supported_alone` corrected from true to false.",
+      "reason": "The label was wrong. The sentence gives the cost of a second visit and cites only the answer ('About 90 pounds a flat, so 1,620 pounds for the 18.'), which does not say what the cost is for. In the first live run the judge marked it unsupported and was right by the rule the pair was meant to test. With the question shown ('What does a second visit cost us?') it is supported, so `supported` stays true."
+    },
+    {
+      "date": "2026-11-19",
+      "pair": "w-two-days, q-started, q-question-not-evidence, w-absorb",
+      "change": "Four pairs added.",
+      "reason": "The judge is now shown the question a cited answer replied to. Two pairs are supported only with the question; two test that the question is never evidence by itself."
+    }
+  ]
+}
