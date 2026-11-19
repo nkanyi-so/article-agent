@@ -89,8 +89,13 @@ In demo mode everything except the model's words runs for real on every request:
 
 | # | Check | Passing |
 |---|---|---|
-| J1 | Groundedness: for each surviving claim, does its cited text support it; and for a model-written headline, do its supporting sentences' cited text support it (the whole kept body when the headline has no number, date or name; a fallback title is not scored). Claims that failed a code check are scored unsupported without asking. | mean ≥ 0.90, no case under 0.80 |
-| J2 | Judge calibration: agreement with about 24 hand-labelled (claim, cited text) pairs, including known negatives (wrong number, inference nobody stated, empty claim) | agreement ≥ 0.90, every known negative failed |
+| J1 | Groundedness: for each surviving claim, does its cited text support it, **each cited answer read with the question it replied to**; and for a model-written headline, does the cited text of the whole kept article support it (a fallback title is not scored). Claims that failed a code check are scored unsupported without asking. | mean ≥ 0.90, no case under 0.80, each case taken as its mean over three runs |
+| J1-alone | The same, with no question shown: the cited lines entirely on their own. This was J1 until 2026-11-19. | reported beside J1 in every result; not a gate |
+| J2 | Judge calibration: agreement with about 24 hand-labelled (claim, cited text) pairs, including known negatives (wrong number, inference nobody stated, empty claim, a sentence only the question supports) | agreement ≥ 0.90, every known negative failed, in every run |
+
+**What J1 measures changed on 2026-11-19, after the first two live runs failed it** (`decisions/0014`). Two changes, both the owner's decision: (1) the judge is shown the question a cited answer was replying to. The question is found by code (the last line of the turn before, when it ends with a question mark), recorded on the claim, and shown to a reader of the trace exactly as the judge sees it, marked as added by code. It is never evidence: no ground rule reads it, and a judge's verdict must still rest on a cited line. (2) A headline is judged against the whole kept article, not only the sentences that share a name or a figure with it. The earlier measure is kept as J1-alone and reported beside J1, so the effect of showing the question is visible in every result. No threshold number was changed.
+
+**Repeated runs.** One run of a case moved by up to 0.2 with no cause, so every case is run three times. E1 to E7 must pass in every run. E8, J1 and J1-alone take each case as its mean over its runs. E9 pools the runs. The result reports each case's single runs beside its mean.
 
 ### Must be refused
 
@@ -109,7 +114,7 @@ At least twelve cases, all fictional: the three seeded transcripts; a speaker co
 
 ### The harness
 
-- `make check` runs the evals in fixture mode: free, deterministic, thresholds enforced, non-zero exit on any failure.
+- `make check` runs the evals in fixture mode: free, deterministic, thresholds enforced, non-zero exit on any failure. It replays three recorded runs of every case.
 - The live run is its own command, asks first with an estimate, and writes a dated result file with the models used, per-case rows and the cost.
 - A failure of the plumbing (timeout, API error, truncated output, a refusal by the model) is recorded as its own outcome, never as a wrong answer.
 - Two baselines are tests: a hand-built perfect run passes everything; an empty article fails.

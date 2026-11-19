@@ -99,26 +99,18 @@
   "response": {
     "blocks": [
       {
-        "text": "{\"points\":[{\"text\":\"Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor (14 hectares, the larger one) and Farrow Bank.\",\"segments\":[7,8,9]},{\"text\":\"Teodor Vance is operations director; Priya Lindqvist is head grower at Ellsmoor.\",\"segments\":[10,11,12]},{\"text\":\"The irrigation project began in March 2025 with a pilot in one 2-hectare block, which had 60 sensors.\",\"segments\":[15,16,28]},{\"text\":\"Before the pilot, every block got 9 fixed-timer irrigation cycles a day regardless of weather, with occasional manual adjustment on very hot days.\",\"segments\":[18,19,22]},{\"text\":\"The replacement is moisture sensors in the growing substrate; the system waters a row when it is actually drying out. Ellsmoor has 420 sensors.\",\"segments\":[24,25,27]},{\"text\":\"The pilot showed they had been watering at the wrong times: plants signalled thirst at eleven while they were watered at nine. Lindqvist agreed to be quoted.\",\"segments\":[30,31,33,34]},{\"text\":\"Tomato water use at Ellsmoor fell from 22 to 15 litres per kilo of fruit, about a third less, for the season after full rollout.\",\"segments\":[37,38,39,40]},{\"text\":\"Full rollout at Ellsmoor finished in October 2025; every block has been on sensors since.\",\"segments\":[42,43]},{\"text\":\"Fertiliser spend is down 11 percent, because less water through the substrate washes out less feed.\",\"segments\":[46,47]},{\"text\":\"Vance says overall yield is flat and he would not claim a yield gain.\",\"segments\":[49,50]},{\"text\":\"Lindqvist cites a 4 percent cucumber yield rise in sensor blocks; Vance notes it is one season and the cucumber variety changed that year; Lindqvist concedes she cannot prove the sensors caused it.\",\"segments\":[52,53,54,55]},{\"text\":\"The Ellsmoor project cost 310,000 euros including sensors, controllers and installation. Payback is expected in about three years, mostly from water and fertiliser savings rather than yield.\",\"segments\":[60,62,63]},{\"text\":\"In June a firmware update knocked out 60 sensors for two days; those rows went back on the old timers as a fallback. Updates are now tested on one row first.\",\"segments\":[66,68,69,70]},{\"text\":\"No one was laid off; three growers were retrained to read sensor data and check flagged rows instead of walking rows with a hand meter. Two like the change, one still walks the rows.\",\"segments\":[73,74,75,76,78,79]},{\"text\":\"Farrow Bank is planned to get the same system in spring 2026. The budget is approved but installation dates are not fixed.\",\"segments\":[82,84,85]},{\"text\":\"Ellsmoor is building a 5,000 cubic metre rainwater tank to reduce mains water use.\",\"segments\":[87,88,89]},{\"text\":\"Advice to other growers: start with one block, and keep the timers as a fallback.\",\"segments\":[92,93,94,95]}],\"corrections\":[],\"disagreements\":[{\"topic\":\"Whether the sensors improved yield (cucumbers)\",\"side_a\":[49,50,53],\"side_b\":[51,52,55]}],\"angle\":\"Korvath's sensor-based irrigation at Ellsmoor cut tomato water use by about a third and fertiliser spend by 11 percent with no layoffs, while the yield benefit remains unproven and the managers differ on it.\"}",
+        "text": "{\"points\":[{\"text\":\"Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor (14 hectares, the bigger one) and Farrow Bank.\",\"segments\":[7,8,9]},{\"text\":\"The irrigation project began in March 2025 with a pilot in one 2-hectare block, which had 60 sensors.\",\"segments\":[15,16,28]},{\"text\":\"Before the pilot, every block got 9 fixed-timer irrigation cycles a day regardless of weather, with occasional manual adjustment on very hot days.\",\"segments\":[18,19,22]},{\"text\":\"The replacement is moisture sensors in the growing substrate, which water a row when it is actually drying out. Ellsmoor has 420 sensors in total.\",\"segments\":[24,25,27]},{\"text\":\"The pilot showed the plants were thirsty at eleven while they had been watered at nine; Priya Lindqvist agreed to be quoted on this.\",\"segments\":[30,31,33,34]},{\"text\":\"On tomatoes, water use fell from 22 to 15 litres per kilo of fruit, about a third less. This is the Ellsmoor figure for the season after full rollout.\",\"segments\":[37,38,39,40]},{\"text\":\"Full rollout at Ellsmoor finished in October 2025, and every block has been on sensors since.\",\"segments\":[42,43]},{\"text\":\"Fertiliser spend is down 11 percent, because less water means less feed washed out of the substrate.\",\"segments\":[46,47]},{\"text\":\"Overall yield is flat according to Teodor Vance. Priya Lindqvist cited a 4 percent cucumber yield rise in the sensor blocks, but both agree it is one season and the cucumber variety changed in the same year.\",\"segments\":[49,50,52,53,55]},{\"text\":\"Ellsmoor cost 310,000 euros including sensors, controllers and installation. Payback is expected in about three years, mostly from water and fertiliser savings rather than yield.\",\"segments\":[60,62,63]},{\"text\":\"In June a firmware update knocked out 60 sensors for two days. Those rows were put back on the old timers as a fallback, and every update is now tested on one row first.\",\"segments\":[66,68,69,70]},{\"text\":\"Nobody was laid off. Three growers were retrained to read sensor data and check flagged rows instead of walking the rows with a hand meter. Two like the change, and one still walks the rows.\",\"segments\":[73,74,75,76,78,79]},{\"text\":\"Farrow Bank is planned to get the same system in spring 2026. The budget is approved but installation dates are not fixed.\",\"segments\":[82,84,85]},{\"text\":\"A 5,000 cubic metre rainwater tank is being built at Ellsmoor to reduce reliance on mains water.\",\"segments\":[87,88,89]},{\"text\":\"Advice to other growers: start with one block and keep the timers for when the sensors go down.\",\"segments\":[92,93,94,95]}],\"corrections\":[],\"disagreements\":[{\"topic\":\"Whether the sensors improved yield\",\"side_a\":[49,50,53],\"side_b\":[52,55]}],\"angle\":\"Korvath Greenhouses' soil-moisture sensor irrigation cut Ellsmoor tomato water use by about a third and fertiliser spend by 11 percent with no layoffs, though the yield benefit remains unproven.\"}",
         "citations": []
       }
     ],
     "parsed": {
       "points": [
         {
-          "text": "Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor (14 hectares, the larger one) and Farrow Bank.",
+          "text": "Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor (14 hectares, the bigger one) and Farrow Bank.",
           "segments": [
             7,
             8,
             9
-          ]
-        },
-        {
-          "text": "Teodor Vance is operations director; Priya Lindqvist is head grower at Ellsmoor.",
-          "segments": [
-            10,
-            11,
-            12
           ]
         },
         {
@@ -138,7 +130,7 @@
           ]
         },
         {
-          "text": "The replacement is moisture sensors in the growing substrate; the system waters a row when it is actually drying out. Ellsmoor has 420 sensors.",
+          "text": "The replacement is moisture sensors in the growing substrate, which water a row when it is actually drying out. Ellsmoor has 420 sensors in total.",
           "segments": [
             24,
             25,
@@ -146,7 +138,7 @@
           ]
         },
         {
-          "text": "The pilot showed they had been watering at the wrong times: plants signalled thirst at eleven while they were watered at nine. Lindqvist agreed to be quoted.",
+          "text": "The pilot showed the plants were thirsty at eleven while they had been watered at nine; Priya Lindqvist agreed to be quoted on this.",
           "segments": [
             30,
             31,
@@ -155,7 +147,7 @@
           ]
         },
         {
-          "text": "Tomato water use at Ellsmoor fell from 22 to 15 litres per kilo of fruit, about a third less, for the season after full rollout.",
+          "text": "On tomatoes, water use fell from 22 to 15 litres per kilo of fruit, about a third less. This is the Ellsmoor figure for the season after full rollout.",
           "segments": [
             37,
             38,
@@ -164,37 +156,31 @@
           ]
         },
         {
-          "text": "Full rollout at Ellsmoor finished in October 2025; every block has been on sensors since.",
+          "text": "Full rollout at Ellsmoor finished in October 2025, and every block has been on sensors since.",
           "segments": [
             42,
             43
           ]
         },
         {
-          "text": "Fertiliser spend is down 11 percent, because less water through the substrate washes out less feed.",
+          "text": "Fertiliser spend is down 11 percent, because less water means less feed washed out of the substrate.",
           "segments": [
             46,
             47
           ]
         },
         {
-          "text": "Vance says overall yield is flat and he would not claim a yield gain.",
+          "text": "Overall yield is flat according to Teodor Vance. Priya Lindqvist cited a 4 percent cucumber yield rise in the sensor blocks, but both agree it is one season and the cucumber variety changed in the same year.",
           "segments": [
             49,
-            50
-          ]
-        },
-        {
-          "text": "Lindqvist cites a 4 percent cucumber yield rise in sensor blocks; Vance notes it is one season and the cucumber variety changed that year; Lindqvist concedes she cannot prove the sensors caused it.",
-          "segments": [
+            50,
             52,
             53,
-            54,
             55
           ]
         },
         {
-          "text": "The Ellsmoor project cost 310,000 euros including sensors, controllers and installation. Payback is expected in about three years, mostly from water and fertiliser savings rather than yield.",
+          "text": "Ellsmoor cost 310,000 euros including sensors, controllers and installation. Payback is expected in about three years, mostly from water and fertiliser savings rather than yield.",
           "segments": [
             60,
             62,
@@ -202,7 +188,7 @@
           ]
         },
         {
-          "text": "In June a firmware update knocked out 60 sensors for two days; those rows went back on the old timers as a fallback. Updates are now tested on one row first.",
+          "text": "In June a firmware update knocked out 60 sensors for two days. Those rows were put back on the old timers as a fallback, and every update is now tested on one row first.",
           "segments": [
             66,
             68,
@@ -211,7 +197,7 @@
           ]
         },
         {
-          "text": "No one was laid off; three growers were retrained to read sensor data and check flagged rows instead of walking rows with a hand meter. Two like the change, one still walks the rows.",
+          "text": "Nobody was laid off. Three growers were retrained to read sensor data and check flagged rows instead of walking the rows with a hand meter. Two like the change, and one still walks the rows.",
           "segments": [
             73,
             74,
@@ -230,7 +216,7 @@
           ]
         },
         {
-          "text": "Ellsmoor is building a 5,000 cubic metre rainwater tank to reduce mains water use.",
+          "text": "A 5,000 cubic metre rainwater tank is being built at Ellsmoor to reduce reliance on mains water.",
           "segments": [
             87,
             88,
@@ -238,7 +224,7 @@
           ]
         },
         {
-          "text": "Advice to other growers: start with one block, and keep the timers as a fallback.",
+          "text": "Advice to other growers: start with one block and keep the timers for when the sensors go down.",
           "segments": [
             92,
             93,
@@ -250,39 +236,38 @@
       "corrections": [],
       "disagreements": [
         {
-          "topic": "Whether the sensors improved yield (cucumbers)",
+          "topic": "Whether the sensors improved yield",
           "side_a": [
             49,
             50,
             53
           ],
           "side_b": [
-            51,
             52,
             55
           ]
         }
       ],
-      "angle": "Korvath's sensor-based irrigation at Ellsmoor cut tomato water use by about a third and fertiliser spend by 11 percent with no layoffs, while the yield benefit remains unproven and the managers differ on it."
+      "angle": "Korvath Greenhouses' soil-moisture sensor irrigation cut Ellsmoor tomato water use by about a third and fertiliser spend by 11 percent with no layoffs, though the yield benefit remains unproven."
     },
     "stop_reason": "end_turn",
     "model": "claude-sonnet-5-5",
     "usage": {
       "input_tokens": 3495,
-      "output_tokens": 1208,
+      "output_tokens": 1129,
       "thinking_tokens": 0
     },
-    "cost_usd": 0.01907,
-    "latency_ms": 8583,
+    "cost_usd": 0.01828,
+    "latency_ms": 7847,
     "attempts": 1,
-    "request_id": "req_011ChBBpik4QnCAtadfqqRWv"
+    "request_id": "req_011ChBnf1a8EMc9eUA2jsVSi"
   },
   "raw_response": {
-    "id": "msg_011ChBBpj8NqToGvKu1UZhRx",
+    "id": "msg_011ChBnf259fP9anB245MLZh",
     "container": null,
     "content": [
       {
-        "text": "{\"points\":[{\"text\":\"Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor (14 hectares, the larger one) and Farrow Bank.\",\"segments\":[7,8,9]},{\"text\":\"Teodor Vance is operations director; Priya Lindqvist is head grower at Ellsmoor.\",\"segments\":[10,11,12]},{\"text\":\"The irrigation project began in March 2025 with a pilot in one 2-hectare block, which had 60 sensors.\",\"segments\":[15,16,28]},{\"text\":\"Before the pilot, every block got 9 fixed-timer irrigation cycles a day regardless of weather, with occasional manual adjustment on very hot days.\",\"segments\":[18,19,22]},{\"text\":\"The replacement is moisture sensors in the growing substrate; the system waters a row when it is actually drying out. Ellsmoor has 420 sensors.\",\"segments\":[24,25,27]},{\"text\":\"The pilot showed they had been watering at the wrong times: plants signalled thirst at eleven while they were watered at nine. Lindqvist agreed to be quoted.\",\"segments\":[30,31,33,34]},{\"text\":\"Tomato water use at Ellsmoor fell from 22 to 15 litres per kilo of fruit, about a third less, for the season after full rollout.\",\"segments\":[37,38,39,40]},{\"text\":\"Full rollout at Ellsmoor finished in October 2025; every block has been on sensors since.\",\"segments\":[42,43]},{\"text\":\"Fertiliser spend is down 11 percent, because less water through the substrate washes out less feed.\",\"segments\":[46,47]},{\"text\":\"Vance says overall yield is flat and he would not claim a yield gain.\",\"segments\":[49,50]},{\"text\":\"Lindqvist cites a 4 percent cucumber yield rise in sensor blocks; Vance notes it is one season and the cucumber variety changed that year; Lindqvist concedes she cannot prove the sensors caused it.\",\"segments\":[52,53,54,55]},{\"text\":\"The Ellsmoor project cost 310,000 euros including sensors, controllers and installation. Payback is expected in about three years, mostly from water and fertiliser savings rather than yield.\",\"segments\":[60,62,63]},{\"text\":\"In June a firmware update knocked out 60 sensors for two days; those rows went back on the old timers as a fallback. Updates are now tested on one row first.\",\"segments\":[66,68,69,70]},{\"text\":\"No one was laid off; three growers were retrained to read sensor data and check flagged rows instead of walking rows with a hand meter. Two like the change, one still walks the rows.\",\"segments\":[73,74,75,76,78,79]},{\"text\":\"Farrow Bank is planned to get the same system in spring 2026. The budget is approved but installation dates are not fixed.\",\"segments\":[82,84,85]},{\"text\":\"Ellsmoor is building a 5,000 cubic metre rainwater tank to reduce mains water use.\",\"segments\":[87,88,89]},{\"text\":\"Advice to other growers: start with one block, and keep the timers as a fallback.\",\"segments\":[92,93,94,95]}],\"corrections\":[],\"disagreements\":[{\"topic\":\"Whether the sensors improved yield (cucumbers)\",\"side_a\":[49,50,53],\"side_b\":[51,52,55]}],\"angle\":\"Korvath's sensor-based irrigation at Ellsmoor cut tomato water use by about a third and fertiliser spend by 11 percent with no layoffs, while the yield benefit remains unproven and the managers differ on it.\"}",
+        "text": "{\"points\":[{\"text\":\"Korvath Greenhouses grows tomatoes and cucumbers under glass at two sites, Ellsmoor (14 hectares, the bigger one) and Farrow Bank.\",\"segments\":[7,8,9]},{\"text\":\"The irrigation project began in March 2025 with a pilot in one 2-hectare block, which had 60 sensors.\",\"segments\":[15,16,28]},{\"text\":\"Before the pilot, every block got 9 fixed-timer irrigation cycles a day regardless of weather, with occasional manual adjustment on very hot days.\",\"segments\":[18,19,22]},{\"text\":\"The replacement is moisture sensors in the growing substrate, which water a row when it is actually drying out. Ellsmoor has 420 sensors in total.\",\"segments\":[24,25,27]},{\"text\":\"The pilot showed the plants were thirsty at eleven while they had been watered at nine; Priya Lindqvist agreed to be quoted on this.\",\"segments\":[30,31,33,34]},{\"text\":\"On tomatoes, water use fell from 22 to 15 litres per kilo of fruit, about a third less. This is the Ellsmoor figure for the season after full rollout.\",\"segments\":[37,38,39,40]},{\"text\":\"Full rollout at Ellsmoor finished in October 2025, and every block has been on sensors since.\",\"segments\":[42,43]},{\"text\":\"Fertiliser spend is down 11 percent, because less water means less feed washed out of the substrate.\",\"segments\":[46,47]},{\"text\":\"Overall yield is flat according to Teodor Vance. Priya Lindqvist cited a 4 percent cucumber yield rise in the sensor blocks, but both agree it is one season and the cucumber variety changed in the same year.\",\"segments\":[49,50,52,53,55]},{\"text\":\"Ellsmoor cost 310,000 euros including sensors, controllers and installation. Payback is expected in about three years, mostly from water and fertiliser savings rather than yield.\",\"segments\":[60,62,63]},{\"text\":\"In June a firmware update knocked out 60 sensors for two days. Those rows were put back on the old timers as a fallback, and every update is now tested on one row first.\",\"segments\":[66,68,69,70]},{\"text\":\"Nobody was laid off. Three growers were retrained to read sensor data and check flagged rows instead of walking the rows with a hand meter. Two like the change, and one still walks the rows.\",\"segments\":[73,74,75,76,78,79]},{\"text\":\"Farrow Bank is planned to get the same system in spring 2026. The budget is approved but installation dates are not fixed.\",\"segments\":[82,84,85]},{\"text\":\"A 5,000 cubic metre rainwater tank is being built at Ellsmoor to reduce reliance on mains water.\",\"segments\":[87,88,89]},{\"text\":\"Advice to other growers: start with one block and keep the timers for when the sensors go down.\",\"segments\":[92,93,94,95]}],\"corrections\":[],\"disagreements\":[{\"topic\":\"Whether the sensors improved yield\",\"side_a\":[49,50,53],\"side_b\":[52,55]}],\"angle\":\"Korvath Greenhouses' soil-moisture sensor irrigation cut Ellsmoor tomato water use by about a third and fertiliser spend by 11 percent with no layoffs, though the yield benefit remains unproven.\"}",
         "type": "text"
       }
     ],
@@ -302,7 +287,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 3495,
-      "output_tokens": 1208,
+      "output_tokens": 1129,
       "output_tokens_details": {
         "thinking_tokens": 0
       },

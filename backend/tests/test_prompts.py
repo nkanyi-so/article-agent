@@ -2,6 +2,8 @@
 
 import re
 
+from app.evals import judge
+from app.evals.cases import load_cases
 from app.pipeline import draft, extract
 from app.pipeline.ground import _lower_case_words, _names
 from app.pipeline.ingest import ingest
@@ -20,16 +22,19 @@ PROMPTS = {
     "draft system": draft.DRAFT_SYSTEM,
     "draft notes introduction": draft._NOTES_INTRO,
     "extract system": extract.EXTRACT_SYSTEM,
+    "judge system": judge.JUDGE_SYSTEM,
 }
 
 
 def names_in_the_test_transcripts() -> set[str]:
-    """Every speaker, organisation, place and month named in a seed or a fixture transcript."""
+    """Every speaker, organisation, place and month named in a seed, a fixture transcript or
+    an eval case."""
     sources = [(seed.text(), seed.title) for seed in SEEDS]
     sources += [
         ((FIXTURES / "transcripts" / filename).read_text(), title)
         for filename, title in TRANSCRIPTS.values()
     ]
+    sources += [(case.text(), case.title) for case in load_cases() if case.expect_error is None]
     names: set[str] = set()
     for text, title in sources:
         segments = ingest(text, title).segments

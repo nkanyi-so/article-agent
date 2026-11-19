@@ -31,6 +31,7 @@ from app.errors import (
     RunNotFound,
     SeedNotFound,
 )
+from app.evals.schemas import EvalReport
 from app.events import RunEvent, RunFailed
 from app.model.fixture import FixtureModelClient
 from app.model.types import ModelClient
@@ -116,6 +117,9 @@ class RunDetail(BaseModel):
     model_calls: list[StoredModelCall]
     segments: list[Segment]
     article: Article | None
+    evaluation: EvalReport | None = Field(
+        description="The run's own checks and the judge's verdicts; null until it is evaluated."
+    )
 
 
 class ErrorInfo(BaseModel):
@@ -235,6 +239,10 @@ def _detail(stored: StoredRun) -> RunDetail:
     if ground_record and ground_record.output:
         result = GroundResult.model_validate(ground_record.output)
         article = Article(headline=result.headline, claims=result.claims, removed=result.removed)
+    evaluation: EvalReport | None = None
+    evaluate_record = by_name.get("evaluate")
+    if evaluate_record and evaluate_record.status == "completed" and evaluate_record.output:
+        evaluation = EvalReport.model_validate(evaluate_record.output)
     return RunDetail(
         run=stored.run,
         cost_usd=round(sum(call.cost_usd for call in stored.model_calls), 6),
@@ -242,6 +250,7 @@ def _detail(stored: StoredRun) -> RunDetail:
         model_calls=stored.model_calls,
         segments=segments,
         article=article,
+        evaluation=evaluation,
     )
 
 

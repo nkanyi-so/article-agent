@@ -17,7 +17,9 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ValidationError
 
-from app.errors import AppError, ReplayNotPossible, RunTimedOut
+from app.errors import AppError, FixtureMiss, ReplayNotPossible, RunTimedOut
+from app.evals import checks, judge
+from app.evals.schemas import EvalReport, JudgeResult
 from app.events import (
     AnyRunEvent,
     RunCompleted,
@@ -179,18 +181,72 @@ async def _ground(ctx: _Context) -> dict[str, Any]:
     return result.model_dump(mode="json")
 
 
-# The evaluate stage joins this list in Phase 6.
+async def _judge(ctx: _Context, failed_in_code: set[int]) -> JudgeResult:
+    """Asks the judge about the sentences the code has not already failed. A judge that
+    cannot be used is recorded as that, and the article stands: it is not a verdict."""
+    assert ctx.ingested is not None and ctx.state.result is not None  # noqa: S101
+    decided, ask = judge.questions(ctx.state.result, ctx.ingested.segments, failed_in_code)
+    items = [item for _, item in ask]
+    if not items:
+        # Every sentence failed a code check and there is no model headline: nothing to ask,
+        # so no call is made and nothing is billed. The code's verdicts are the result.
+        return JudgeResult(
+            outcome="judged",
+            verdicts=decided,
+            score=judge.score(decided),
+            score_alone=judge.score_alone(decided),
+        )
+    request = judge.build_judge_request(items)
+    try:
+        response = await ctx.call_model("evaluate", request)
+        judgements = judge.parse_judgement(response, items)
+    except FixtureMiss:
+        # A missing recording is a broken setup, not a judge that failed. Say so loudly.
+        raise
+    except AppError as error:
+        return JudgeResult(outcome="failed", error=error.code, model=request.model)
+    verdicts = judge.verdicts_from(decided, ask, judgements)
+    return JudgeResult(
+        outcome="judged",
+        model=response.model,
+        verdicts=verdicts,
+        score=judge.score(verdicts),
+        score_alone=judge.score_alone(verdicts),
+    )
+
+
+async def _evaluate(ctx: _Context) -> dict[str, Any]:
+    """Checks the run from its own stored records, then asks the judge."""
+    assert ctx.state.result is not None  # noqa: S101
+    ctx.stage_input = {"claims": len(ctx.state.result.claims)}
+    view = checks.view_of(
+        ctx.state.stages[:-1], [call.stage for call in ctx.state.model_calls], ctx.state.status
+    )
+    cites, uncited = checks.cites_existing(view)
+    facts, unsupported = checks.facts_in_cited_text(view)
+    drafted, removed = checks.removal(view)
+    report = EvalReport(
+        checks=[checks.structural(view, upto="ground", finished=False), cites, facts],
+        judge=await _judge(ctx, uncited | unsupported),
+        drafted=drafted,
+        removed=removed,
+        removal_rate=removed / drafted if drafted else 0.0,
+    )
+    return report.model_dump(mode="json")
+
+
 STAGES: tuple[tuple[StageName, Stage], ...] = (
     ("ingest", _ingest),
     ("extract", _extract),
     ("draft", _draft),
     ("ground", _ground),
+    ("evaluate", _evaluate),
 )
 
 
 STAGE_NAMES: tuple[StageName, ...] = tuple(name for name, _ in STAGES)
 # The stages a run can be re-run from: the ones this runner executes. Keep in step with STAGES.
-RunnableStage = Literal["ingest", "extract", "draft", "ground"]
+RunnableStage = Literal["ingest", "extract", "draft", "ground", "evaluate"]
 
 
 @dataclass(frozen=True)
@@ -211,6 +267,8 @@ def _restore(ctx: _Context, name: StageName, output: dict[str, Any]) -> None:
         ctx.extract = ExtractResult.model_validate(output)
     elif name == "draft":
         ctx.draft_blocks = [DraftBlock.model_validate(block) for block in output["blocks"]]
+    elif name == "ground":
+        ctx.state.result = GroundResult.model_validate(output)
 
 
 def _utc_now() -> datetime:

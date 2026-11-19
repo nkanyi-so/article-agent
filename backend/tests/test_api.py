@@ -109,12 +109,8 @@ async def test_a_stored_run_shows_its_article_its_removals_and_its_trace(
 
     assert detail["run"]["title"].startswith("Korvath Greenhouses")
     assert detail["article"]["headline"]["source"] == "model"
-    assert len(detail["article"]["claims"]) == 20
-    removed = detail["article"]["removed"]
-    assert [(u["reason"], u["detail"]) for u in removed] == [
-        ("no_citation", []),
-        ("unsupported_name", ["Farrow", "Bank"]),
-    ]
+    assert len(detail["article"]["claims"]) == 19
+    assert detail["article"]["removed"] == []
     assert len(detail["segments"]) == 100
     first = detail["article"]["claims"][0]
     assert detail["segments"][first["segment_indexes"][0]]["text"].startswith("For readers who")
@@ -123,6 +119,7 @@ async def test_a_stored_run_shows_its_article_its_removals_and_its_trace(
         ("extract", "completed"),
         ("draft", "completed"),
         ("ground", "completed"),
+        ("evaluate", "completed"),
     ]
     assert all(
         s["input"] and s["output"] and s["duration_ms"] is not None for s in detail["stages"]
@@ -131,10 +128,72 @@ async def test_a_stored_run_shows_its_article_its_removals_and_its_trace(
     assert [(c["stage"], c["source"]) for c in calls] == [
         ("extract", "fixture"),
         ("draft", "fixture"),
+        ("evaluate", "fixture"),
     ]
     assert calls[1]["request"]["system"].startswith("You write short news briefs")
     assert calls[1]["response"]["blocks"]
-    assert detail["cost_usd"] == pytest.approx(calls[0]["cost_usd"] + calls[1]["cost_usd"])
+    assert calls[2]["model_requested"] == "claude-opus-5-5"
+    assert detail["cost_usd"] == pytest.approx(sum(c["cost_usd"] for c in calls))
+
+
+async def test_a_stored_run_shows_its_evaluation(client: httpx.AsyncClient) -> None:
+    detail = (await client.get(f"/api/runs/{KORVATH}")).json()
+
+    evaluation = detail["evaluation"]
+    assert [(c["id"], c["passed"]) for c in evaluation["checks"]] == [
+        ("E1", True),
+        ("E2", True),
+        ("E3", True),
+    ]
+    judged = evaluation["judge"]
+    assert (judged["outcome"], judged["model"]) == ("judged", "claude-opus-5-5")
+    # One verdict for each kept sentence and one for the model's headline. The score is the
+    # share the judge found supported with each answer's question shown; the second score
+    # is the share with the cited lines alone, which is lower on this recording.
+    verdicts = judged["verdicts"]
+    assert len(verdicts) == len(detail["article"]["claims"]) + 1
+    assert judged["score"] == pytest.approx(sum(v["supported"] for v in verdicts) / len(verdicts))
+    alone = sum(v["supported_alone"] for v in verdicts) / len(verdicts)
+    assert judged["score_alone"] == pytest.approx(alone)
+    assert judged["score_alone"] < judged["score"]
+    assert all(v["supported"] or not v["supported_alone"] for v in verdicts)
+    for verdict in judged["verdicts"]:
+        if verdict["claim"] is not None:
+            cited = detail["article"]["claims"][verdict["claim"]]["segment_indexes"]
+            assert set(verdict["supporting_segments"]) <= set(cited)
+    assert (evaluation["drafted"], evaluation["removed"], evaluation["removal_rate"]) == (19, 0, 0)
+
+
+async def test_a_stored_claim_shows_the_question_its_cited_answer_replied_to(
+    client: httpx.AsyncClient,
+) -> None:
+    # What the reader is shown is what the judge was shown: the same line, found by code.
+    detail = (await client.get(f"/api/runs/{KORVATH}")).json()
+    segments = detail["segments"]
+    with_question = [c for c in detail["article"]["claims"] if c["question_segments"]]
+
+    assert with_question
+    for claim in with_question:
+        for index in claim["question_segments"]:
+            assert segments[index]["text"].endswith("?")
+            assert index not in claim["segment_indexes"]
+            assert index + 1 in claim["segment_indexes"]
+    judge_call = detail["model_calls"][2]["request"]["content"][0]["text"]
+    first = with_question[0]
+    question = segments[first["question_segments"][0]]
+    shown = f"[{question['index']}] {question['speaker']}: {question['text']}"
+    assert f"<context>\n{shown}" in judge_call
+
+
+async def test_a_run_that_failed_before_the_evaluation_has_none() -> None:
+    refused = create_app(Settings(), model_client=FakeClient(extract=ModelRefused("unspecified")))
+    async with client_for(refused) as client:
+        started = await client.post("/api/runs/stream", json={"seed_id": "korvath-greenhouses"})
+        run_id = events_of(started.text)[0]["run_id"]
+        detail = (await client.get(f"/api/runs/{run_id}")).json()
+
+    assert detail["run"]["status"] == "failed"
+    assert detail["evaluation"] is None
 
 
 # ------------------------------------------------------------------ starting a run
@@ -155,6 +214,7 @@ async def test_a_seeded_run_streams_to_run_completed_and_is_stored(
         "stage_started", "stage_completed",
         "stage_started", "stage_completed",
         "stage_started", "stage_completed",
+        "stage_started", "stage_completed",
         "run_completed",
     ]  # fmt: skip
     run_id = events[0]["run_id"]
@@ -166,7 +226,7 @@ async def test_a_seeded_run_streams_to_run_completed_and_is_stored(
         "korvath-greenhouses",
     )
     assert stored["run"]["pinned"] is False
-    assert len(stored["article"]["claims"]) == 20
+    assert len(stored["article"]["claims"]) == 19
     listed = [r["id"] for r in (await client.get("/api/runs")).json()["runs"]]
     assert run_id in listed and len(listed) == 4
 
@@ -350,6 +410,7 @@ async def test_a_replay_from_draft_is_a_new_run_linked_to_its_parent(
         "stage_completed", "stage_completed",
         "stage_started", "stage_completed",
         "stage_started", "stage_completed",
+        "stage_started", "stage_completed",
         "run_completed",
     ]  # fmt: skip
     assert [e.get("copied_from_run_id") for e in events[1:3]] == [KORVATH, KORVATH]
@@ -364,8 +425,9 @@ async def test_a_replay_from_draft_is_a_new_run_linked_to_its_parent(
     assert run["status"] == "completed"
     assert [(s["name"], s["copied_from_run_id"]) for s in stored["stages"]] == [
         ("ingest", KORVATH), ("extract", KORVATH), ("draft", None), ("ground", None),
+        ("evaluate", None),
     ]  # fmt: skip
-    assert [c["stage"] for c in stored["model_calls"]] == ["draft"]
+    assert [c["stage"] for c in stored["model_calls"]] == ["draft", "evaluate"]
     parent = (await client.get(f"/api/runs/{KORVATH}")).json()
     assert stored["article"] == parent["article"]
     assert parent["run"]["status"] == "completed"
@@ -693,18 +755,36 @@ def test_the_committed_openapi_file_is_what_the_code_writes() -> None:
 # ------------------------------------------------------------------ found by the reviewer
 
 
-async def test_replaying_from_a_stage_that_is_not_run_yet_is_refused_before_the_stream(
+async def test_replaying_from_a_stage_that_does_not_exist_is_refused_before_the_stream(
     client: httpx.AsyncClient, app: FastAPI
 ) -> None:
-    # "evaluate" is a stage name the schemas know, but the runner does not run it until Phase 6.
     response = await client.post(
-        f"/api/runs/{KORVATH}/replay/stream", json={"from_stage": "evaluate"}
+        f"/api/runs/{KORVATH}/replay/stream", json={"from_stage": "publish"}
     )
 
     assert response.status_code == 422
     assert error_of(response)["code"] == "invalid_request"
+    # What a caller may ask for is exactly what the runner runs.
+    from app.pipeline.runner import STAGE_NAMES
+
     stages = app.openapi()["components"]["schemas"]["ReplayRequest"]["properties"]["from_stage"]
-    assert stages["enum"] == ["ingest", "extract", "draft", "ground"]
+    assert stages["enum"] == list(STAGE_NAMES)
+
+
+async def test_a_replay_from_evaluate_copies_the_article_and_judges_it_again(
+    client: httpx.AsyncClient,
+) -> None:
+    response = await client.post(
+        f"/api/runs/{KORVATH}/replay/stream", json={"from_stage": "evaluate"}
+    )
+
+    events = events_of(response.text)
+    assert types(events)[-1] == "run_completed"
+    stored = (await client.get(f"/api/runs/{events[0]['run_id']}")).json()
+    assert [s["copied_from_run_id"] for s in stored["stages"]] == [KORVATH] * 4 + [None]
+    assert [c["stage"] for c in stored["model_calls"]] == ["evaluate"]
+    parent = (await client.get(f"/api/runs/{KORVATH}")).json()
+    assert stored["evaluation"] == parent["evaluation"]
 
 
 @pytest.mark.parametrize("failing_call", [1, 2, 3, 6, 10])

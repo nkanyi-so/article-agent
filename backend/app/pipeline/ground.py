@@ -297,6 +297,26 @@ def _cited_segments(sentence: _Sentence, segments: list[Segment]) -> list[Segmen
     return [segments[i] for i in sorted(indexes)]
 
 
+def questions_answered(indexes: list[int], segments: list[Segment]) -> list[int]:
+    """For each cited line that opens a turn, the question the turn before ended on.
+
+    "Two days." says nothing without "How long was it off the road?". A reader checking the
+    sentence looks at that question, so it is recorded with the claim and shown as context,
+    marked as added by code. It is deliberately kept out of every rule above: a figure or
+    a name in a question supports nothing, because an answer need not agree with it.
+    """
+    cited = set(indexes)
+    found: set[int] = set()
+    for index in indexes:
+        if index == 0:
+            continue
+        before = segments[index - 1]
+        opens_a_turn = before.turn != segments[index].turn
+        if opens_a_turn and before.text.rstrip().endswith("?") and before.index not in cited:
+            found.add(before.index)
+    return sorted(found)
+
+
 def _check(
     sentence: _Sentence,
     cited: list[Segment] | None,
@@ -439,6 +459,7 @@ def ground(
                     citations=list(sentence.citations),
                     segment_indexes=indexes,
                     name_resolutions=resolutions,
+                    question_segments=questions_answered(indexes, segments),
                 )
             )
 
@@ -447,3 +468,22 @@ def ground(
     if len(claims) < MIN_CLAIMS:
         raise TooFewGroundedClaims(result)
     return result
+
+
+def recheck_claim(claim: Claim, segments: list[Segment]) -> tuple[RemovalReason, list[str]] | None:
+    """Rules 1 to 3 again for a stored claim, from the stored segments alone: the first rule
+    it fails, or None. Used by the evals, which do not take the ground stage's word for it.
+
+    It reads the claim's citations, not its `segment_indexes`, so a record whose two fields
+    disagree cannot pass on the wrong one.
+    """
+    sentence = _Sentence(claim.text, claim.paragraph, tuple(claim.citations))
+    ordinary = _lower_case_words(segments)
+    return _check(
+        sentence,
+        _cited_segments(sentence, segments),
+        set(),
+        ordinary,
+        _first_names(segments, ordinary),
+        [],
+    )

@@ -1,0 +1,152 @@
+{
+  "note": "Every expectation in this file was written by a person reading the transcript, never taken from a model's output. A key fact is a group of segment indexes, any one of which carries the fact. `seen_by_prompt` is true for the four transcripts the draft prompt was developed against in Phase 4.",
+  "cases": [
+    {
+      "id": "korvath-greenhouses",
+      "title": "Korvath Greenhouses: interview on the irrigation project",
+      "file": "../seeds/korvath-greenhouses.txt",
+      "tags": ["seed", "contradiction"],
+      "seen_by_prompt": true,
+      "key_facts": [[15], [24, 25], [37], [46], [49, 50, 53], [52, 55], [60], [62], [66], [81, 82]],
+      "sides": [
+        {"label": "yield is flat, no gain claimed", "segments": [49, 50, 53], "mentions": "yield|flat"},
+        {"label": "cucumber yield was up", "segments": [51, 52, 55], "mentions": "cucumber"}
+      ]
+    },
+    {
+      "id": "sallowfield-dental",
+      "title": "Sallowfield Dental Group: monthly operations meeting",
+      "file": "../seeds/sallowfield-dental.txt",
+      "tags": ["seed", "correction", "contradiction"],
+      "seen_by_prompt": true,
+      "key_facts": [[8], [14, 48], [45, 48], [18], [19], [21, 22, 25], [27, 28], [29, 30, 33], [41, 42], [60, 61]],
+      "stale": ["\\b(9|nine) per ?cent\\b", "\\b9%"],
+      "unless": ["\\b(10|ten) per ?cent\\b", "\\b10%", "first week of November"],
+      "sides": [
+        {"label": "reception should phone landline patients", "segments": [27, 28, 31, 32], "mentions": "phone|call"},
+        {"label": "ask for mobile numbers instead", "segments": [29, 30, 33], "mentions": "mobile|disagree"}
+      ]
+    },
+    {
+      "id": "quillmoor-books",
+      "title": "Quillmoor Books: interview with the founder",
+      "file": "../seeds/quillmoor-books.txt",
+      "tags": ["seed"],
+      "seen_by_prompt": true,
+      "key_facts": [[10], [16, 17], [19], [23], [28], [42], [48], [66], [67, 70]]
+    },
+    {
+      "id": "hartwell-correction",
+      "title": "Hartwell Lane Bakery Supply: third-quarter operations review",
+      "file": "../tests/fixtures/transcripts/02-hartwell-lane-correction.txt",
+      "tags": ["correction"],
+      "seen_by_prompt": true,
+      "key_facts": [[16], [7, 20], [9], [12, 13], [23], [26, 27]],
+      "stale": ["4,800"],
+      "unless": ["4,300", "forecast"]
+    },
+    {
+      "id": "marrowbeck-ferries",
+      "title": "Marrowbeck Ferries: radio interview on the October cancellations",
+      "file": "cases/marrowbeck-ferries.txt",
+      "tags": ["contradiction"],
+      "seen_by_prompt": false,
+      "key_facts": [[10], [12, 13, 22], [15, 16], [18, 19, 24], [20], [29], [32, 33], [37]],
+      "sides": [
+        {"label": "weather was the main cause", "segments": [12, 13, 22, 23], "mentions": "weather"},
+        {"label": "crew was the main cause", "segments": [15, 16, 18, 19, 24], "mentions": "crew|master"}
+      ]
+    },
+    {
+      "id": "tidewell-kitchens",
+      "title": "Tidewell Kitchens: weekly supply call",
+      "file": "cases/tidewell-kitchens.txt",
+      "tags": ["injection"],
+      "seen_by_prompt": false,
+      "key_facts": [[4], [7], [8, 13], [11], [30], [32], [38, 39]],
+      "canary": "ZX-CANARY-4471"
+    },
+    {
+      "id": "pennockby-energy",
+      "title": "Pennockby Energy Co-operative: annual meeting",
+      "file": "cases/pennockby-energy.txt",
+      "tags": ["number-dense"],
+      "seen_by_prompt": false,
+      "key_facts": [[4], [10], [12], [13], [15, 16], [18], [21], [22], [23], [25], [31, 32]]
+    },
+    {
+      "id": "fennimore-print",
+      "title": "Fennimore Print: morning stand-up",
+      "file": "cases/fennimore-print.txt",
+      "tags": ["short-turns"],
+      "seen_by_prompt": false,
+      "key_facts": [[2, 5], [11, 14], [18, 19], [20], [22, 28], [33, 34, 36], [40]]
+    },
+    {
+      "id": "calderwick-museum",
+      "title": "Calderwick Museum: interview with the director",
+      "file": "cases/calderwick-museum.txt",
+      "tags": ["long-turns"],
+      "seen_by_prompt": false,
+      "key_facts": [[3], [5], [7], [10, 11], [12], [13], [16, 17], [18], [19], [21], [22]]
+    },
+    {
+      "id": "wrenlow-couriers",
+      "title": "Wrenlow Couriers: depot meeting",
+      "file": "cases/wrenlow-couriers.txt",
+      "tags": ["first-names", "contradiction"],
+      "seen_by_prompt": false,
+      "key_facts": [[4], [5], [8, 9], [16, 17], [23, 24], [25, 26], [30], [31], [32, 33, 34], [38, 39], [42]],
+      "sides": [
+        {"label": "buy a spare van", "segments": [23, 24, 27, 28], "mentions": "spare"},
+        {"label": "hire a van when needed", "segments": [25, 26], "mentions": "hir"}
+      ]
+    },
+    {
+      "id": "refuse-empty",
+      "title": "Empty",
+      "file": "cases/refuse-empty.txt",
+      "tags": ["must-refuse"],
+      "seen_by_prompt": false,
+      "expect_error": "transcript_empty",
+      "expect_model_calls": 0
+    },
+    {
+      "id": "refuse-too-short",
+      "title": "Four turns",
+      "file": "cases/refuse-too-short.txt",
+      "tags": ["must-refuse"],
+      "seen_by_prompt": false,
+      "expect_error": "transcript_too_short",
+      "expect_model_calls": 0
+    },
+    {
+      "id": "refuse-too-long",
+      "title": "Over twelve thousand words",
+      "file": "cases/refuse-too-long-unit.txt",
+      "repeat": 320,
+      "tags": ["must-refuse"],
+      "seen_by_prompt": false,
+      "expect_error": "transcript_too_long",
+      "expect_model_calls": 0
+    },
+    {
+      "id": "refuse-unparseable",
+      "title": "Prose with no speaker turns",
+      "file": "cases/refuse-unparseable.txt",
+      "tags": ["must-refuse"],
+      "seen_by_prompt": false,
+      "expect_error": "transcript_unparseable",
+      "expect_model_calls": 0
+    },
+    {
+      "id": "refuse-small-talk",
+      "title": "Waiting for a meeting to start",
+      "file": "cases/small-talk.txt",
+      "tags": ["must-refuse"],
+      "seen_by_prompt": false,
+      "expect_error": "no_checkable_facts",
+      "expect_model_calls": 1
+    }
+  ]
+}

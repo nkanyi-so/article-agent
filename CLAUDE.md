@@ -2,7 +2,7 @@
 
 A public portfolio piece: it turns a meeting or interview transcript into a short article in which every sentence points at the transcript sentences that support it, with a stage-by-stage trace that can be re-run from any stage and an eval score. The reader is an engineer or hiring manager judging whether the author can build a language-model feature that survives production. It is a rebuild on synthetic data. The one claim it has to prove: the model added nothing the speakers did not say, and you can check that.
 
-**Where it actually is:** see the status line at the top of `docs/PLAN.md`. `frontend/` is ported from the old project and still contains its name-lookup UI until Phase 7. `reference/` is old code to read, not to run.
+**Where it actually is:** see the status line at the top of `docs/PLAN.md`. `frontend/` is ported from the old project and still contains its name-lookup UI until Phase 7.
 
 Source of truth, in this order: `docs/SPEC.md` (what), `docs/ARCHITECTURE.md` (how), `docs/PLAN.md` (phases, gates, progress log), `docs/decisions/` (why). If code and docs disagree, stop and say so. Files in `docs/profiles/` (`llm-app`, `portfolio-piece`) are rules for this project too.
 

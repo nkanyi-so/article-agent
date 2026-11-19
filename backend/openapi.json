@@ -30,6 +30,60 @@
         "title": "Article",
         "type": "object"
       },
+      "CheckResult": {
+        "description": "One check's verdict on one run. `score` is the share that passed, 0 to 1.",
+        "properties": {
+          "detail": {
+            "default": [],
+            "description": "What failed, in words a person can read.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Detail",
+            "type": "array"
+          },
+          "id": {
+            "enum": [
+              "E1",
+              "E2",
+              "E3",
+              "E4",
+              "E5",
+              "E6",
+              "E7",
+              "E8",
+              "E9",
+              "J1",
+              "J1-alone",
+              "J2"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          },
+          "score": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "passed",
+          "score"
+        ],
+        "title": "CheckResult",
+        "type": "object"
+      },
       "Citation": {
         "description": "A pointer into the transcript: segments from `start_segment` up to, not including,\n`end_segment`.",
         "properties": {
@@ -79,6 +133,15 @@
             "minimum": 0.0,
             "title": "Paragraph",
             "type": "integer"
+          },
+          "question_segments": {
+            "default": [],
+            "description": "Added by code, not cited by the model: for each cited line that opens a turn, the question the turn before ended on. Shown to the reader and to the judge as context. Never evidence: no ground rule reads it.",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Question Segments",
+            "type": "array"
           },
           "segment_indexes": {
             "items": {
@@ -183,6 +246,44 @@
           "text"
         ],
         "title": "DraftBlock",
+        "type": "object"
+      },
+      "EvalReport": {
+        "description": "The evaluate stage's output for one run.",
+        "properties": {
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/CheckResult"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "drafted": {
+            "description": "Sentences the model drafted.",
+            "title": "Drafted",
+            "type": "integer"
+          },
+          "judge": {
+            "$ref": "#/components/schemas/JudgeResult"
+          },
+          "removal_rate": {
+            "title": "Removal Rate",
+            "type": "number"
+          },
+          "removed": {
+            "description": "Of those, how many the ground check removed.",
+            "title": "Removed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "checks",
+          "judge",
+          "drafted",
+          "removed",
+          "removal_rate"
+        ],
+        "title": "EvalReport",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -300,6 +401,79 @@
           "store"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "JudgeResult": {
+        "description": "`failed` means the judge could not be used (a refusal, a timeout, an unusable\nresponse). It is plumbing, and is never counted as an unsupported sentence.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "An error code, when it failed.",
+            "title": "Error"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "outcome": {
+            "enum": [
+              "judged",
+              "failed"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Share of sentences supported.",
+            "title": "Score"
+          },
+          "score_alone": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The same share when no question is shown with an answer.",
+            "title": "Score Alone"
+          },
+          "verdicts": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Verdict"
+            },
+            "title": "Verdicts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "JudgeResult",
         "type": "object"
       },
       "Limits": {
@@ -561,7 +735,8 @@
               "ingest",
               "extract",
               "draft",
-              "ground"
+              "ground",
+              "evaluate"
             ],
             "title": "From Stage",
             "type": "string"
@@ -619,6 +794,17 @@
             "title": "Cost Usd",
             "type": "number"
           },
+          "evaluation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvalReport"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The run's own checks and the judge's verdicts; null until it is evaluated."
+          },
           "model_calls": {
             "items": {
               "$ref": "#/components/schemas/StoredModelCall"
@@ -650,7 +836,8 @@
           "stages",
           "model_calls",
           "segments",
-          "article"
+          "article",
+          "evaluation"
         ],
         "title": "RunDetail",
         "type": "object"
@@ -1448,6 +1635,64 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "Verdict": {
+        "description": "Whether one sentence is supported by the transcript lines it cites.",
+        "properties": {
+          "claim": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Index into the run's claims; null for the headline.",
+            "title": "Claim"
+          },
+          "decided_by": {
+            "description": "A sentence that fails a code check is scored unsupported without asking.",
+            "enum": [
+              "code",
+              "judge"
+            ],
+            "title": "Decided By",
+            "type": "string"
+          },
+          "reason": {
+            "default": "",
+            "title": "Reason",
+            "type": "string"
+          },
+          "supported": {
+            "description": "Supported, reading each cited answer with the question it replied to.",
+            "title": "Supported",
+            "type": "boolean"
+          },
+          "supported_alone": {
+            "default": false,
+            "description": "Supported by the cited lines with no question shown.",
+            "title": "Supported Alone",
+            "type": "boolean"
+          },
+          "supporting_segments": {
+            "default": [],
+            "description": "The cited segments the judge named. Never outside the citation.",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Supporting Segments",
+            "type": "array"
+          }
+        },
+        "required": [
+          "claim",
+          "supported",
+          "decided_by"
+        ],
+        "title": "Verdict",
         "type": "object"
       }
     }

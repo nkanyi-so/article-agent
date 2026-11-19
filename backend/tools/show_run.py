@@ -89,7 +89,9 @@ def show_run(run_id: str) -> None:
             paragraph = claim["paragraph"]
             print()
         cited = ", ".join(str(i) for i in claim["segment_indexes"])
-        print(f"  [{number}] {claim['text']}  (cites {cited})")
+        asked = ", ".join(str(i) for i in claim["question_segments"])
+        question = f"; in answer to {asked}, added by code" if asked else ""
+        print(f"  [{number}] {claim['text']}  (cites {cited}{question})")
 
     print(f"\nREMOVED BY THE GROUND CHECK: {len(article['removed'])}")
     for unit in article["removed"]:
@@ -107,6 +109,12 @@ def show_claim(run_id: str, number: int) -> None:
     for index in claim["segment_indexes"]:
         segment = detail["segments"][index]
         print(f"  [{index}] {segment['speaker']}: {segment['text']}")
+    if claim["question_segments"]:
+        # Not cited by the model. Found by code, and shown to the judge in the same way.
+        print("\nTHE QUESTION A CITED LINE WAS ANSWERING (added by code, not evidence)")
+        for index in claim["question_segments"]:
+            segment = detail["segments"][index]
+            print(f"  [{index}] {segment['speaker']}: {segment['text']}")
 
 
 def main() -> None:

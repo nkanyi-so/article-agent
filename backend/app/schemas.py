@@ -87,6 +87,14 @@ class Claim(BaseModel):
     name_resolutions: list[NameResolution] = Field(
         default=[], description="Names kept by the first-name rule, so the trace shows it."
     )
+    question_segments: list[int] = Field(
+        default=[],
+        description=(
+            "Added by code, not cited by the model: for each cited line that opens a turn, "
+            "the question the turn before ended on. Shown to the reader and to the judge as "
+            "context. Never evidence: no ground rule reads it."
+        ),
+    )
 
 
 RemovalReason = Literal[
