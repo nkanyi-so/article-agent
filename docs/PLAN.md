@@ -1317,6 +1317,23 @@ pass  desktop and phone  re-run from the draft stage (opened the new run, marked
 
 **The same check on the public address, as deployed before this pull request:** 12 of 16. The four failures are "start a run and watch it finish" and "re-run from a stage" at each width, with the page showing "No such run": the defect above. I tried to put this phase's code on the host to check it there, and the deploy of unmerged code was refused by the session's permissions, which is right: it has to go through the merge.
 
+**This phase's backend on its preview deployment** (behind the host's login, reached with the CLI's authenticated request): four seeds listed; `/api/runs/s--quillmoor-books--0a1b2c3d`, a run nobody started, answers 200 and so does a re-run chained on it; `s--nope--0a1b2c3d` and `whatever` answer 404; `/skeleton/stream` 404; the altered run carries its note and its two removals; a run started there was read back four times, 200 each. The preview frontend cannot be checked the same way: it is built to call the production backend, which only accepts the production frontend's origin.
+
+**The verifier's table** (local production build, real Chrome; and read-only requests to the public address).
+
+| # | Step | What happened | |
+|---|---|---|---|
+| 1 | `make check` | Exit 0. 384 backend tests, the eval set, 36 frontend tests | pass |
+| 2 | The browser check, locally | 16 lines of `pass`, 8 at each width, no failure: first page, a seeded article, a normal and a flagged sentence, the headline, the removed sentence, a run started and finished (4 stage states seen), a re-run from `draft` | pass |
+| 3 | The altered run | The note says "Altered on purpose"; removed are `unsupported_number` 17 and a `no_citation` sentence; neither is among the 17 kept | pass |
+| 4 | A run made from its address | 200 for a recipe nobody started; 404 for a seed that does not exist and for a plain word | pass |
+| 5 | The limit on that | Fifteen new ids in a row: four 200s, then eleven 429s; a stored run still read with 200. It expected ten 200s: the browser check and row 4 had used six of the minute's ten first. The exact count is held by a unit test (three allowed, then 429) | pass, with that note |
+| 6 | Rule 5 in the eval set | The museum case 1.00, 1.00, 1.00 with 2 of 51 removed; 14 of 468 removed in all; J1 0.959, lowest 0.906 | pass |
+| 7 | Default dependencies | fastapi, pydantic, pydantic-settings, uvicorn. No `anthropic` | pass |
+| 8 | The public address today | Demo mode; `/skeleton/stream` 404; the page 200 | pass |
+
+Not exercised by the verifier: the deployed screen in a browser (I did that, above), anything live, and the limit's window resetting.
+
 **Spend:** $0.12 of the owner's 50 cents, three judge calls (`trials/phase8/spend.jsonl`): the two that rule 5 changed (8 cents) and the judge's verdict on the altered article (4 cents).
 
 **Gate: not yet passed, and it cannot be until the merge.** The gate asks for a verifier table against the hosted address. What is hosted today fails four steps of it for a reason this pull request fixes. After the merge, `node scripts/browser-check.mjs` must print 16 passes, and then: the deployed backend's dependency list has no `anthropic`, and no `/skeleton` route answers.
