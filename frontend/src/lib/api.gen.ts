@@ -452,7 +452,7 @@ export interface components {
              * Reason
              * @enum {string}
              */
-            reason: "no_citation" | "invalid_citation" | "unsupported_number" | "unsupported_name" | "misquote" | "rests_on_corrected_segment";
+            reason: "no_citation" | "invalid_citation" | "unsupported_number" | "unsupported_name" | "misquote" | "rests_on_corrected_segment" | "wrong_speaker";
             /**
              * Segment Indexes
              * @default []
@@ -495,6 +495,11 @@ export interface components {
             evaluation: components["schemas"]["EvalReport"] | null;
             /** Model Calls */
             model_calls: components["schemas"]["StoredModelCall"][];
+            /**
+             * Note
+             * @description Said with the run, for example that its draft was altered by hand.
+             */
+            note?: string | null;
             run: components["schemas"]["RunRow"];
             /** Segments */
             segments: components["schemas"]["Segment"][];
@@ -599,6 +604,11 @@ export interface components {
         SeedSummary: {
             /** Id */
             id: string;
+            /**
+             * Note
+             * @description Said beside the seed, for example that it was altered.
+             */
+            note?: string | null;
             /** Title */
             title: string;
         };
@@ -606,6 +616,11 @@ export interface components {
         SeedText: {
             /** Id */
             id: string;
+            /**
+             * Note
+             * @description Said beside the seed, for example that it was altered.
+             */
+            note?: string | null;
             /** Text */
             text: string;
             /** Title */

@@ -87,3 +87,9 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-19. The demo's recordings had no flagged sentence, so the state the owner most wanted shown did not exist in the demo's data. The plan's Phase 7 list did not ask "does the seeded data exercise every state the screen has". It should.
 - 2026-11-19. The reviewer found that a link could start a paid run on a live server: the guard read a property of the stored run where it needed the server's mode. Two phases running, the reviewer's adversarial brief has found a spend path.
 
+## Phase 8, harness 0.3.0
+
+- 2026-11-19. Every hosted check since Phase 2 had been made with `curl`, which kept landing on one instance. The first check with a real browser found that a visitor's finished run could not be opened. "Check it the way a visitor arrives" should be in the plan from the phase that first deploys, not the phase that shows it to people.
+- 2026-11-19. A phase whose gate is "verified on the hosted address" cannot pass before its own merge when a merge is the only way to deploy. The plan should either allow a preview that the check can run against (the preview frontend cannot call the preview backend here: CORS and the API address are production's) or word the gate as "after merge".
+- 2026-11-19. A real-browser check written as a small script over the DevTools protocol, with no dependency, found two faults the screenshots and the logic tests had not: the run that could not be opened, and a page wider than a phone's screen. It also had four faults of its own first (clicking the middle of a wrapped sentence, reading capitals as mixed case). A check needs checking against a page known to be right.
+

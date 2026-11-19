@@ -38,6 +38,7 @@ export function BackendStatus() {
         alignItems: "center",
         gap: 6,
         fontSize: 11,
+        whiteSpace: "nowrap",
         color: "var(--text3)",
         fontFamily: "var(--font-mono), monospace",
       }}

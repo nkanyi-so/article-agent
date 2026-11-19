@@ -119,11 +119,18 @@ export default function EntryPage() {
       )}
 
       <section>
-        <h2 className="micro" style={{ margin: "0 0 10px" }}>Three transcripts of fictional meetings</h2>
+        <h2 className="micro" style={{ margin: "0 0 10px" }}>Transcripts of fictional meetings</h2>
         <div className="seed-row">
           {(config?.seeds ?? []).map((seed) => (
             <div key={seed.id} className="panel" style={{ display: "grid", gap: 12, alignContent: "space-between" }}>
-              <div style={{ fontWeight: 600, lineHeight: 1.4 }}>{seed.title}</div>
+              <div>
+                <div style={{ fontWeight: 600, lineHeight: 1.4 }}>{seed.title}</div>
+                {seed.note && (
+                  <div className="note-flag" style={{ marginTop: 8, fontSize: 12.5, lineHeight: 1.5 }}>
+                    {seed.note}
+                  </div>
+                )}
+              </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
                 <Link href={`/runs/seed-${seed.id}`} style={{ textDecoration: "none" }}>
                   <Button variant="primary" tabIndex={-1}>Read the checked article</Button>

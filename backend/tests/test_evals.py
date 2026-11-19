@@ -851,3 +851,20 @@ def test_reported_speech_is_flagged_and_a_blank_speaker_label_does_not_crash() -
 
     assert misattributed("Kovac proposed closing the depot.", [lines_[0]], lines_) == ["Kovac"]
     assert misattributed("Kovac proposed closing the depot.", lines_[:2], lines_) == []
+
+
+async def test_rule_5_altered_a_statement_given_to_the_wrong_speaker_is_removed() -> None:
+    # Farraday said it (22). The same sentence given to Oxley, with the same citation,
+    # passes the name rule only if it also cites a line naming him: line 1 does.
+    sentences = [*PERFECT, ("Oxley said weather was the main cause.", [1, 22])]
+    state = await finished_run(ScriptedClient(draft_blocks(sentences, SEGMENTS)))
+
+    assert state.result is not None
+    (removed,) = state.result.removed
+    assert (removed.reason, removed.detail) == ("wrong_speaker", ["Oxley"])
+
+
+async def test_rule_5_real_the_hand_built_article_loses_nothing_to_it() -> None:
+    state = await finished_run(perfect_client())
+
+    assert state.result is not None and state.result.removed == []

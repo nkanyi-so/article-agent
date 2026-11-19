@@ -46,7 +46,13 @@ export function Trace({
                 <span style={{ fontFamily: "var(--font-mono), monospace", fontSize: 12, color: STATUS_COLOR[stage.status] ?? "var(--text2)" }}>
                   {stage.status}
                   {stage.error ? ` (${stage.error})` : ""}
-                  {stage.duration_ms != null ? ` · ${formatDuration(stage.duration_ms)}` : ""}
+                  {/* A replayed model stage takes a millisecond. The time worth showing is how
+                      long the call took when it was recorded, and it is labelled as that. */}
+                  {call?.source === "fixture" && call.latency_ms != null
+                    ? ` · ${formatDuration(call.latency_ms)} when recorded`
+                    : stage.duration_ms != null
+                      ? ` · ${formatDuration(stage.duration_ms)}`
+                      : ""}
                 </span>
                 <Button variant="ghost" onClick={() => setOpen(expanded ? null : stage.name)} aria-expanded={expanded}>
                   {expanded ? "Hide" : "Show"} input and output
@@ -62,7 +68,6 @@ export function Trace({
                     <div>
                       Model {call.model_requested}
                       {call.input_tokens != null ? ` · ${call.input_tokens} tokens in, ${call.output_tokens} out` : ""}
-                      {call.latency_ms != null ? ` · ${formatDuration(call.latency_ms)} when recorded` : ""}
                       {` · $${call.cost_usd.toFixed(4)}`}
                       {call.source === "fixture" ? " when recorded; replayed now at no cost" : ""}
                       {call.error ? ` · failed: ${call.error}` : ""}

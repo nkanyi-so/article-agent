@@ -104,6 +104,7 @@ RemovalReason = Literal[
     "unsupported_name",
     "misquote",
     "rests_on_corrected_segment",
+    "wrong_speaker",
 ]
 
 

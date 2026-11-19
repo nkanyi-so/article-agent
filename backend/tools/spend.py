@@ -47,6 +47,9 @@ PHASE4 = Ledger(TRIALS / "phase4" / "spend.jsonl", 2.00)
 # same day for a third run with every case run three times.
 PHASE6 = Ledger(TRIALS / "phase6" / "spend.jsonl", 4.50)
 
+# The owner's limit for Phase 8: 50 cents, for recordings that have to be made again.
+PHASE8 = Ledger(TRIALS / "phase8" / "spend.jsonl", 0.50)
+
 # The Phase 4 tools (prompt_trial, record) use these.
 LEDGER = PHASE4.path
 LIMIT_USD = PHASE4.limit_usd

@@ -107,6 +107,11 @@ export function RunScreen({ run }: { run: RunDetail }) {
             </>
           )}
         </div>
+        {run.note && (
+          <p className="note-flag" style={{ margin: "12px 0 0", lineHeight: 1.55 }}>
+            {run.note}
+          </p>
+        )}
         {replayed && (
           <p className="demo-line" style={{ margin: "12px 0 0" }}>
             {DEMO_LINE} The recorded calls for this run cost ${run.cost_usd.toFixed(4)}.

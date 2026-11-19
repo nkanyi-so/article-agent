@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 was merged on 2026-11-19 (pull request #7) and both production sites deployed. Phase 7 (the frontend) is done on `phase-7-frontend` and waits for the owner's review of its pull request.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 was merged on 2026-11-19 (pull request #7) and both production sites deployed. Phase 7 was merged on 2026-11-19 (pull request #8) and both production sites deployed. Phase 8 (the hosted demo) is done on `phase-8-hosted-demo` and waits for the owner's review of its pull request; **the check of the public address has to be run again after the merge, because the fix it depends on is in this pull request.**
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -19,7 +19,7 @@ This file is the single record of progress. Each phase lands as its own branch a
 | 8 | Production deploy of the demo | free |
 | 9 | Make the repository public | free |
 
-Whole project: about $4 to $5 on the measured figures (was about $15 before Phase 1 measured them); $6.10 spent so far ($0.55 in Phase 1, $1.48 in Phase 4, $4.07 in Phase 6). Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
+Whole project: about $4 to $5 on the measured figures (was about $15 before Phase 1 measured them); $6.22 spent so far ($0.55 in Phase 1, $1.48 in Phase 4, $4.07 in Phase 6, $0.12 in Phase 8). Recommended guard, an owner action before Phase 1: a separate Anthropic workspace for this project with a monthly spend limit of $25, and a key from that workspace only.
 
 **What a merge to `main` does.** It deploys the frontend and the backend to Vercel (both projects were connected to the repository on 2026-11-18, production branch `main`). A push to any other branch builds a preview deployment of each.
 
@@ -1259,13 +1259,68 @@ exit 1
 
 ## Phase 8: hosted demo
 
-- [ ] Deploy both projects in demo mode (asks first). Production settings: CORS origin, body size cap, rate limit.
-- [ ] A fourth, clearly labelled demo run built from a hand-altered recording, so a visitor sees the ground check remove a wrong number and an uncited sentence.
-- [ ] Verifier against the public address, read-only requests and seeded runs only.
+- [x] Deploy both projects in demo mode (asks first). Production settings: CORS origin, body size cap, rate limit. *(Deployed by each merge since Phase 2. Settings on the host: demo mode, the CORS origin, the trusted proxy, and now the replay delay.)*
+- [x] A fourth, clearly labelled demo run built from a hand-altered recording, so a visitor sees the ground check remove a wrong number and an uncited sentence.
+- [ ] Verifier against the public address, read-only requests and seeded runs only. *(Done for what is deployed now: 12 of 16 steps pass, and the 4 that fail are the defect this pull request fixes. To be run again after the merge: `node scripts/browser-check.mjs`.)*
 
 **Gate:** verifier table against the hosted address: page loads with no key, seeded run streams, claim click works, replay works, removed units visible. The deployed backend's dependency list has no `anthropic`. No `/skeleton` route answers on the hosted address.
 
 **Log:**
+
+### 2026-11-19, after the owner's review of Phase 7
+
+- Pull request #8 merged by squash at the owner's instruction (`8093b33`), after the owner clicked through the screen locally.
+- **Both production deployments came from GitHub and are ready at the merged commit.** The hosted first page is the new screen; the hosted Sallowfield run has two flagged sentences, one removed and five stages.
+
+### 2026-11-19, Phase 8 on `phase-8-hosted-demo`
+
+**Decided by the owner and done.**
+
+- **The wrong-speaker rule is on,** as rule 5 of the ground check (`decisions/0003`, with its limit: it removes true reported speech). Two judge recordings were made again. Re-measured free on the recorded eval runs: removed 14 of 468 (3.0%), judged groundedness 0.959, lowest case mean 0.906; both museum runs that gave the host's words to the guest now lose that sentence and score 1.00.
+- **The top bar stays on one line on a phone.** The first fix put it on one line but ran it off the right edge, which made the whole page wider than the screen; found in a phone screenshot and by taps missing in the browser check. The tagline and, under 520px, the backend's status are hidden.
+- **Runs take a few seconds on the host.** `APP_REPLAY_LATENCY=0.25` is set on the hosted backend (production and preview) and the production deployment was rebuilt with it: a hosted seeded run streamed its 12 events over 6.7 seconds. In the trace, a replayed stage now shows how long its call took when recorded, labelled as that, not the millisecond the replay took.
+
+**Built.**
+
+- **A fourth demo run, altered by hand and labelled so** on the first page, on the run page and in its title: the Korvath draft with one figure changed (11 percent to 17) and one sentence's citation removed. The ground check removes both, with `unsupported_number: 17` and `no_citation`. `backend/tools/make_altered_seed.py` makes its two recordings without calling a model, from an altered copy of the raw response, so the test that every stored response is what its raw response converts to still holds. The judge's verdict on the altered article is a real recorded call.
+- **`backend/tools/record_missing.py`:** replays everything and calls a model only where there is no recording. Behind `--yes-spend` and a ledger checked at the worst case before every call.
+- **`scripts/browser-check.mjs`:** drives a real Chrome through what a stranger does, with mouse events at the element's position, at 1440px and 390px, and prints a table. Needs only Chrome and Node.
+
+**A defect found on the public address, and fixed here.** The browser check against `https://article-agent-web.vercel.app` passed twelve steps and failed four, at both widths: after a run finished, the page moved to the new run and said "No such run". The stages had arrived live (five distinct states seen). The cause: on the host each instance of the backend has its own scratch database (`decisions/0007`), and the request for the finished run was answered by an instance that had never seen it. Requests from `curl` had kept landing on one instance, which is why nothing earlier caught it.
+
+- **The fix:** in demo mode a run's id says how to make it again: `s--<seed>--<8 hex>` for a seeded transcript, `<parent id>--r-<stage>--<8 hex>` for a re-run. An instance that is asked for a run it does not have, and whose id has one of those two shapes, makes it from the recordings and stores it. It is the same article, because every call is a recording. A live server never does this, and pasted text can never be made again this way.
+- **Tested with separate databases standing in for instances:** a run started on one is read on another; it is re-run on a second and the re-run read on a third; seven ids that are not recipes are still "not found".
+- **What it does not fix:** the list of recent runs in the sidebar is still each instance's own, so a visitor's run may be missing from the list while its address works.
+
+**The security review** (the reviewer in security mode, whole repository and history, against the architecture's security section), as it reported, and what was done.
+
+- *BLOCKING. A GET can start runs with no rate limit.* Making a run again from its id was unauthenticated work that nothing limited: one client looping new ids could keep an instance busy. **Fixed:** making a run again counts against the asker's per-address allowance, like starting one; reading a stored run stays free. Test: three made, then 429.
+- *The altered run's label was only on the first page.* **Fixed:** the note is on the run itself (`note` in the run's detail) and shown at the top of its page.
+- *The store's bound under that flood.* Holds (pruning), and the fix above removes the flood.
+- *The commit author's email address is in three commits and becomes public with the repository.* The owner's to decide, in Phase 9.
+- Its checklist: auth and exposure, spend, secrets, untrusted input, model output in the browser, errors, synthetic data, dependencies all hold; abuse did not hold until the fix above. Held under attack: the id reader (no pattern that can backtrack, 120 characters at most, fixed shapes); no paid or pasted rebuild; rule 5 against hostile labels and 30,000-character sentences; the recording tools; every address parameter; CORS on the hosted API. It could not confirm from outside that the trusted-proxy setting is on (it is: shown in the Phase 5 follow-up above).
+- Before that review, my own first version of the id reader used a pattern that could backtrack on a hostile id, and took a lock twice; the test run hung. Both were replaced before the review saw them.
+
+**The browser check, locally, on this phase's code** (production build of the frontend, backend in demo mode, real Chrome, twice):
+
+```
+pass  desktop and phone  the first page loads with no key (4 transcripts offered)
+pass  desktop and phone  open a checked article
+pass  desktop and phone  choose a normal sentence: line 14 cited; line 13 shown as added by code
+pass  desktop and phone  choose a flagged sentence: "Line 1 only says what the meeting is; it never says Stanek chaired it."
+pass  desktop and phone  choose the headline: explains that a headline cites no lines, with the judge's verdict
+pass  desktop and phone  the removed sentence, with its reason: "A name in it is not in the lines it cited: Abbey, Row."
+pass  desktop and phone  start a run and watch it finish (stage states seen over 6 seconds; the run's page opened)
+pass  desktop and phone  re-run from the draft stage (opened the new run, marked as a re-run)
+16 of 16
+```
+
+**The same check on the public address, as deployed before this pull request:** 12 of 16. The four failures are "start a run and watch it finish" and "re-run from a stage" at each width, with the page showing "No such run": the defect above. I tried to put this phase's code on the host to check it there, and the deploy of unmerged code was refused by the session's permissions, which is right: it has to go through the merge.
+
+**Spend:** $0.12 of the owner's 50 cents, three judge calls (`trials/phase8/spend.jsonl`): the two that rule 5 changed (8 cents) and the judge's verdict on the altered article (4 cents).
+
+**Gate: not yet passed, and it cannot be until the merge.** The gate asks for a verifier table against the hosted address. What is hosted today fails four steps of it for a reason this pull request fixes. After the merge, `node scripts/browser-check.mjs` must print 16 passes, and then: the deployed backend's dependency list has no `anthropic`, and no `/skeleton` route answers.
+
 
 ---
 

@@ -33,6 +33,7 @@ const REASONS: Record<RemovedUnit["reason"], string> = {
   unsupported_name: "A name in it is not in the lines it cited",
   misquote: "It quoted words that are not in the lines it cited",
   rests_on_corrected_segment: "It rested on a statement a speaker later corrected",
+  wrong_speaker: "It gave a statement to a speaker none of whose lines it cited",
 };
 
 /** Why code removed a sentence, in words, with what was missing. */
