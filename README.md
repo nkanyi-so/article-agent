@@ -2,7 +2,7 @@
 
 Turns a meeting or interview transcript into a short article you can check against what was said.
 
-**The claim.** Every sentence of the article points at the transcript lines behind it. Code removes any sentence whose numbers, dates, names or quotations are not in those lines or their speaker labels. A judge model then reads each sentence that is left against its lines and flags the ones it finds unsupported, and every flag is shown to the reader.
+**The claim.** Every sentence of the article points at the transcript lines behind it. Code removes any sentence in which a number, date, name or quotation it can read is not in those lines or their speaker labels. A judge model then reads each sentence that is left against its lines and flags the ones it finds unsupported, and every flag is shown to the reader.
 
 It does not say the model adds nothing. Code can only see what is missing from the cited lines, and its reading of "a number" and "a name" has known gaps, listed under [Limits](#7-limits-and-what-id-do-next): a figure written as "a third" is not seen as a figure. In the recorded eval runs the judge still flags about one kept sentence in 23, and those sentences stay in the article, marked, with the judge's reason beside them. The numbers are [below](#4-evals).
 
