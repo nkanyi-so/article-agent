@@ -7,6 +7,7 @@
 //
 // It clicks with real mouse events at the element's position, through the DevTools
 // protocol. It starts two runs per width (one run, one re-run) and reads everything else.
+// Eighteen steps: nine at each width.
 import { spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -203,6 +204,33 @@ async function journey(width, metrics) {
       return path !== runPath && (await text()).includes("Re-run of");
     }, 60000);
     return `opened ${await js("location.pathname")}, marked as a re-run of ${runPath.split("/").pop()}`;
+  });
+
+  await step(width, "the list of runs is the seeded ones plus this browser's", async () => {
+    await send("Page.navigate", { url: `${BASE}/` });
+    await until("this browser's runs", async () => (await text()).toLowerCase().includes("runs you started in this browser"));
+    const mine = await js(`[...document.querySelectorAll('section[aria-label="Runs you started"] a')].map((a) => a.innerText)`);
+    if (!mine.some((label) => label.includes("re-run")) || !mine.some((label) => label.endsWith("run") && !label.includes("re-run"))) {
+      throw new Error(`expected a run and a re-run, got ${JSON.stringify(mine)}`);
+    }
+    let where = "the first page";
+    if (width === "desktop") {
+      // The sidebar is only shown on a wide screen. It must hold the same runs, and stay
+      // the same when asked again (on the host, another instance may answer).
+      const read = () => js(`[...document.querySelectorAll("nav.sidebar a[href^='/runs/']")].map((a) => a.getAttribute("href")).sort().join(" ")`);
+      const first = await until("the sidebar", async () => { const v = await read(); return v.includes("seed-") && v.includes("--r-draft--") ? v : null; });
+      for (let again = 0; again < 3; again++) {
+        await send("Page.navigate", { url: `${BASE}/` });
+        const next = await until("the sidebar again", async () => { const v = await read(); return v.includes("seed-") ? v : null; });
+        if (next !== first) throw new Error("the sidebar's list changed between loads");
+      }
+      if ((first.match(/seed-/g) ?? []).length !== 4) throw new Error(`expected 4 seeded runs in the sidebar: ${first}`);
+      where = "the sidebar (same on four loads) and the first page";
+    }
+    await click("one of this browser's runs", `document.querySelector('section[aria-label="Runs you started"] a')`);
+    await until("that run's page", async () => (await js("location.pathname")).includes("--") && (await text()).toLowerCase().includes("sentences kept"));
+    await shot(width, "8-my-runs");
+    return `${mine.length} of this browser's runs listed in ${where}; opened ${await js("location.pathname")}`;
   });
 }
 

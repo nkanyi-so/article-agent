@@ -8,6 +8,7 @@ import { replayedFromRecordings } from "@/lib/article";
 import { DEMO_LINE, linkMayStartRuns } from "@/lib/copy";
 import { formatDate } from "@/lib/format";
 import { applyEvent, startLiveRun, type LiveRun } from "@/lib/live";
+import { rememberRun } from "@/lib/my-runs";
 import { STAGES, type RunDetail, type StageName } from "@/lib/types";
 import { ArticlePanel, EvidencePanel, FlagList, RemovedList, ScoreCards, type Selection } from "./ArticleParts";
 import { LiveStages } from "./LiveStages";
@@ -56,7 +57,12 @@ export function RunScreen({ run }: { run: RunDetail }) {
           live = applyEvent(live, event);
           setReplay({ from, live });
           // The new run exists and has ended, whichever way: go and look at it.
-          if (live.ended && live.runId) router.push(`/runs/${live.runId}`);
+          if (live.ended && live.runId) {
+            if (live.ended.ok) {
+              rememberRun({ id: live.runId, title: run.run.title, kind: "re-run", at: new Date().toISOString() });
+            }
+            router.push(`/runs/${live.runId}`);
+          }
           else if (live.ended && !live.ended.ok) setReplayError(messageFor(live.ended.error));
         })
         .catch((error: unknown) => {
@@ -64,7 +70,7 @@ export function RunScreen({ run }: { run: RunDetail }) {
           setReplayError(messageFor(error instanceof ApiError ? error.code : null));
         });
     },
-    [router, run.run.id]
+    [router, run.run.id, run.run.title]
   );
 
   // `?rerun=draft` starts a re-run on arrival, but only when the server says it replays

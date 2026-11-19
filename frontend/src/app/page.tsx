@@ -9,6 +9,7 @@ import { LiveStages } from "@/components/run/LiveStages";
 import { api, ApiError, messageFor } from "@/lib/api";
 import { CLAIM, DEMO_LINE, linkMayStartRuns } from "@/lib/copy";
 import { applyEvent, startLiveRun, type LiveRun } from "@/lib/live";
+import { myRuns, rememberRun, type MyRun } from "@/lib/my-runs";
 import type { ConfigResponse } from "@/lib/types";
 
 type Loaded = { state: "loading" } | { state: "ready"; config: ConfigResponse } | { state: "error"; code: string };
@@ -20,6 +21,13 @@ export default function EntryPage() {
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState("");
   const [title, setTitle] = useState("");
+  const [mine, setMine] = useState<MyRun[]>([]);
+
+  // Read after the page is in the browser: the list lives in the browser's own storage.
+  useEffect(() => {
+    const timer = window.setTimeout(() => setMine(myRuns()), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let stale = false;
@@ -46,8 +54,12 @@ export default function EntryPage() {
       if (!live.ended) return;
       // The address changes only now, when the run exists and has ended. A failed run has
       // a page too: it shows what failed and what was stored.
-      if (live.runId) router.push(`/runs/${live.runId}`);
-      else {
+      if (live.runId) {
+        if (live.ended.ok) {
+          rememberRun({ id: live.runId, title: runTitle, kind: "run", at: new Date().toISOString() });
+        }
+        router.push(`/runs/${live.runId}`);
+      } else {
         setRunning(null);
         setError(messageFor(live.ended.ok ? null : live.ended.error));
       }
@@ -144,6 +156,21 @@ export default function EntryPage() {
           {loaded.state === "loading" && <div style={{ color: "var(--text3)" }}>Loading the transcripts…</div>}
         </div>
       </section>
+
+      {mine.length > 0 && (
+        <section aria-label="Runs you started">
+          <h2 className="micro" style={{ margin: "0 0 10px" }}>Runs you started in this browser</h2>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
+            {mine.map((run) => (
+              <li key={run.id}>
+                <Link className="link" href={`/runs/${run.id}`}>
+                  {run.title.split(":")[0]} · {run.kind}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="panel">
         <h2 className="micro" style={{ margin: "0 0 10px" }}>Or paste a transcript</h2>

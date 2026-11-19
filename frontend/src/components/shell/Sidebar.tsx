@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { api } from "@/lib/api";
+import { myRuns } from "@/lib/my-runs";
 import type { RunRow } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 
@@ -17,17 +18,31 @@ export function Sidebar() {
 
   useEffect(() => {
     let stale = false;
-    api
-      .listRuns()
-      .then((r) =>
-        r
-          .slice()
-          .sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
-      )
+    // In demo mode the list is the seeded runs plus the runs this browser started: on the
+    // host each backend instance has its own list, which would change under the visitor.
+    Promise.all([api.listRuns(), api.config().catch(() => null)])
+      .then(([stored, config]) => {
+        if (config?.mode !== "demo") {
+          return stored
+            .slice()
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        }
+        const seeded = stored.filter((run) => run.pinned);
+        const mine: RunRow[] = myRuns().map((run) => ({
+          id: run.id,
+          title: run.title,
+          created_at: run.at,
+          status: "completed",
+          source: run.kind === "re-run" ? "replay" : "seed",
+          mode: "demo",
+          pinned: false,
+          error: null,
+          seed_id: null,
+          parent_run_id: null,
+          replay_from_stage: null,
+        }));
+        return [...mine, ...seeded];
+      })
       .catch((): RunRow[] => [])
       .then((sorted) => {
         if (stale) return;

@@ -1,7 +1,16 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { messageFor } from "./api";
-import { evidenceFor, flags, headlineVerdict, paragraphs, removalReason, replayedFromRecordings, scores } from "./article";
+import {
+  evidenceFor,
+  flags,
+  headlineVerdict,
+  paragraphs,
+  removalReason,
+  replayedFromRecordings,
+  scores,
+  stageSummary,
+} from "./article";
 import { CLAIM, linkMayStartRuns } from "./copy";
 import type { RunDetail } from "./types";
 
@@ -174,5 +183,34 @@ describe("error messages", () => {
     expect(messageFor("network")).toBe("The backend could not be reached.");
     expect(messageFor("<script>")).toBe("Something went wrong on the server.");
     expect(messageFor(null)).toBe("Something went wrong on the server.");
+  });
+});
+
+describe("a stage's summary", () => {
+  it("says in words what each stage produced", () => {
+    expect(stageSummary({ name: "ingest", output: { segments: [{ speaker: "A" }, { speaker: "B" }, { speaker: "A" }] } })).toBe(
+      "Split into 3 numbered lines from 2 speakers."
+    );
+    expect(stageSummary({ name: "extract", output: { points: [1, 2], corrections: [1], disagreements: [] } })).toBe(
+      "Listed 2 points, 1 correction and 0 disagreements."
+    );
+    expect(stageSummary({ name: "ground", output: { headline: { source: "title" }, claims: [1, 2, 3], removed: [1] } })).toBe(
+      "Kept 3 sentences, removed 1; the headline replaced by the title."
+    );
+    expect(
+      stageSummary({
+        name: "evaluate",
+        output: { checks: [{ passed: true }, { passed: true }], judge: { outcome: "judged", verdicts: [{ supported: false }, { supported: true }] } },
+      })
+    ).toBe("2 of 2 code checks passed; the judge flagged 1.");
+    expect(stageSummary({ name: "evaluate", output: { checks: [], judge: { outcome: "failed" } } })).toBe(
+      "0 of 0 code checks passed; the judge could not be used."
+    );
+  });
+
+  it("gives nothing, not something wrong, for a record it cannot read", () => {
+    expect(stageSummary({ name: "ingest", output: null })).toBeNull();
+    expect(stageSummary({ name: "ingest", output: { segments: "no" } })).toBeNull();
+    expect(stageSummary({ name: "publish", output: {} })).toBeNull();
   });
 });

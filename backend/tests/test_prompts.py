@@ -66,3 +66,14 @@ def test_no_prompt_contains_a_name_from_a_seeded_or_fixture_transcript() -> None
     for label, prompt in PROMPTS.items():
         found = sorted(name for name in names if re.search(rf"\b{re.escape(name)}\b", prompt))
         assert not found, f"{label} names {found}"
+
+
+def test_the_readme_states_the_claim_word_for_word_as_decided() -> None:
+    root = FIXTURES.parents[2]
+    decided = [
+        line[2:]
+        for line in (root / "docs/decisions/0015-the-claim.md").read_text().splitlines()
+        if line.startswith("> ")
+    ]
+    assert len(decided) == 1
+    assert decided[0] in (root / "README.md").read_text()

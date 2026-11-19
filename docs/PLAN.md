@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 was merged on 2026-11-19 (pull request #7) and both production sites deployed. Phase 7 was merged on 2026-11-19 (pull request #8) and both production sites deployed. Phase 8 (the hosted demo) is done on `phase-8-hosted-demo` and waits for the owner's review of its pull request; **the check of the public address has to be run again after the merge, because the fix it depends on is in this pull request.**
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 was merged on 2026-11-19 (pull request #7) and both production sites deployed. Phase 7 was merged on 2026-11-19 (pull request #8) and both production sites deployed. Phase 8 was merged on 2026-11-19 (pull request #9), both production sites deployed, and the browser check passed all 16 steps on the public address. Phase 9 (release) is done on `phase-9-release` up to, and not including, making the repository public: it waits for the owner's read of the README, the go-ahead to go public, and the walkthrough video.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -1261,7 +1261,7 @@ exit 1
 
 - [x] Deploy both projects in demo mode (asks first). Production settings: CORS origin, body size cap, rate limit. *(Deployed by each merge since Phase 2. Settings on the host: demo mode, the CORS origin, the trusted proxy, and now the replay delay.)*
 - [x] A fourth, clearly labelled demo run built from a hand-altered recording, so a visitor sees the ground check remove a wrong number and an uncited sentence.
-- [ ] Verifier against the public address, read-only requests and seeded runs only. *(Done for what is deployed now: 12 of 16 steps pass, and the 4 that fail are the defect this pull request fixes. To be run again after the merge: `node scripts/browser-check.mjs`.)*
+- [x] Verifier against the public address, read-only requests and seeded runs only. *(After the merge: 16 of 16, below.)*
 
 **Gate:** verifier table against the hosted address: page loads with no key, seeded run streams, claim click works, replay works, removed units visible. The deployed backend's dependency list has no `anthropic`. No `/skeleton` route answers on the hosted address.
 
@@ -1336,20 +1336,71 @@ Not exercised by the verifier: the deployed screen in a browser (I did that, abo
 
 **Spend:** $0.12 of the owner's 50 cents, three judge calls (`trials/phase8/spend.jsonl`): the two that rule 5 changed (8 cents) and the judge's verdict on the altered article (4 cents).
 
-**Gate: not yet passed, and it cannot be until the merge.** The gate asks for a verifier table against the hosted address. What is hosted today fails four steps of it for a reason this pull request fixes. After the merge, `node scripts/browser-check.mjs` must print 16 passes, and then: the deployed backend's dependency list has no `anthropic`, and no `/skeleton` route answers.
+**Gate at the pull request: not yet passed, and it could not be until the merge (passed after it: see the next entry).** The gate asks for a verifier table against the hosted address. What is hosted today fails four steps of it for a reason this pull request fixes. After the merge, `node scripts/browser-check.mjs` must print 16 passes, and then: the deployed backend's dependency list has no `anthropic`, and no `/skeleton` route answers.
 
+
+### 2026-11-19, after the owner's review of Phase 8: the public address
+
+- Pull request #9 merged by squash at the owner's instruction (`7609986`). **Both production deployments came from GitHub and are ready at the merged commit;** the hosted backend lists the four seeds.
+- **The browser check on the public address: 16 of 16,** real Chrome, 1440px and 390px, no key. At each width: the first page loads; a checked article opens; a normal sentence shows line 14 cited and line 13 as added by code; the flagged sentence shows the judge's reason; the headline explains itself; the removed sentence shows its reason; a run started and finished (stage states seen over 7.9 s and 7.3 s) and its page opened; a re-run from `draft` opened, marked as a re-run. Screenshots: `docs/screens/hosted/`.
+- **Phase 8 gate: passed, 2026-11-19.** The deployed backend's default dependencies have no `anthropic` (verifier row 7); `/skeleton/stream` answers 404 on the hosted address.
 
 ---
 
 ## Phase 9: release
 
-- [ ] README with the seven profile sections; every claim traced to code or to a result file. **The eval table shows both judged scores side by side** (cited lines alone, and cited lines with the question shown), per case with mean and spread, and says plainly that the second was introduced after the first two runs failed, and why (the owner's instruction, 2026-11-19; the table is in `decisions/0014`).
-- [ ] Reviewer in security mode over the whole repository; fix every blocking finding.
+- [x] README with the seven profile sections; every claim traced to code or to a result file. **The eval table shows both judged scores side by side** (cited lines alone, and cited lines with the question shown), per case with mean and spread, and says plainly that the second was introduced after the first two runs failed, and why (the owner's instruction, 2026-11-19; the table is in `decisions/0014`).
+- [x] Reviewer in security mode over the whole repository; fix every blocking finding.
 - [ ] History check against the synthetic-data rule and a full-history secret scan. Known already: a depot in the second spike transcript carried a name that is also a real software company's, in commits `74f3425` and `1cee60f` on `main` (replaced in `0effa8c`). Before the repository is made public, either `main` is rewritten to remove it or the owner explicitly accepts it as a depot's name.
-- [ ] Delete the old paused Vercel project `article-agent` (asks first; it cannot be undone). Left paused until then by the owner's decision.
+- [x] Delete the old paused Vercel project `article-agent` (asks first; it cannot be undone). *(Deleted on 2026-11-19 with the owner's approval; the project list now holds only `article-agent-api` and `article-agent-web`.)*
 - [ ] Ask the owner, then make the repository public. Turn on branch protection on `main` (no force-push, the `check` and `secrets` jobs must pass) and show it is on: carried from Phase 0, where GitHub refused it on the private repository.
 - [ ] Walkthrough video (owner).
 
 **Gate:** the spec's "Done when", item by item, each with its evidence.
 
 **Log:**
+
+### 2026-11-19, Phase 9 on `phase-9-release`, up to and not including going public
+
+**The owner's decisions.**
+
+1. **History is not rewritten.** The old depot name in the second spike transcript (also a real software company's name) stays in commits `74f3425` and `1cee60f`; it was replaced in `0effa8c`. The owner judged the phase-by-phase trail worth more than a clean history. It is a name on an invented depot, with nothing said about the real company.
+2. **The commit author's email stays:** it is the owner's public contact address.
+3. **The old paused Vercel project is deleted,** confirmed gone; the public demo answered 200 afterwards.
+4. **The repository stays private** until the owner says otherwise. Branch protection waits for that too.
+
+**Built.**
+
+- **The runs list is reliable in demo mode:** the seeded runs plus the runs this browser started, which are kept in the browser. On the host each instance has its own stored list, which read as broken. The sidebar shows it on a wide screen; the first page shows "Runs you started in this browser" at any width. Only runs that finished are remembered, so an abandoned run no longer shows as failed.
+- **The trace says in words what each stage produced** ("Kept 17 sentences, removed 1; the model's headline kept."), with the raw record one click away.
+- **The theme switch and the address:** not a fault. It already follows `?theme=`; the screenshot that suggested otherwise was taken from the stale server in Phase 7.
+- **`README.md`,** on the portfolio-piece profile's seven sections. The claim is word for word as decided (a test compares them). Every figure was re-read at its source: the ten table rows against what `make check` replays, the first two runs against their result files, the check counts, the removal reasons, the 21 flags sorted by kind, the timeouts and limits against the code, the costs against this plan.
+- **The browser check has nine steps a width now:** the ninth checks the runs list (the sidebar the same on four loads, on a wide screen) and opens one of this browser's runs.
+
+**The final security review, and a second read of the README** (the reviewer in security mode: the whole repository and its history as a stranger would see them, and every README sentence against the code and the result files), as it reported, and what was done.
+
+- *BLOCKING. The README hid known gaps in the code check.* It said code removes any sentence whose numbers, names or quotations are missing from its cited lines; `decisions/0003` lists what the code does not see ("one", ordinals, fractions in words, a lower-case name, single-quoted quotations, a right number with the wrong unit), and one is in the recorded runs: a headline's "about a third" passed the code and was flagged by the judge. **Fixed in the README:** said beside the claim, and as the first item under Limits, with the example. The claim's own wording is the owner's and is unchanged; **for the owner: "any sentence whose numbers... are not in those lines" is true only of what the code reads as a number or a name.**
+- *"Moved by up to 0.2 with no cause" was loose.* **Fixed:** it now gives the spread the table shows (0.59 to 0.90 for one case).
+- *"Every stream ends with a terminal event, including when the client leaves."* A client that has left gets no event. **Fixed:** the stored run is closed as failed.
+- *The CI job with the SDK also runs one test; "cannot open a socket" should say network socket.* **Fixed.**
+- *"$4.07 on the eval runs" includes the $0.38 trial.* **Fixed.**
+- *The browser check starts four runs on the public demo by default and assumes Chrome's macOS path.* **Said in the README.**
+- Its security checklist: auth and exposure, spend, secrets, untrusted input, model output in the browser, errors, synthetic data, dependencies and abuse all hold. No secret in 26 commits; no private path in history; the stored run list only accepts ids of letters, digits and hyphens, so a link built from it cannot leave the site; CI actions are pinned.
+- It confirmed against the code and the files: the eval table, both means, the check counts, the removals and their reasons, the 21 flags and their kinds, the calibration figures, the costs, the reviewer's catches, the five rules, the timeouts and limits.
+- What it could not confirm either way, and where each rests: "four sentences to seven" and "a prompt fix did not work" (on `decisions/0014`, which I wrote from the two result files); "every earlier hosted check had used curl" (on this plan's logs); "about 8 cents a run" (the recorded cost shown on the Sallowfield run, $0.0815); that the hosted backend's installed packages lack the SDK (the default dependency list, and the Phase 2 evidence above); that no real name is in any transcript (the names were searched for when written; it spot-checked).
+
+**The verifier's table** (as a new reader of the README; local production build, real Chrome).
+
+| # | Step | What happened | |
+|---|---|---|---|
+| 1 | `make check` | Exit 0. 385 backend tests, the eval set, 42 frontend tests | pass |
+| 2 | The browser check, locally | Exit 0, 18 lines of `pass`, 9 at each width. The ninth: "2 of this browser's runs listed in the sidebar (same on four loads) and the first page" at desktop, and this browser's runs listed on the first page at phone width; one opened | pass |
+| 3 | The trace | "Kept 17 sentences, removed 1; the model's headline kept." and "Show the raw record" on each stage | pass |
+| 4 | The README's links | All ten targets exist | pass |
+| 5 | The README's numbers | 0.959, 0.904 and "14 of 468 (3.0%)" match the eval replay | pass |
+| 6 | Screenshots | 40 state images (ten states, two themes, two widths) and 14 from the public site | pass |
+
+Not exercised by the verifier: the public site (I ran the 16-step check on it, above; the new ninth step reaches it only after this is merged), the screenshots' content, `make setup`.
+
+**Gate: not passed, by design.** The spec's "Done when" still lacks three things, all the owner's: the read of the README, the repository made public (with branch protection after it), and the walkthrough video. CI on `main` is green; the hosted page loads with no key and passed the 16-step browser check; the eval table is in the README with its date, one real failure and its fix; `make check` exits 0.
+

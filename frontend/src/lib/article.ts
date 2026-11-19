@@ -137,3 +137,50 @@ export function scores(run: RunDetail): Scores {
 export function replayedFromRecordings(run: RunDetail): boolean {
   return run.model_calls.length > 0 && run.model_calls.every((call) => call.source === "fixture");
 }
+
+type Loose = Record<string, unknown>;
+const list = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);
+const count = (n: number, one: string, many = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
+
+/**
+ * What a stage produced, in a sentence, read from its stored output. The raw record is
+ * still one click away; this is so a reader does not have to parse JSON to follow a run.
+ * Anything unexpected in the record gives no summary, never a wrong one.
+ */
+export function stageSummary(stage: { name: string; output?: unknown }): string | null {
+  const out = (stage.output ?? null) as Loose | null;
+  if (!out || typeof out !== "object") return null;
+  switch (stage.name) {
+    case "ingest": {
+      const segments = list(out.segments) as Loose[];
+      const speakers = new Set(segments.map((segment) => segment.speaker));
+      return segments.length
+        ? `Split into ${count(segments.length, "numbered line")} from ${count(speakers.size, "speaker")}.`
+        : null;
+    }
+    case "extract":
+      return `Listed ${count(list(out.points).length, "point")}, ${count(list(out.corrections).length, "correction")} and ${count(list(out.disagreements).length, "disagreement")}.`;
+    case "draft": {
+      const blocks = list(out.blocks) as Loose[];
+      const cited = blocks.filter((block) => list(block.citations).length > 0).length;
+      return blocks.length ? `Wrote ${count(blocks.length, "block")} of text, ${cited} with a citation.` : null;
+    }
+    case "ground": {
+      const headline = (out.headline ?? {}) as Loose;
+      const from = headline.source === "model" ? "the model's headline kept" : "the headline replaced by the title";
+      return `Kept ${count(list(out.claims).length, "sentence")}, removed ${list(out.removed).length}; ${from}.`;
+    }
+    case "evaluate": {
+      const checks = list(out.checks) as Loose[];
+      const judge = (out.judge ?? {}) as Loose;
+      const passed = checks.filter((check) => check.passed === true).length;
+      const judged =
+        judge.outcome === "judged"
+          ? `the judge flagged ${list(judge.verdicts).filter((v) => (v as Loose).supported === false).length}`
+          : "the judge could not be used";
+      return `${passed} of ${count(checks.length, "code check")} passed; ${judged}.`;
+    }
+    default:
+      return null;
+  }
+}
