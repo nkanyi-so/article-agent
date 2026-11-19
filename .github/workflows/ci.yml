@@ -28,6 +28,26 @@ jobs:
       - run: make setup
       - run: make check
 
+  # The one module that can spend (backend/app/model/live.py) imports the Anthropic SDK,
+  # which the `check` job never installs. This job installs it for the type check only,
+  # so that module is checked against the SDK's real types. It has no key and makes no
+  # call: importing the SDK and constructing nothing cannot reach the network.
+  types-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.9"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Type-check with the live dependency group installed
+        working-directory: backend
+        run: uv run --locked --group live mypy
+      - name: The one test that needs the SDK present (live mode without a key fails at start)
+        working-directory: backend
+        run: uv run --locked --group live pytest -q -k live_mode_without_a_key
+
   secrets:
     runs-on: ubuntu-latest
     env:

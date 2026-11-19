@@ -149,10 +149,14 @@ export function Sidebar() {
             runs.map((run) => {
               const href = `/runs/${run.id}`;
               const active = pathname === href;
+              // The backend now lists runs in its new shape (a title on the run itself).
+              // This component still has the old lookup shape until Phase 7 rewrites it,
+              // so read both and never assume `input` exists.
               const label =
+                (run as { title?: string }).title ??
                 run.article?.title ??
-                run.input.name ??
-                run.input.linkedin_url ??
+                run.input?.name ??
+                run.input?.linkedin_url ??
                 run.id.slice(0, 8);
               const statusColor =
                 run.status === "completed"

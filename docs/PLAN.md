@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 (the model seam, extract, draft, the runner, and the fix for over-removal) is done on `phase-4-model-seam-runner` and waits for the owner's review of its pull request.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 (stored runs, replay, the API and the guards) is done on `phase-5-store-api` and waits for the owner's review of its pull request. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.**
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -870,23 +870,111 @@ What the verifier could not exercise: anything live (the live client, a real ref
 
 **The owner's bar:** the lead survives (11 of 12 trial runs, 3 of 3 seeds) and the model's headline is accepted on most runs (the same). True sentences removed are at 5.6%, about 1 in 18, with a plausible range of 3% to 9%: at the edge of "roughly one in twenty", not clearly inside it. Every altered-copy test is still caught. The figure is reported as it is, by the owner's instruction.
 
+### 2026-11-19, after the owner's review of Phase 4
+
+- Pull request #5 merged by squash at the owner's instruction (`013492b`). The owner accepted the removal rate of 5.6% as it stands, with Phase 6 as the honest measure, and approved the CI job that type-checks the live client against the SDK.
+- **Both production deployments came from GitHub and are ready at the merged commit,** checked before Phase 5 started. CI on `main`: success.
+
+  ```
+  article-agent-api: READY 013492b git article-agent-cet8xjz05-nkanyi-so.vercel.app
+  article-agent-web: READY 013492b git article-agent-itykvvfb7-nkanyi-so.vercel.app
+  health: {"status":"ok","mode":"demo","version":"0.1.0"}
+  skeleton routes: 404 404
+  cors frontend: access-control-allow-origin: https://article-agent-web.vercel.app
+  cors other: 0 headers
+  frontend: 200
+  browser: API demo · 0.1.0
+  ```
+
 ---
 
 ## Phase 5: stored runs, replay, API, guards
 
 First working draft.
 
-- [ ] Delete the Phase 2 skeleton: the `/skeleton/*` routes, `app/skeleton.py`'s routes and the `APP_SKELETON_ROUTES` setting, on the host too. A test asserts no `/skeleton` path is in `app.openapi()`. The event shapes move to the real stream.
-- [ ] `Store` over SQLite: the four tables, seeded runs created at startup through the real pipeline.
-- [ ] Replay from a stage: a new run, earlier stages copied and marked, later stages re-executed from stored input.
-- [ ] The HTTP routes in the architecture, the typed event union, uniform error mapping with no upstream text.
-- [ ] Rate limit and daily budget as a dependency on every run-starting route; a test that fails when such a route lacks it; `paste_disabled_in_demo`.
-- [ ] A script that writes `openapi.json` with no server and no key.
-- [ ] Verifier run against the local backend in demo mode.
+- [x] Delete the Phase 2 skeleton: the `/skeleton/*` routes, `app/skeleton.py`'s routes and the `APP_SKELETON_ROUTES` setting, on the host too. A test asserts no `/skeleton` path is in `app.openapi()`. The event shapes move to the real stream.
+- [x] `Store` over SQLite: the four tables, seeded runs created at startup through the real pipeline.
+- [x] Replay from a stage: a new run, earlier stages copied and marked, later stages re-executed from stored input.
+- [x] The HTTP routes in the architecture, the typed event union, uniform error mapping with no upstream text.
+- [x] Rate limit and daily budget as a dependency on every run-starting route; a test that fails when such a route lacks it; `paste_disabled_in_demo`.
+- [x] A script that writes `openapi.json` with no server and no key.
+- [x] Verifier run against the local backend in demo mode.
 
 **Gate:** `make check` exits 0. Verifier table: a seeded run streams to `run_completed`; a replay from `draft` yields a linked run; a reload mid-run finds the run; an induced stage failure still ends in `run_failed`; pasted text in demo is refused; the budget test refuses a run when the day's recorded cost is at the cap.
 
 **Log:**
+
+### 2026-11-19, Phase 5 on `phase-5-store-api`
+
+No paid call was made in this phase, and no recording had to be redone.
+
+**Built.**
+
+- **The Phase 2 skeleton is deleted:** its routes, its module and its setting. A test asserts the exact set of routes.
+- **The store** (`backend/app/store.py`): SQLite through the standard library, four tables. A run row is written before its first event; after each event the run's whole state is written again.
+- **Seeded runs:** created once per process on the first `/api` request, by running the real pipeline over the recordings, under stable ids (`seed-<id>`). Not at start-up, so `/health` answers at once on a cold start; the architecture now says so.
+- **Replay from a stage:** a new run linked to its parent. Stages before the chosen one are copied from the parent's records and marked; the chosen stage and those after it are executed again from what those records stored.
+- **The HTTP surface** (`backend/app/main.py`): `/health`, `/api/config`, `/api/seeds/{id}`, `/api/runs`, `/api/runs/{id}`, and the two event streams, `POST /api/runs/stream` and `POST /api/runs/{id}/replay/stream`. Events are one named union, data-only, with the tag in the body.
+- **One error shape:** a code, a fixed message, whether a retry can help, and a request id, which is also a header on every response. Validation errors do not echo the input.
+- **Guards:** every route that can start a run depends on one guard, a per-address rate limit and then the daily budget, decided and recorded in a single transaction. Pasted text is refused in demo mode. The request body is capped, by declared length before it is read and by count as it is read.
+- **`tools/write_openapi.py`** writes `backend/openapi.json` with no server and no key (`make openapi`); a test fails if the committed file is stale.
+- **CI:** the `types-live` job the owner approved installs the SDK for the type check of the live client only. It has no key and makes no call.
+- **For watching a run locally:** `make dev` makes the demo wait a quarter of the time each recorded call really took, so a seeded run takes about four seconds. Off everywhere else.
+- **Frontend:** one line in the old sidebar, so that it reads a run's title in the new shape and no longer assumes the old one. The old screen is otherwise untouched until Phase 7.
+
+**Not settled, for the owner.** On the hosted demo, what the app sees as a visitor's address has not been checked. If Vercel presents one shared address, every visitor shares a single allowance of ten runs a minute. `APP_TRUST_PROXY=1` makes the app read the header the platform sets; that is a Vercel setting, so it is the owner's to make (recommended, and needed by Phase 8 at the latest).
+
+**Reviewer** (fresh context, run alone, asked to break things). It confirmed that an abandoned stream closes the run as failed, that no error path echoes input or exception text, that all SQL values are bound, that a visitor cannot overwrite another run, that replay reads the stored input and cannot be pointed at another run's data, that seeding does not spend in live mode, and that the new CI job cannot reach the network. Its verdict: 4 blocking issues and 8 non-blocking ones. As reported, and what I did; every fix has a test that failed first:
+
+Blocking:
+
+- *B1. Any visitor can break a stream so it never sends its terminal event:* the schema offered `evaluate` as a stage to replay from, the runner does not run it yet, and the request returned an empty 200. **Fixed:** replay accepts only the stages the runner executes, refused before the stream opens with 422, and the runner ends in `run_failed` for a stage it does not know.
+- *B2. A store failure during a stream ends it with no terminal event.* **Fixed:** if storing fails the stream sends `run_failed` with `internal_error`; tested with the store failing on the 1st, 2nd, 3rd, 6th and 10th write.
+- *B3. Parallel requests get straight past the rate limit:* ten at once all passed a limit of two, because the guard counted, checked and recorded in three steps. **Fixed:** one transaction that takes the write lock first; ten at once now give exactly two passes. The budget also holds a worst-case amount for each live run still going.
+- *B4. A chunked request gets past the body-size cap.* **Fixed:** the body is counted as it is read on the two routes that take one; a declared length over the limit is still refused before anything is read. Both give the same 413.
+
+Not blocking:
+
+- *N1. A 500 has no `x-request-id` header.* **Fixed.**
+- *N2. SQLite calls block the event loop, though `0007` says the store runs in a worker thread.* **Fixed:** the streaming and seeding code call the store through a worker thread, and the reading routes are plain functions the framework runs in one.
+- *N3. The docs and the code disagree* (seeding at start-up, undocumented settings, table columns, what the budget reads). **Fixed in the docs:** the architecture and `0007` now describe what is built.
+- *N4. Address handling on the hosted demo has not been checked.* **Partly fixed, partly the owner's:** behind a trusted proxy the app now reads only the platform's header or the right-most forwarded entry, and counts IPv6 by its /64. Whether to trust the proxy on Vercel is the open point above.
+- *N5. Hosted storage grows without bound.* **Fixed:** runs besides the seeded ones are pruned to the newest 200; rate events older than a day are deleted.
+- *N6. A demo-mode replay accepts pasted text* when demo and live share a database file. **Fixed:** refused with `paste_disabled_in_demo`.
+- *N7. The guard test only looks at POST routes.* **Fixed:** the test asserts the exact set of paths and methods, and that every route opening an event stream is guarded.
+- *N8. Importing the app tidies the shared database, so running the tests during `make dev` fails the dev server's in-flight runs.* **Fixed:** the tests point the import at a throwaway file.
+
+**Verifier** (run alone, after the fixes, against `make dev` in demo mode with no key; localhost only).
+
+| # | What it did | Expected | What happened | Result |
+|---|---|---|---|---|
+| 1 | `curl -sN -X POST -d '{"seed_id":"korvath-greenhouses"}' localhost:8000/api/runs/stream`, lines stamped on arrival | Events spread over time; one terminal event | Extract completed at 2.14 s, draft at 3.66 s, ground and `run_completed` at 3.68 s; 10 events, no `run_failed` | pass |
+| 2 | Replay `{"from_stage":"draft"}`, then `GET` the new run | A linked run with earlier stages copied | Ingest and extract arrive as `stage_completed` with `copied_from_run_id`; draft and ground run. Stored: `parent_run_id` set, `replay_from_stage: draft`, `source: replay`, `completed`; the only model call is `draft` | pass |
+| 3 | Started a run, read its id from the first event, `GET /api/runs/{id}` at 1.2 s, 2.7 s and after the end | `running` with partial stages, then `completed` | At 1.2 s: `running`, ingest completed, extract running. At 2.7 s: `running`, draft running. After: `completed`, four stages, article present | pass |
+| 4a | `curl --max-time 1` on a run, then `GET` it four times over 8 s | Stored as failed, not left running | `failed`, error `cancelled`, extract failed; unchanged on every poll | pass |
+| 4b | In-process, a model client that refuses at draft | The stream ends in `run_failed`; the stored run is failed | Last event `{"type":"run_failed","error":"model_refused","stage":"draft"}`; stored `failed`, draft failed, no article | pass |
+| 5 | `POST {"transcript":"...","title":"x"}` in demo mode | Refused; no run created | 403 `paste_disabled_in_demo` with the message about running locally; run count 9 before and after | pass |
+| 6a | In-process, live cost recorded at $1.99, then $2.00, against a $2.00 budget | Allowed under the cap, refused at it | 200 and `run_completed` at $1.99; 429 `daily_budget_exhausted` at $2.00, and for a replay | pass |
+| 6b | Twelve run starts within a minute (limit 10) | The 11th refused | Requests 1 to 10: 200; 11 and 12: 429 `rate_limited`, `retryable: true`. Reading routes still 200 | pass |
+| 7 | `GET /api/runs/seed-korvath-greenhouses` | A readable stored run | The model's headline; 20 claims, 2 removed with reason and detail; four stages completed with input and output; two model calls, `fixture`, with model and cost | pass |
+| 7b | Read three claims against the segments they cite | The cited text says what the claim says | All three do. One cited segment (the host naming the company) supports only the company's name, which is what it is cited for | pass |
+| 8 | Unknown run, seed and path; wrong method; malformed bodies; a stage that does not exist; a 3 MB body with and without a declared length | One error shape; a matching `x-request-id` | 404, 404, 404, 405, 422, 422, 413, 413, each in the one shape with the header equal to the body's id. No input echoed, no stack trace, no path | pass |
+| 9 | Stopped and restarted `make dev` | The same runs; seeds not doubled | Identical id list; the earlier run still readable; the abandoned one still `failed` | pass |
+| 10 | `make check` | Exit 0 | Exit 0; "303 passed, 1 skipped"; frontend 10 passed; build ok | pass |
+| 11 | The frontend root in headless Chrome | Renders, no crash | Renders; the sidebar lists the runs by title; no error overlay | pass |
+| 12 | The server's environment; `import anthropic` | No key; the import fails | No key variable; `ModuleNotFoundError` | pass |
+
+No failures. Its observations, and what I did:
+
+- *The 429 carries no `Retry-After` header.* **Fixed:** it now says 60.
+- *`GET /api/runs/stream` is a 404 `run_not_found`, because "stream" is read as a run id.* Left: there is no run called stream, and the route for starting one is a POST.
+- *Seeded runs show stage times of a millisecond or two,* because they are built without the watching delay. Noted for Phase 7's trace view.
+
+What the verifier could not exercise: the old frontend beyond loading it; anything live; a server killed mid-run (the tidy-up at start is covered by a unit test only); concurrency beyond one caller (covered by the test of ten at once).
+
+**Gate evidence.** `make check` exits 0 (303 backend tests, 10 frontend tests, lint, types, build). The verifier's table above has each row the gate names: a seeded run streams to `run_completed` (1); a replay from `draft` yields a linked run (2); a reload mid-run finds the run (3); an induced stage failure still ends in `run_failed` (4a, 4b); pasted text in demo is refused (5); the budget refuses a run when the day's recorded cost is at the cap (6a).
+
+**Gate: passed, 2026-11-19.**
 
 ---
 

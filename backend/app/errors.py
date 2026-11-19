@@ -138,3 +138,66 @@ class RunTimedOut(AppError):
     http_status = 504
     retryable = True
     message = "The run took longer than its time limit."
+
+
+class ReplayNotPossible(AppError):
+    """The parent run never completed a stage that the replay would have to copy."""
+
+    code = "replay_not_possible"
+    http_status = 409
+    message = "This run cannot be re-run from that stage: an earlier stage never completed."
+
+
+class RunNotFound(AppError):
+    code = "run_not_found"
+    http_status = 404
+    message = "No run with that id."
+
+
+class SeedNotFound(AppError):
+    code = "seed_not_found"
+    http_status = 404
+    message = "No seeded transcript with that id."
+
+
+class NotFound(AppError):
+    code = "not_found"
+    http_status = 404
+    message = "Nothing at that address."
+
+
+class MethodNotAllowed(AppError):
+    code = "method_not_allowed"
+    http_status = 405
+    message = "That method is not allowed here."
+
+
+class InvalidRequest(AppError):
+    code = "invalid_request"
+    http_status = 422
+    message = "The request is not in the expected shape."
+
+
+class RequestTooLarge(AppError):
+    code = "request_too_large"
+    http_status = 413
+    message = "The request body is too large."
+
+
+class PasteDisabledInDemo(AppError):
+    code = "paste_disabled_in_demo"
+    http_status = 403
+    message = "Pasting your own transcript works when you run this locally with your own key."
+
+
+class RateLimited(AppError):
+    code = "rate_limited"
+    http_status = 429
+    retryable = True
+    message = "Too many runs started from this address. Try again in a minute."
+
+
+class DailyBudgetExhausted(AppError):
+    code = "daily_budget_exhausted"
+    http_status = 429
+    message = "The daily budget for model calls has been used. Try again tomorrow."

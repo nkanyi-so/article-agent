@@ -15,9 +15,9 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
-from app.errors import AppError, RunTimedOut
+from app.errors import AppError, ReplayNotPossible, RunTimedOut
 from app.events import (
     AnyRunEvent,
     RunCompleted,
@@ -32,7 +32,14 @@ from app.pipeline.draft import build_draft_request
 from app.pipeline.extract import build_extract_request, parse_extract
 from app.pipeline.ground import ground
 from app.pipeline.ingest import ingest
-from app.schemas import ExtractResult, GroundResult, IngestResult, StageName, StageRecord
+from app.schemas import (
+    DraftBlock,
+    ExtractResult,
+    GroundResult,
+    IngestResult,
+    StageName,
+    StageRecord,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +70,7 @@ class FailedModelCall(BaseModel):
 
     stage: StageName
     request_key: str
+    source: Literal["live", "fixture"]
     model_requested: str
     error: str
     cost_usd: float
@@ -93,7 +101,7 @@ class _Context:
     state: RunState
     ingested: IngestResult | None = None
     extract: ExtractResult | None = None
-    draft: ModelResponse | None = None
+    draft_blocks: list[DraftBlock] | None = None
     stage_input: dict[str, Any] = field(default_factory=dict)
 
     async def call_model(self, stage: StageName, request: ModelRequest) -> ModelResponse:
@@ -105,6 +113,7 @@ class _Context:
                     FailedModelCall(
                         stage=stage,
                         request_key=request_key(request),
+                        source=self.client.source,
                         model_requested=request.model,
                         error=error.code,
                         cost_usd=error.cost_usd,
@@ -151,19 +160,20 @@ async def _extract(ctx: _Context) -> dict[str, Any]:
 async def _draft(ctx: _Context) -> dict[str, Any]:
     assert ctx.ingested is not None and ctx.extract is not None  # noqa: S101
     ctx.stage_input = {"extract": ctx.extract.model_dump(mode="json")}
-    ctx.draft = await ctx.call_model("draft", build_draft_request(ctx.ingested, ctx.extract))
-    return {"blocks": [block.model_dump(mode="json") for block in ctx.draft.blocks]}
+    response = await ctx.call_model("draft", build_draft_request(ctx.ingested, ctx.extract))
+    ctx.draft_blocks = response.blocks
+    return {"blocks": [block.model_dump(mode="json") for block in ctx.draft_blocks]}
 
 
 async def _ground(ctx: _Context) -> dict[str, Any]:
     assert ctx.ingested is not None and ctx.extract is not None  # noqa: S101
-    assert ctx.draft is not None  # noqa: S101
+    assert ctx.draft_blocks is not None  # noqa: S101
     ctx.stage_input = {
-        "blocks": [block.model_dump(mode="json") for block in ctx.draft.blocks],
+        "blocks": [block.model_dump(mode="json") for block in ctx.draft_blocks],
         "corrections": [c.model_dump(mode="json") for c in ctx.extract.corrections],
     }
     result = ground(
-        ctx.draft.blocks, ctx.ingested.segments, ctx.extract.corrections, ctx.ingested.title
+        ctx.draft_blocks, ctx.ingested.segments, ctx.extract.corrections, ctx.ingested.title
     )
     ctx.state.result = result
     return result.model_dump(mode="json")
@@ -178,6 +188,31 @@ STAGES: tuple[tuple[StageName, Stage], ...] = (
 )
 
 
+STAGE_NAMES: tuple[StageName, ...] = tuple(name for name, _ in STAGES)
+# The stages a run can be re-run from: the ones this runner executes. Keep in step with STAGES.
+RunnableStage = Literal["ingest", "extract", "draft", "ground"]
+
+
+@dataclass(frozen=True)
+class Resume:
+    """Re-run from `from_stage`: earlier stages are copied from the parent run's records,
+    and the stages from there on are executed again from what those records stored."""
+
+    from_stage: RunnableStage
+    parent_run_id: str
+    parent_stages: list[StageRecord]
+
+
+def _restore(ctx: _Context, name: StageName, output: dict[str, Any]) -> None:
+    """Puts a copied stage's stored output back where the later stages read it."""
+    if name == "ingest":
+        ctx.ingested = IngestResult.model_validate(output)
+    elif name == "extract":
+        ctx.extract = ExtractResult.model_validate(output)
+    elif name == "draft":
+        ctx.draft_blocks = [DraftBlock.model_validate(block) for block in output["blocks"]]
+
+
 def _utc_now() -> datetime:
     return datetime.now(UTC)
 
@@ -190,8 +225,13 @@ async def run_pipeline(
     *,
     ceiling_s: float = RUN_CEILING_S,
     now: Callable[[], datetime] = _utc_now,
+    resume: Resume | None = None,
 ) -> AsyncIterator[AnyRunEvent]:
-    """Runs the stages in order, writing to `state` and yielding events."""
+    """Runs the stages in order, writing to `state` and yielding events.
+
+    With `resume`, the stages before `resume.from_stage` are not executed: their records
+    are copied from the parent run and marked as copies.
+    """
     ctx = _Context(text=text, title=title, client=client, state=state)
     deadline = time.monotonic() + ceiling_s
     seq = 0
@@ -215,7 +255,46 @@ async def run_pipeline(
 
     try:
         yield RunStarted(seq=0, run_id=state.run_id)
-        for name, stage in STAGES:
+        if resume and resume.from_stage not in STAGE_NAMES:
+            # Not a stage this runner executes. Refuse with a terminal event, not an exception.
+            yield fail(ReplayNotPossible.code)
+            return
+        copy_until = STAGE_NAMES.index(resume.from_stage) if resume else 0
+        for position, (name, stage) in enumerate(STAGES):
+            if resume and position < copy_until:
+                parent = next((r for r in resume.parent_stages if r.name == name), None)
+                if parent is None or parent.status != "completed" or parent.output is None:
+                    # The parent never finished this stage, so there is nothing to copy.
+                    record = None
+                    yield fail(ReplayNotPossible.code)
+                    return
+                try:
+                    _restore(ctx, name, parent.output)
+                except ValidationError, KeyError, TypeError:
+                    record = None
+                    yield fail(ReplayNotPossible.code)
+                    return
+                state.stages.append(
+                    StageRecord(
+                        run_id=state.run_id,
+                        seq=len(state.stages),
+                        name=name,
+                        status="completed",
+                        started_at=now(),
+                        duration_ms=parent.duration_ms,
+                        input=parent.input,
+                        output=parent.output,
+                        copied_from_run_id=resume.parent_run_id,
+                    )
+                )
+                yield StageCompleted(
+                    seq=next_seq(),
+                    run_id=state.run_id,
+                    stage=name,
+                    duration_ms=parent.duration_ms or 0,
+                    copied_from_run_id=resume.parent_run_id,
+                )
+                continue
             if time.monotonic() >= deadline:
                 # The ceiling is on the whole run. Checked here as well as inside the stage,
                 # because a stage that never waits on anything would never notice it.

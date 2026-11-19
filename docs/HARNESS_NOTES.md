@@ -62,3 +62,11 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-19. A scripted edit stopped at its first failed match, and the commit that followed in the same command went through without the changes it was meant to carry (the verifier's table and the gate entry). Caught on the next line of output and fixed with a second commit. A commit should never be chained after an edit whose success has not been read.
 - 2026-11-19. The reviewer, asked to attack a rule the owner had specified in one sentence, found it matching "will" to a speaker called Will and "June" to a speaker called June. A rule that sounds complete in a sentence needs adversarial inputs before it is trusted.
 
+## Phase 5, harness 0.3.0
+
+- 2026-11-19. Tests that send requests one after another said the rate limit worked; the reviewer sent ten at once and all ten passed a limit of two. Any guard that counts then records needs a concurrent test, and the reviewer's brief should always include "send them at once".
+- 2026-11-19. The schema offered a stage name the runner does not run yet, so a request that was valid by the published schema produced a stream with no terminal event. Types shared between "what exists in the design" and "what a caller may ask for" need to be separate.
+- 2026-11-19. Getting one error shape for an over-large body took four attempts, because the framework handles a declared length, a counted body and exceptions raised while reading the body in three different places. Reading the installed framework's source was faster than guessing; the skill's "check the installed source" step earned its place.
+- 2026-11-19. After the Phase 4 slip, every scripted edit in this phase printed its exit status and was read before the next step, and the commit was its own command. No repeat.
+- 2026-11-19. The owner asked for a hands-on walkthrough before approving. The hand-over step could always include "how to try it yourself in two minutes, and what is not built yet".
+

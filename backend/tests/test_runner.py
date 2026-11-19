@@ -276,3 +276,74 @@ async def test_a_billed_call_whose_response_is_unusable_is_still_counted_in_the_
     assert (failed.stage, failed.error) == ("draft", "model_truncated")
     assert failed.cost_usd == pytest.approx(0.020662)
     assert state.cost_usd() == pytest.approx(0.017312 + 0.020662)
+
+
+# ------------------------------------------------------------------ re-running from a stage
+
+
+async def replay(
+    from_stage: str, client: FakeClient, parent: RunState
+) -> tuple[list[AnyRunEvent], RunState]:
+    from app.pipeline.runner import Resume
+
+    state = RunState(run_id="run-replay")
+    resume = Resume(from_stage=from_stage, parent_run_id=parent.run_id, parent_stages=parent.stages)  # type: ignore[arg-type]
+    events = [e async for e in run_pipeline(TRANSCRIPT, TITLE, client, state, resume=resume)]
+    return events, state
+
+
+async def test_a_replay_from_draft_copies_the_earlier_stages_and_runs_the_rest_again() -> None:
+    _, parent = await collect(FakeClient())
+    client = FakeClient()
+
+    events, state = await replay("draft", client, parent)
+
+    assert types(events) == [
+        "run_started",
+        "stage_completed", "stage_completed",
+        "stage_started", "stage_completed",
+        "stage_started", "stage_completed",
+        "run_completed",
+    ]  # fmt: skip
+    copied = [e for e in events if e.type == "stage_completed" and e.copied_from_run_id]
+    assert [e.stage for e in copied] == ["ingest", "extract"]
+    assert [(r.name, r.copied_from_run_id) for r in state.stages] == [
+        ("ingest", "run-1"), ("extract", "run-1"), ("draft", None), ("ground", None),
+    ]  # fmt: skip
+    assert state.stages[1].output == parent.stages[1].output
+    # Only the draft was asked of the model again.
+    assert [bool(r.output_schema) for r in client.calls] == [False]
+    assert state.status == "completed" and state.result is not None
+
+
+async def test_a_replay_from_ground_calls_no_model_at_all() -> None:
+    _, parent = await collect(FakeClient())
+    client = FakeClient()
+
+    _, state = await replay("ground", client, parent)
+
+    assert client.calls == []
+    assert state.result == parent.result
+    assert [r.copied_from_run_id for r in state.stages] == ["run-1", "run-1", "run-1", None]
+
+
+async def test_a_replay_re_executes_from_the_stored_input_not_from_memory() -> None:
+    # The parent's stored extract output is edited; the replayed draft must be built from it.
+    _, parent = await collect(FakeClient())
+    assert parent.stages[1].output is not None
+    parent.stages[1].output["angle"] = "An angle edited in the stored record."
+    client = FakeClient()
+
+    await replay("draft", client, parent)
+
+    assert "An angle edited in the stored record." in client.calls[0].content[-1].text  # type: ignore[union-attr]
+
+
+async def test_a_replay_of_a_run_that_never_reached_the_stage_fails_cleanly() -> None:
+    _, parent = await collect(FakeClient(extract=ModelRefused("bio")))
+
+    events, state = await replay("draft", FakeClient(), parent)
+
+    assert types(events) == ["run_started", "stage_completed", "run_failed"]
+    assert events[-1].error == "replay_not_possible"  # type: ignore[union-attr]
+    assert state.status == "failed"

@@ -31,6 +31,10 @@ class StageCompleted(_Event):
     type: Literal["stage_completed"] = "stage_completed"
     stage: StageName
     duration_ms: int
+    copied_from_run_id: str | None = Field(
+        default=None,
+        description="Set when the stage was not run again but copied from a parent run.",
+    )
 
 
 class RunCompleted(_Event):

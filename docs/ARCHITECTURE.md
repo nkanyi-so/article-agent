@@ -57,18 +57,35 @@ Events are one named discriminated union (`run_started`, `stage_started`, `stage
 
 **Modes.** `APP_MODE=demo` (default) builds the fixture client and refuses pasted text. `APP_MODE=live` builds the live client and needs `ANTHROPIC_API_KEY` and the `live` dependency group. The mode is chosen once, in the app factory.
 
+**Settings** (environment variables, all with defaults that are right for local use):
+
+| Variable | Default | What it does |
+|---|---|---|
+| `APP_MODE` | `demo` | `demo` or `live`. |
+| `ANTHROPIC_API_KEY` | none | Needed in live mode only. |
+| `APP_CORS_ORIGINS` | `http://localhost:3000` | Comma-separated origins allowed to call the API. A wildcard is refused. |
+| `APP_DATABASE_PATH` | a file in the system's scratch folder | Where the SQLite file lives. |
+| `APP_RUNS_PER_MINUTE` | 10 | Runs one address may start in a minute. |
+| `APP_DAILY_BUDGET_USD` | 2.0 | Cap on what live calls may cost in a UTC day. |
+| `APP_MAX_BODY_BYTES` | 262144 | Largest request body. |
+| `APP_MAX_STORED_RUNS` | 200 | Runs kept besides the seeded ones. |
+| `APP_TRUST_PROXY` | off | Take the caller's address from the header the platform sets (`x-real-ip`, else the right-most `x-forwarded-for` entry). Off by default, because anywhere else that header is the caller's to choose. |
+| `APP_REPLAY_LATENCY` | 0 | In demo mode, wait this fraction of the time each recorded call really took, so a run can be watched. `make dev` sets 0.25. |
+
 ## Data model
 
 SQLite, four tables.
 
-- `runs`: `id`, `created_at`, `mode`, `source` (seed, paste, replay), `seed_id`, `parent_run_id`, `replay_from_stage`, `status` (running, completed, failed), `error`, `pinned`.
+- `runs`: `id`, `created_at`, `mode`, `source` (seed, paste, replay), `title`, `seed_id`, `parent_run_id`, `replay_from_stage`, `status` (running, completed, failed), `error`, `pinned`.
 - `stage_records`: `run_id`, `seq`, `name`, `status`, `started_at`, `duration_ms`, `input`, `output`, `error`, `copied_from_run_id`. Input and output are JSON, validated by the stage's Pydantic model on the way in and out.
-- `model_calls`: `id`, `run_id`, `stage`, `request_key`, `source` (live, fixture), `model_requested`, `model_served`, `request`, `response`, `stop_reason`, token counts, `cost_usd`, `latency_ms`, `attempts`.
-- `rate_events`: what the rate limit and the daily budget read.
+- `model_calls`: `id`, `run_id`, `stage`, `request_key`, `source` (live, fixture), `model_requested`, `model_served`, `request`, `response`, `stop_reason`, token counts, `cost_usd`, `latency_ms`, `attempts`. Also `created_at`, which is what "today" means for the daily budget, and `error`: a call that was billed but whose response could not be used is stored with its cost, its error code and no response.
+- `rate_events`: one row per run started, with the caller's address and the time. The rate limit reads it. The daily budget reads `model_calls`: the cost of live calls since midnight UTC, plus a worst-case amount held for each live run still going.
 
 The transcript is the input of the `ingest` record. The article is derived from the `ground` record; it is not stored twice.
 
-Seeded runs are created at startup by running the real pipeline with the fixture client, with stable ids, so their links always resolve.
+Seeded runs are created once per process, on the first request to an `/api` route, by running the real pipeline with the fixture client, under stable ids (`seed-<id>`), so their links always resolve. Not at start-up, so that `/health` answers at once on a cold start. A run still marked running when the process starts was cut off by the last one stopping, and is closed as failed with the error `interrupted`.
+
+Runs other than the seeded ones are pruned to the newest `APP_MAX_STORED_RUNS` (200), so starting runs cannot fill the hosted demo's scratch disk.
 
 ## Stack and why
 

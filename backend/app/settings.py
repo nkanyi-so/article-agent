@@ -2,6 +2,7 @@
 
 import os
 import re
+import tempfile
 from pathlib import Path
 from typing import Literal
 
@@ -34,10 +35,23 @@ class Settings(BaseSettings):
     )
     # Comma-separated origins allowed to call the API from a browser. A wildcard is refused.
     cors_origins: str = "http://localhost:3000"
-    # The Phase 2 skeleton routes. Off unless switched on; Phase 5 deletes them.
-    skeleton_routes: bool = False
-    # Seconds between events of the skeleton stream.
-    skeleton_delay_s: float = 2.0
+    # Where the SQLite file lives. The default is the system's scratch folder: on the hosted
+    # demo that is the only writable place, and it goes when the instance does.
+    database_path: Path = Path(tempfile.gettempdir()) / "article-agent.sqlite3"
+    # Guards on every route that can start a run.
+    runs_per_minute: int = Field(default=10, ge=1)
+    daily_budget_usd: float = Field(default=2.0, ge=0)
+    # How many runs other than the seeded ones are kept. Older ones are pruned, so the
+    # hosted demo's scratch disk cannot be filled by starting runs.
+    max_stored_runs: int = Field(default=200, ge=1)
+    # Largest request body accepted, in bytes.
+    max_body_bytes: int = Field(default=262_144, ge=1024)
+    # Behind a platform proxy the client's address is in a header the platform sets.
+    # Off by default: trusting that header anywhere else lets a caller choose its address.
+    trust_proxy: bool = False
+    # Demo mode replays recordings at once. This makes it wait for a fraction of the time
+    # each recorded call really took, so a run can be watched. Zero by default.
+    replay_latency: float = Field(default=0.0, ge=0, le=1)
 
     @field_validator("cors_origins")
     @classmethod
