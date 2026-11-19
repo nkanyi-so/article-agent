@@ -1,6 +1,6 @@
 # article-agent
 
-A public portfolio piece: it turns a meeting or interview transcript into a short article in which every sentence points at the transcript sentences that support it, with a stage-by-stage trace that can be re-run from any stage and an eval score. The reader is an engineer or hiring manager judging whether the author can build a language-model feature that survives production. It is a rebuild on synthetic data. The one claim it has to prove: the model added nothing the speakers did not say, and you can check that.
+A public portfolio piece: it turns a meeting or interview transcript into a short article in which every sentence points at the transcript sentences that support it, with a stage-by-stage trace that can be re-run from any stage and an eval score. The reader is an engineer or hiring manager judging whether the author can build a language-model feature that survives production. It is a rebuild on synthetic data. The one claim it has to prove, worded so that it is exactly true (`docs/decisions/0015-the-claim.md`): Every sentence of the article points at the transcript lines behind it. Code removes any sentence whose numbers, dates, names or quotations are not in those lines or their speaker labels. A judge model then reads each sentence that is left against its lines and flags the ones it finds unsupported, and every flag is shown to the reader.
 
 **Where it actually is:** see the status line at the top of `docs/PLAN.md`. `frontend/` is ported from the old project and still contains its name-lookup UI until Phase 7.
 

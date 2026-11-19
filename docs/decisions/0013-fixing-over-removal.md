@@ -80,7 +80,7 @@ Without the first-name rule the same saved runs give: baseline 37 of 216 removed
 **Options the owner rejected, and why.**
 
 - *Keep the prompt with seed-derived examples and report 2.1%.* The number would overstate: it was tuned on the test, and it leaves the seeds' names in the system prompt for every transcript.
-- *Let a question count as cited when its answer is cited.* A name from a sentence the model did not cite would count, and an answer can contradict its question ("And Abbey Row?" "No, Kiln Street."). That weakens "the model added nothing the speakers did not say" more than it buys.
+- *Let a question count as cited when its answer is cited.* A name from a sentence the model did not cite would count, and an answer can contradict its question ("And Abbey Row?" "No, Kiln Street."). That weakens the claim (then worded "the model added nothing the speakers did not say"; reworded in `0015`) more than it buys.
 - *One citable block per turn instead of per sentence.* Places named earlier in the same turn would fall inside the cited block, but what the reader sees highlighted becomes a whole turn, a looser pointer, and it reverses `0002`.
 - *More prompt rounds* (not chosen): see decision 3.
 

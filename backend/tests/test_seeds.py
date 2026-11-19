@@ -60,7 +60,7 @@ async def test_a_seeds_article_keeps_its_lead_and_its_own_headline(seed: Seed) -
 # prompt change forces a new recording these numbers are replaced with what it shows.
 RECORDED = {
     "korvath-greenhouses": (19, 0),
-    "sallowfield-dental": (16, 1),
+    "sallowfield-dental": (17, 1),
     "quillmoor-books": (16, 0),
 }
 

@@ -25,8 +25,7 @@ export default function NotFound() {
         404
       </div>
       <p style={{ fontSize: 16, color: "var(--text2)", maxWidth: 360 }}>
-        This page doesn&apos;t exist, or the run you&apos;re looking for was cleared when the
-        server restarted (the store is in-memory for now).
+        There is nothing at this address.
       </p>
       <Link
         href="/"
@@ -43,7 +42,7 @@ export default function NotFound() {
           textDecoration: "none",
         }}
       >
-        ← New article
+        ← Back to the transcripts
       </Link>
     </div>
   );

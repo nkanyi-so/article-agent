@@ -1,93 +1,70 @@
 /**
- * Canonical run view — handles reloads, shared links, and history clicks.
- *
- * This is a Client Component because:
- * - It calls api.getRun() (mutable, cache:'no-store')
- * - RunView needs client-side interactivity (eval trigger, toggle)
- * - Consistent error-handling path shared with the live stream
- *
- * params is consumed via useParams() (Client Component pattern for Next 16 —
- * avoids the async-params Promise which only applies to Server Components).
+ * A stored run, by its address: reloads, shared links and the sidebar all land here.
+ * A client component, because the run is fetched from the backend in the browser.
  */
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { notFound } from "next/navigation";
-import { RunView } from "@/components/run/RunView";
 import { Spinner } from "@/components/primitives/Spinner";
-import { api, ApiError } from "@/lib/api";
-import type { Run } from "@/lib/run-types";
+import { RunScreen } from "@/components/run/RunScreen";
+import { api, ApiError, messageFor } from "@/lib/api";
+import type { RunDetail } from "@/lib/types";
+
+// What was loaded, and for which address. While `id` differs from the current address a
+// load is in flight, so "loading" needs no state of its own.
+type Loaded =
+  | { id: string; state: "ready"; run: RunDetail }
+  | { id: string; state: "error"; code: string; missing: boolean };
 
 export default function RunPage() {
   const { id } = useParams<{ id: string }>();
-  const [run, setRun] = useState<Run | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFoundFlag, setNotFoundFlag] = useState(false);
+  const [loaded, setLoaded] = useState<Loaded | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    let cancelled = false;
-
+    let stale = false;
     api
       .getRun(id)
-      .then((r) => {
-        if (!cancelled) setRun(r);
+      .then((run) => {
+        if (!stale) setLoaded({ id, state: "ready", run });
       })
-      .catch((err) => {
-        if (cancelled) return;
-        if (err instanceof ApiError && err.status === 404) {
-          setNotFoundFlag(true);
-        } else {
-          // Any other error — treat as not found for simplicity.
-          setNotFoundFlag(true);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+      .catch((error: unknown) => {
+        if (stale) return;
+        // A run that does not exist and a backend that cannot be reached are different
+        // things, and are said differently.
+        const code = error instanceof ApiError ? error.code : "internal_error";
+        setLoaded({ id, state: "error", code, missing: code === "run_not_found" });
       });
-
     return () => {
-      cancelled = true;
+      stale = true;
     };
   }, [id]);
 
-  if (notFoundFlag) {
-    // Trigger Next.js not-found boundary.
-    notFound();
-  }
-
-  if (loading) {
+  if (loaded === null || loaded.id !== id) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "40vh",
-          gap: 12,
-          color: "var(--text3)",
-          fontSize: 14,
-        }}
-      >
+      <div className="page" style={{ display: "flex", gap: 12, alignItems: "center", color: "var(--text3)" }}>
         <Spinner size={18} />
-        Loading run…
+        Loading the run…
       </div>
     );
   }
-
-  if (!run) return null;
-
-  return (
-    <div
-      style={{
-        maxWidth: 800,
-        margin: "0 auto",
-        padding: "40px 24px 80px",
-        width: "100%",
-      }}
-    >
-      <RunView run={run} onRunUpdated={setRun} />
-    </div>
-  );
+  if (loaded.state === "error") {
+    return (
+      <div className="page">
+        <div className="note-removed" role="alert">
+          <div className="micro" style={{ color: "var(--fail)", marginBottom: 4 }}>
+            {loaded.missing ? "No such run" : "The run could not be loaded"}
+          </div>
+          {messageFor(loaded.code)}{" "}
+          <Link className="link" href="/">
+            Back to the transcripts
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  // Keyed by the run, so a re-run opens with nothing chosen from the run before it.
+  return <RunScreen key={loaded.run.run.id} run={loaded.run} />;
 }

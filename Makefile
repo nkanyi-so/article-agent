@@ -29,6 +29,8 @@ check-backend:
 
 check-frontend:
 	cd frontend && $(NODE) npm run lint
+	@# The API types are generated from backend/openapi.json. Fails if the committed file is stale.
+	cd frontend && $(NODE) npm run types:check
 	cd frontend && $(NODE) npm run typecheck
 	cd frontend && $(NODE) npm run test
 	cd frontend && $(NODE) npm run build

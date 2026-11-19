@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 (evals) is done on `phase-6-evals` and waits for the owner's review of its pull request: three live runs, the first two failing judged groundedness, the third passing after the owner approved a change to what the judge is shown (`decisions/0014`).
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 was merged on 2026-11-19 (pull request #7) and both production sites deployed. Phase 7 (the frontend) is done on `phase-7-frontend` and waits for the owner's review of its pull request.
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -1169,16 +1169,91 @@ $ ls backend/evals/results
 
 Read `frontend/AGENTS.md` and the bundled Next.js guide first.
 
-- [ ] Generated types from `openapi.json`, with the freshness check in `make check`. Delete the hand-copied type files.
-- [ ] Remove the name-lookup UI and every vendor name that came with it.
-- [ ] Entry: three seeded transcripts to choose from; the paste box shown and disabled in demo with its one line, enabled in live mode from `/api/config`.
-- [ ] Run page: the article with clickable claims that highlight their transcript sentences; the removed-units list with reasons; the trace with each stage's input, output, cost and latency; re-run from a stage; eval cards.
-- [ ] Fix the known defects: a stream that closes without a terminal event; every error shown as "not found"; the address changing before the run exists.
-- [ ] Tests for the stream parser and claim rendering. Verifier run in a browser-like flow.
+- [x] Generated types from `openapi.json`, with the freshness check in `make check`. Delete the hand-copied type files.
+- [x] Remove the name-lookup UI and every vendor name that came with it.
+- [x] Entry: three seeded transcripts to choose from; the paste box shown and disabled in demo with its one line, enabled in live mode from `/api/config`.
+- [x] Run page: the article with clickable claims that highlight their transcript sentences; the removed-units list with reasons; the trace with each stage's input, output, cost and latency; re-run from a stage; eval cards.
+- [x] Fix the known defects: a stream that closes without a terminal event; every error shown as "not found"; the address changing before the run exists.
+- [x] Tests for the stream parser and claim rendering. Verifier run in a browser-like flow.
 
 **Gate:** `make check` exits 0 on both sides. Verifier table for the flow in the spec's "Done when", run locally in demo mode with no key. No vendor name from the old lookup path remains (`git grep` output pasted).
 
 **Log:**
+
+### 2026-11-19, after the owner's review of Phase 6
+
+- Pull request #7 merged by squash at the owner's instruction (`d28efda`). The owner accepted the restated threshold wording as written.
+- **Both production deployments came from GitHub and are ready at the merged commit,** checked before Phase 7 started. The hosted seeded runs now have the fifth stage: `seed-korvath-greenhouses` lists `ingest, extract, draft, ground, evaluate`, all completed, with an evaluation (judge `judged`, 1.0 with the question, 0.9 alone, 10 of 19 sentences with a question added); the other two seeded runs end in `evaluate` too; a hosted seeded run streamed 12 events; pasted text 403; the frontend 200.
+- **The claim was reworded,** by the owner's decision, to what is exactly true: `decisions/0015`. Replaced in `CLAUDE.md`, `docs/SPEC.md`, `decisions/0003` and `0013`. Three small changes to the owner's wording, each to keep it exactly true, are listed in the record.
+- **The wrong-speaker check was assessed** (`decisions/0003`, "Wrong speaker"). Built as a tested function, `misattributed` in `ground.py`, and measured free on the 40 saved articles that can still be replayed: it would remove 2 of 601 kept sentences, both the same wrong sentence in two runs, both flagged by the judge, and no true one. **It is not switched on.** Switching it on changes what is put to the judge in two recorded eval runs, so two judge recordings would have to be made again (about 7 cents), and this phase has no paid calls. It can also remove a true sentence of one kind, reported speech, which the saved articles do not contain. For the owner to decide.
+
+### 2026-11-19, Phase 7 on `phase-7-frontend`
+
+**Built.** The three views were rewritten inside the kept shell (top bar, sidebar, theme, primitives, inline styles over the same tokens).
+
+- **Types** are generated from `backend/openapi.json` into `frontend/src/lib/api.gen.ts` (`npm run types`); `make check` fails if the committed file is stale (shown: a line appended to the file gives exit 1). The hand-copied type files are deleted. One dev-only dependency, `openapi-typescript`.
+- **Entry** (`/`): the claim word for word as in `0015` (a test compares them), a line saying the demo replays recordings, the three seeded transcripts each with "Read the checked article" and "Run it now", and the paste box shown but disabled with its reason (enabled when `/api/config` says so).
+- **Run page** (`/runs/{id}`): four score cards (kept, removed by code, flagged by the judge, judged supported, with the cited-lines-alone figure in the line beneath); the article, where every sentence and the headline can be chosen by mouse or keyboard; a panel with the exact transcript lines the chosen sentence cites, then, apart and dashed, the question a cited answer replied to, labelled "added by code, not cited by the model · not evidence", then the judge's verdict and reason; a list of what was flagged, in amber, still in the article; a list of what code removed, in red and struck through, with the reason in words; the trace, each stage with its status, duration, model, tokens, cost and latency, its input and output on request, and "Re-run from here".
+- **Live stages:** starting a run or a re-run shows the five stages arriving from the event stream; the article opens when the stream ends.
+- **The three named defects.** A stream that closes with no terminal event now produces one (`stream_ended_early`) and the screen says the connection closed. Each error code has its own sentence; "no such run" is said only for `run_not_found`. The address changes only when the run exists and its stream has ended.
+- **Addresses that can be shared:** `?claim=3` or `?claim=headline` opens a sentence, `?stage=draft` opens a stage of the trace, `?theme=light` picks a theme. `?start=<seed>` and `?rerun=<stage>` start a run on arrival only when the server says it is in demo mode.
+- **Phone width:** the sidebar is hidden, the cards fold to two columns, and the lines behind a chosen sentence come up as a sheet over the article.
+- **Tests:** 36 (were 10): the stream reader (any chunking, CRLF, malformed events, an early close, a dropped connection, nothing after the terminal event), the folding of events into stages, and the claim rendering (which sentence is flagged and why, cited lines apart from the code-added question, removed apart from flagged, "not judged" never shown as zero).
+
+**The seeded Sallowfield run was changed so the screen has something real to show.** In the recordings the demo replayed, none of the three seeded articles had a sentence flagged by the judge. The eval's second recorded pass of the Sallowfield transcript has two (the lead and the headline) and one sentence removed by code. Its three recordings were swapped with the first pass's, between `backend/recordings/` and `backend/evals/recordings/run-2/`. Both are real recordings of the same requests; no call was made. The eval's means are unchanged (`make check` prints the same per-case figures, with Sallowfield's first two single runs in the other order than `2026-11-19-third.json` lists them). The earlier line in the Phase 6 log, that the first pass is what the demo replays, is true of the other two seeds and not of this one. A merge deploys this.
+
+**Screenshots:** `docs/screens/`, 40 files: ten states, light and dark, 1440px and 390px, indexed in `docs/screens/README.md`, taken by `scripts/screenshots.sh` from a production build. What looked wrong in them and what was done:
+
+- Every sentence started on its own line: a `<button>` cannot wrap like text. The sentences are now spans with a button's role, focusable, chosen with Enter or Space.
+- The phone shots were cut off on the right: headless Chrome will not make a window narrower than 500px. They are now taken through a 390px frame.
+- The framework's development badge was in every shot. They are now taken from a production build.
+- The re-run's progress was below the fold, under the article. It now appears at the top of the page.
+- The trace and the two lists were in no shot. Two whole-page shots were added.
+- Every run page after the first mid-run shot showed only "Loading". The cause was mine, not the app's: the frontend server had not been stopped before a rebuild and was serving a build that had been replaced under it.
+
+**Still rough.** The seeded runs show stage times of a millisecond or two, because they are built without the watching delay. On a phone the top bar wraps to three lines. The theme switch shows the stored choice, not the one a `?theme=` address asked for. The trace's input and output are raw JSON. Runs abandoned mid-stream stay in the sidebar as failed. Whether the stages arrive visibly spread out on the hosted demo depends on a setting there, and is for Phase 8.
+
+
+**The reviewer's findings**, as it reported them, and what was done.
+
+- *BLOCKING. A link can start a paid run.* `?rerun=` was allowed whenever the stored run's calls were all replayed, but a seeded run is built from recordings even on a live server, and a re-run uses the server's own client. On a live server, opening `/runs/seed-korvath-greenhouses?rerun=draft` would have made paid calls with no click. **Fixed:** both `?start=` and `?rerun=` ask the server for its mode and act only in demo mode, through one tested function.
+- *The claim on screen was not the decided wording* (it left out "or their speaker labels"). **Fixed:** word for word, and a test compares the screen's text with `decisions/0015`.
+- *A verdict decided by a code check was labelled "flagged by the judge model".* **Fixed:** it says "Failed a code check after grounding".
+- *`misattributed` can flag a true sentence (reported speech), and crashed on a blank speaker label; the record said it could not remove a true sentence.* **Fixed:** the crash; the docstring and `0003` now say what it can remove. Still not switched on.
+- *The recording swap made a line of the Phase 6 log and the per-run order in the third result file untrue for one case.* Recorded above; the result file is left as it was written.
+- What held: the stream reader against chunk splits, split multi-byte characters, CRLF, malformed events, events after the terminal one, and early closes; the three named defects; every address parameter whitelisted; no HTML injected from API text; the code-added question labelled apart from citations; "not judged" never shown as zero; the sentence control usable by keyboard; no vendor names; nothing private in the screenshots.
+
+**The verifier's table** (demo mode, no key, pages loaded in headless Chrome and their text read).
+
+| # | Step | What happened | |
+|---|---|---|---|
+| 1 | `make check` | Exit 0. 367 backend tests, the eval set, 36 frontend tests, the generated-types check, the build | pass |
+| 2 | The entry page | The claim, the line about recordings, three transcripts, the paste box with "Not available here: this demo replays recordings and has no key" | pass |
+| 3 | A seeded run | Kept 17, removed by code 1, flagged by the judge 2, judged supported 89% (83% alone); the article; two flags with the judge's reasons; one removal with "A name in it is not in the lines it cited: Abbey, Row."; five stages each with "Re-run from here"; the recordings line with the recorded cost | pass |
+| 4 | A sentence with a question (`?claim=1`) | "Cited by the model": line 14, Hana Olund. "Added by code, not cited by the model · the question being answered · not evidence": line 13, Tobias Ferrant. Both match the API | pass |
+| 5 | A flagged sentence (`?claim=0`) | "Flagged by the judge model · kept in the article" with its reason; in the flagged list, not in the removed list; the removed sentence is not in the article | pass |
+| 6 | A run started from a link | "Running", `ingest` running and four stages waiting; the API shows the new run | pass |
+| 7 | A re-run from `draft` | "Re-running from the draft stage", `ingest` and `extract` copied, `draft` running, `ground` waiting; the API shows the replay run | pass |
+| 8 | An address with no run | "No such run. There is no run with this address." | pass |
+| 9 | The vendor-name search | No output (below) | pass |
+| 10 | `docs/screens/` | 40 images; the two it opened show loaded pages | pass |
+| 11 | `npm run types:check` | Exit 0 | pass |
+
+**Not exercised by anyone, and worth the owner's two minutes:** clicking and the keyboard (pages were loaded by address, not driven); a run or re-run watched to its end in a browser, where the page should move to the new run; the message when the backend is down. I tried the last two in headless Chrome and could not make it wait for real time, so they rest on the tests of the logic, not on a browser.
+
+**Gate evidence.**
+
+```
+$ make check; echo "exit $?"
+367 passed          (backend, then the eval set: every line pass)
+> openapi-typescript ../backend/openapi.json -o src/lib/api.gen.ts --check
+Tests  36 passed (36)
+exit 0
+$ git grep -n -i "linkedin\|firecrawl\|tavily\|serpapi\|apollo\|clearbit\|proxycurl\|perplexity\|disambig\|enrich" -- frontend ':!frontend/package-lock.json'; echo "exit $?"
+exit 1
+```
+
+**Gate: passed, 2026-11-19.** `make check` exits 0 on both sides; the verifier's table covers the flow in the spec's "Done when" (the page loads with no key, a seeded transcript runs, a sentence shows its transcript lines, a removed sentence shows its reason, a re-run starts from a stage) in demo mode with no key; no vendor name from the old lookup path remains.
 
 ---
 
