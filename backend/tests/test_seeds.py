@@ -10,18 +10,38 @@ from app.evals.cases import EVALS_DIR, recordings_dir
 from app.evals.harness import run_set
 from app.model.fixture import RECORDINGS_DIR, FixtureModelClient
 from app.model.payload import request_key
-from app.model.types import ModelRequest, ModelResponse
+from app.model.types import ModelClient, ModelRequest, ModelResponse
 from app.pipeline.runner import RunState, run_pipeline
 from app.seeds import SEEDS, Seed
 
 SEED_IDS = [seed.id for seed in SEEDS]
 
 
-async def run_seed(seed: Seed) -> RunState:
+async def run_seed_with(seed: Seed, client: ModelClient) -> RunState:
     state = RunState(run_id=f"test-{seed.id}")
-    async for _ in run_pipeline(seed.text(), seed.title, FixtureModelClient(), state):
+    async for _ in run_pipeline(seed.text(), seed.title, client, state):
         pass
     return state
+
+
+async def run_seed(seed: Seed) -> RunState:
+    return await run_seed_with(seed, FixtureModelClient())
+
+
+async def test_the_altered_seed_shows_the_ground_check_removing_what_was_changed() -> None:
+    from app.seeds import ALTERED_SEED, seed
+
+    altered = seed(ALTERED_SEED)
+    state = await run_seed(altered)
+
+    assert state.result is not None and altered.note is not None
+    assert "Altered on purpose" in altered.note
+    assert [(u.reason, u.detail) for u in state.result.removed] == [
+        ("unsupported_number", ["17"]),
+        ("no_citation", []),
+    ]
+    assert "17 percent" in state.result.removed[0].text
+    assert not [c for c in state.result.claims if "17 percent" in c.text or "310,000" in c.text]
 
 
 @pytest.mark.parametrize("seed", SEEDS, ids=SEED_IDS)
@@ -38,7 +58,11 @@ async def test_a_seed_runs_end_to_end_from_its_recordings(seed: Seed) -> None:
     assert len(state.result.claims) >= 3
 
 
-@pytest.mark.parametrize("seed", SEEDS, ids=SEED_IDS)
+# The hand-altered seed is left out: losing a sentence is what it is for.
+AS_RECORDED = [seed for seed in SEEDS if seed.note is None]
+
+
+@pytest.mark.parametrize("seed", AS_RECORDED, ids=[seed.id for seed in AS_RECORDED])
 async def test_a_seeds_article_keeps_its_lead_and_its_own_headline(seed: Seed) -> None:
     # What the Phase 4 prompt change was for: on the recorded runs the first sentence of the
     # body survives the ground check and the model's headline is accepted.
@@ -62,6 +86,8 @@ RECORDED = {
     "korvath-greenhouses": (19, 0),
     "sallowfield-dental": (17, 1),
     "quillmoor-books": (16, 0),
+    # The draft altered by hand: the wrong figure and the uncited sentence are removed.
+    "korvath-altered": (17, 2),
 }
 
 
@@ -97,6 +123,9 @@ async def test_every_recording_is_one_the_eval_set_asks_for() -> None:
         return clients.setdefault(repeat, Noting(recordings_dir(repeat)))
 
     await run_set(client_for, repeats=thresholds.REPEATS)
+    # The seeds that are not eval cases (the hand-altered one) replay the first folder too.
+    for seed in SEEDS:
+        await run_seed_with(seed, client_for(1))
 
     assert sorted(clients) == [1, 2, 3]
     assert recordings_dir(1) == RECORDINGS_DIR

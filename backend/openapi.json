@@ -702,7 +702,8 @@
               "unsupported_number",
               "unsupported_name",
               "misquote",
-              "rests_on_corrected_segment"
+              "rests_on_corrected_segment",
+              "wrong_speaker"
             ],
             "title": "Reason",
             "type": "string"
@@ -811,6 +812,18 @@
             },
             "title": "Model Calls",
             "type": "array"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Said with the run, for example that its draft was altered by hand.",
+            "title": "Note"
           },
           "run": {
             "$ref": "#/components/schemas/RunRow"
@@ -1089,6 +1102,18 @@
             "title": "Id",
             "type": "string"
           },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Said beside the seed, for example that it was altered.",
+            "title": "Note"
+          },
           "title": {
             "title": "Title",
             "type": "string"
@@ -1106,6 +1131,18 @@
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Said beside the seed, for example that it was altered.",
+            "title": "Note"
           },
           "text": {
             "title": "Text",

@@ -313,12 +313,12 @@ def misattributed(text: str, cited: list[Segment], segments: list[Segment]) -> l
     """Speakers a sentence gives a statement to ("Banks said...") although none of the lines
     it cites was spoken by them. Returns the names as written; empty when there are none.
 
-    NOT YET A GROUND RULE: `ground` does not call this (docs/decisions/0003, "Wrong
-    speaker"). It is narrow on purpose: the name must be a speaker's full label or
+    Rule 5 of the ground check (docs/decisions/0003, "Wrong speaker"), switched on by the
+    owner on 2026-11-19. It is narrow on purpose: the name must be a speaker's full label or
     surname, it must stand directly before a verb of saying (or after "according to"),
     and a surname two speakers share is left alone. "Kovac asked Pryce for the figures"
-    gives nothing to Pryce and is not touched. It removed no true sentence in the saved
-    articles, but it can: a sentence that reports, truly, what one speaker said another
+    gives nothing to Pryce and is not touched. Its known cost: it removed no true sentence
+    in the saved articles, but it can: a sentence that reports, truly, what one speaker said another
     did ("Kovac proposed closing the depot", citing Pryce saying so) is flagged, because
     the cited line is Pryce's. A pronoun ("she said"), a label ending in a full stop, and
     a sentence that cites one of the person's lines beside the line it really took the
@@ -368,8 +368,9 @@ def _check(
     ordinary: set[str],
     first_names: FirstNames,
     resolutions: list[NameResolution],
+    segments: list[Segment],
 ) -> tuple[RemovalReason, list[str]] | None:
-    """The first rule the sentence fails, with what was missing, or None if it passes all four.
+    """The first rule the sentence fails, with what was missing, or None if it passes all five.
     Names that stand only through the first-name rule are appended to `resolutions`."""
     if not sentence.citations:
         return "no_citation", []
@@ -397,6 +398,10 @@ def _check(
             missing_names.append(name)
     if missing_names:
         return "unsupported_name", missing_names
+    # Rule 5: a statement given to a named speaker needs a cited line that speaker spoke.
+    wrong_speaker = misattributed(sentence.text, cited, segments)
+    if wrong_speaker:
+        return "wrong_speaker", wrong_speaker
     if not _quotes_are_closed(sentence.text):
         return "misquote", ["a quotation mark is never closed"]
     misquotes = [q for q in _quotations(sentence.text) if not _is_verbatim(q, _runs(cited))]
@@ -483,7 +488,7 @@ def ground(
         cited = _cited_segments(sentence, segments)
         indexes = [segment.index for segment in cited or []]
         resolutions: list[NameResolution] = []
-        failure = _check(sentence, cited, superseded, ordinary, first_names, resolutions)
+        failure = _check(sentence, cited, superseded, ordinary, first_names, resolutions, segments)
         if failure:
             reason, detail = failure
             removed.append(
@@ -530,4 +535,5 @@ def recheck_claim(claim: Claim, segments: list[Segment]) -> tuple[RemovalReason,
         ordinary,
         _first_names(segments, ordinary),
         [],
+        segments,
     )

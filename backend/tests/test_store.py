@@ -66,8 +66,9 @@ async def test_a_visitors_run_is_kept_across_a_restart_and_the_seeded_runs_are_n
         "seed-korvath-greenhouses",
         "seed-sallowfield-dental",
         "seed-quillmoor-books",
+        "seed-korvath-altered",
     ]
-    assert len(runs) == 4
+    assert len(runs) == 5
     assert kept.status_code == 200 and kept.json()["article"]["claims"]
 
 

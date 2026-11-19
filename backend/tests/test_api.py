@@ -75,7 +75,7 @@ async def test_config_says_what_the_page_needs_to_know(client: httpx.AsyncClient
 
     assert (config["mode"], config["paste_enabled"]) == ("demo", False)
     assert [s["id"] for s in config["seeds"]] == [
-        "korvath-greenhouses", "sallowfield-dental", "quillmoor-books",
+        "korvath-greenhouses", "sallowfield-dental", "quillmoor-books", "korvath-altered",
     ]  # fmt: skip
     assert config["limits"] == {
         "min_turns": 6, "min_words": 120, "max_words": 12000,
@@ -90,7 +90,7 @@ async def test_a_seeds_text_can_be_read(client: httpx.AsyncClient) -> None:
     assert seed["text"].startswith("Ines Wetherby: Welcome back to the programme.")
 
 
-async def test_the_three_seeded_runs_exist_from_the_start_under_stable_ids(
+async def test_the_seeded_runs_exist_from_the_start_under_stable_ids(
     client: httpx.AsyncClient,
 ) -> None:
     runs = (await client.get("/api/runs")).json()["runs"]
@@ -99,6 +99,7 @@ async def test_the_three_seeded_runs_exist_from_the_start_under_stable_ids(
         ("seed-korvath-greenhouses", "completed", True, "seed"),
         ("seed-sallowfield-dental", "completed", True, "seed"),
         ("seed-quillmoor-books", "completed", True, "seed"),
+        ("seed-korvath-altered", "completed", True, "seed"),
     ]
 
 
@@ -228,7 +229,7 @@ async def test_a_seeded_run_streams_to_run_completed_and_is_stored(
     assert stored["run"]["pinned"] is False
     assert len(stored["article"]["claims"]) == 19
     listed = [r["id"] for r in (await client.get("/api/runs")).json()["runs"]]
-    assert run_id in listed and len(listed) == 4
+    assert run_id in listed and len(listed) == 5
 
 
 async def test_the_run_exists_before_its_first_event_so_a_reload_mid_run_finds_it(
@@ -340,7 +341,7 @@ async def test_pasted_text_is_refused_in_demo_mode_and_nothing_is_started(
     error = error_of(response)
     assert error["code"] == "paste_disabled_in_demo"
     assert "locally with your own key" in error["message"]
-    assert len((await client.get("/api/runs")).json()["runs"]) == 3
+    assert len((await client.get("/api/runs")).json()["runs"]) == 4
 
 
 async def test_pasted_text_runs_in_live_mode() -> None:
@@ -558,7 +559,7 @@ async def test_the_rate_limit_refuses_the_run_after_the_allowed_number_in_a_minu
     assert refused.headers["retry-after"] == "60"
     assert replay.status_code == 429
     assert reading.status_code == 200
-    assert len(reading.json()["runs"]) == 5
+    assert len(reading.json()["runs"]) == 6
 
 
 async def test_the_rate_limit_is_per_address() -> None:
@@ -873,7 +874,7 @@ async def test_a_chunked_body_with_no_declared_length_is_still_capped() -> None:
 
     assert response.status_code == 413
     assert error_of(response)["code"] == "request_too_large"
-    assert len(runs) == 3
+    assert len(runs) == 4
 
 
 async def test_a_500_carries_the_request_id_header_too(
@@ -968,6 +969,119 @@ async def test_old_runs_are_pruned_but_seeded_runs_never_are() -> None:
 
     assert [r["id"] for r in runs if r["pinned"]] == [
         "seed-korvath-greenhouses", "seed-sallowfield-dental", "seed-quillmoor-books",
+        "seed-korvath-altered",
     ]  # fmt: skip
     assert sorted(r["id"] for r in runs if not r["pinned"]) == sorted(ids[-3:])
-    assert oldest.status_code == 404
+    # A pruned demo run is not gone for good: its address says how to make it again. What
+    # pruning bounds is how many are stored, and making one again does not lift the bound.
+    assert oldest.status_code == 200
+    async with client_for(app) as client:
+        after = (await client.get("/api/runs")).json()["runs"]
+    assert len([r for r in after if not r["pinned"]]) == 3
+
+
+# ------------------------------------------------------------------ a host with several instances
+#
+# On the host each instance of the backend has its own scratch database. A visitor's run
+# is started on one instance and may be asked for on another. In demo mode a run is a
+# replay of recordings, so its address says how to make it again.
+
+
+def two_instances(tmp_path: Path) -> tuple[FastAPI, FastAPI]:
+    first = create_app(Settings(database_path=tmp_path / "one.sqlite3"))
+    second = create_app(Settings(database_path=tmp_path / "two.sqlite3"))
+    return first, second
+
+
+async def test_a_run_started_on_one_instance_can_be_read_on_another(tmp_path: Path) -> None:
+    first, second = two_instances(tmp_path)
+    async with client_for(first) as a, client_for(second) as b:
+        started = await a.post("/api/runs/stream", json={"seed_id": "quillmoor-books"})
+        run_id = events_of(started.text)[0]["run_id"]
+        here = (await a.get(f"/api/runs/{run_id}")).json()
+        there = await b.get(f"/api/runs/{run_id}")
+
+    assert there.status_code == 200
+    assert there.json()["article"] == here["article"]
+    assert there.json()["evaluation"] == here["evaluation"]
+    assert (there.json()["run"]["seed_id"], there.json()["run"]["pinned"]) == (
+        "quillmoor-books",
+        False,
+    )
+
+
+async def test_a_run_can_be_re_run_on_another_instance_and_the_re_run_read_on_a_third(
+    tmp_path: Path,
+) -> None:
+    first, second = two_instances(tmp_path)
+    third = create_app(Settings(database_path=tmp_path / "three.sqlite3"))
+    async with client_for(first) as a, client_for(second) as b, client_for(third) as c:
+        started = await a.post("/api/runs/stream", json={"seed_id": "quillmoor-books"})
+        run_id = events_of(started.text)[0]["run_id"]
+        again = await b.post(f"/api/runs/{run_id}/replay/stream", json={"from_stage": "draft"})
+        events = events_of(again.text)
+        rerun = (await c.get(f"/api/runs/{events[0]['run_id']}")).json()
+
+    assert types(events)[-1] == "run_completed"
+    assert (rerun["run"]["parent_run_id"], rerun["run"]["replay_from_stage"]) == (run_id, "draft")
+    assert [s["copied_from_run_id"] for s in rerun["stages"]] == [run_id, run_id, None, None, None]
+
+
+@pytest.mark.parametrize(
+    "run_id",
+    [
+        "no-such-run",
+        "s--no-such-seed--0123abcd",
+        "s--quillmoor-books--nothex!!",
+        "s--quillmoor-books",
+        "seed-quillmoor-books--r-publish--0123abcd",
+        "x" * 300,
+        "--r-draft--0123abcd" * 8,
+    ],
+)
+async def test_an_address_that_is_not_a_runs_recipe_is_still_not_found(
+    client: httpx.AsyncClient, run_id: str
+) -> None:
+    response = await client.get(f"/api/runs/{run_id}")
+
+    assert response.status_code == 404
+    assert error_of(response)["code"] == "run_not_found"
+
+
+async def test_a_live_server_never_makes_a_run_from_its_address(tmp_path: Path) -> None:
+    # Making a run again is only honest, and only free, when every run is a replay.
+    live = create_app(
+        Settings(mode="live", database_path=tmp_path / "live.sqlite3"), model_client=FakeClient()
+    )
+    async with client_for(live) as client:
+        response = await client.get("/api/runs/s--quillmoor-books--0123abcd")
+        started = await client.post("/api/runs/stream", json={"seed_id": "quillmoor-books"})
+
+    assert response.status_code == 404
+    assert "--" not in events_of(started.text)[0]["run_id"]
+
+
+async def test_making_a_run_again_counts_against_the_askers_allowance(tmp_path: Path) -> None:
+    # Found by the security review: a GET that makes a run is a run-starting route.
+    app = create_app(Settings(database_path=tmp_path / "limit.sqlite3", runs_per_minute=3))
+    async with client_for(app) as client:
+        made = [
+            (await client.get(f"/api/runs/s--quillmoor-books--0000000{n}")).status_code
+            for n in range(5)
+        ]
+        again = await client.get("/api/runs/s--quillmoor-books--00000000")
+        seeded = await client.get("/api/runs/seed-quillmoor-books")
+        listed = (await client.get("/api/runs")).json()["runs"]
+
+    assert made == [200, 200, 200, 429, 429]
+    # Reading what is already stored stays free, for a made run and for a seeded one.
+    assert (again.status_code, seeded.status_code) == (200, 200)
+    assert len([r for r in listed if not r["pinned"]]) == 3
+
+
+async def test_the_altered_run_says_so_on_the_run_itself(client: httpx.AsyncClient) -> None:
+    altered = (await client.get("/api/runs/seed-korvath-altered")).json()
+    plain = (await client.get("/api/runs/seed-korvath-greenhouses")).json()
+
+    assert "Altered on purpose" in altered["note"]
+    assert plain["note"] is None

@@ -7,7 +7,7 @@ import uuid
 from collections.abc import AsyncIterable, AsyncIterator, Awaitable, Callable, Mapping
 from contextlib import aclosing
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -36,13 +36,45 @@ from app.events import RunEvent, RunFailed
 from app.model.fixture import FixtureModelClient
 from app.model.types import ModelClient
 from app.pipeline.ingest import MAX_WORDS, MIN_TURNS, MIN_WORDS
-from app.pipeline.runner import RUN_CEILING_S, Resume, RunnableStage, RunState, run_pipeline
+from app.pipeline.runner import (
+    RUN_CEILING_S,
+    STAGE_NAMES,
+    Resume,
+    RunnableStage,
+    RunState,
+    run_pipeline,
+)
 from app.schemas import Claim, GroundResult, Headline, RemovedUnit, Segment, StageRecord
 from app.seeds import SEEDS, seed
 from app.settings import Mode, Settings, load_settings
 from app.store import WORST_RUN_USD, RunRow, Store, StoredModelCall, StoredRun, utc_now
 
 logger = logging.getLogger(__name__)
+
+# How a demo run's id says what it is: "s--<seed>--<8 hex>" for a seeded transcript, or
+# "<parent id>--r-<stage>--<8 hex>" for a re-run of another run from a stage. Read by
+# splitting, never by a pattern that can backtrack: the id comes from an address.
+_ID_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789-")
+_HEX = frozenset("0123456789abcdef")
+
+
+def read_recipe(run_id: str) -> tuple[Literal["seed", "replay"], str, str] | None:
+    """("seed", seed id, "") or ("replay", parent id, stage), or None if it is neither."""
+    if len(run_id) > MAX_RECIPE_CHARS + 10 or not set(run_id) <= _ID_CHARS:
+        return None
+    parts = run_id.rsplit("--", 2)
+    if len(parts) != 3 or len(parts[2]) != 8 or not set(parts[2]) <= _HEX:
+        return None
+    head, middle, _ = parts
+    if head == "s" and middle and "--" not in middle:
+        return "seed", middle, ""
+    if head and middle.startswith("r-") and middle[2:] in STAGE_NAMES:
+        return "replay", head, middle[2:]
+    return None
+
+
+MAX_RECIPE_CHARS = 110
+MAX_RECIPE_DEPTH = 4
 
 MAX_TRANSCRIPT_CHARS = 200_000
 
@@ -57,6 +89,9 @@ class HealthResponse(BaseModel):
 class SeedSummary(BaseModel):
     id: str
     title: str
+    note: str | None = Field(
+        default=None, description="Said beside the seed, for example that it was altered."
+    )
 
 
 class SeedText(SeedSummary):
@@ -116,6 +151,10 @@ class RunDetail(BaseModel):
     stages: list[StageRecord]
     model_calls: list[StoredModelCall]
     segments: list[Segment]
+    note: str | None = Field(
+        default=None,
+        description="Said with the run, for example that its draft was altered by hand.",
+    )
     article: Article | None
     evaluation: EvalReport | None = Field(
         description="The run's own checks and the judge's verdicts; null until it is evaluated."
@@ -228,6 +267,13 @@ def client_address(headers: Mapping[str, str], peer: str, *, trust_proxy: bool) 
     return str(address)
 
 
+def _seed_note(seed_id: str | None) -> str | None:
+    try:
+        return seed(seed_id).note if seed_id else None
+    except KeyError:
+        return None
+
+
 def _detail(stored: StoredRun) -> RunDetail:
     by_name = {record.name: record for record in stored.stages}
     segments: list[Segment] = []
@@ -249,6 +295,7 @@ def _detail(stored: StoredRun) -> RunDetail:
         stages=stored.stages,
         model_calls=stored.model_calls,
         segments=segments,
+        note=_seed_note(stored.run.seed_id),
         article=article,
         evaluation=evaluation,
     )
@@ -268,6 +315,7 @@ def create_app(
     app.state.model_client = client
     app.state.store = store
     seeding = asyncio.Lock()
+    rebuilding = asyncio.Lock()
     seeded = False
 
     app.add_middleware(
@@ -399,10 +447,8 @@ def create_app(
         the daily budget against what live calls have cost today and what the live runs
         still going might cost. Decided and recorded in one transaction, so requests that
         arrive together cannot all slip through."""
-        peer = request.client.host if request.client else "unknown"
-        address = client_address(request.headers, peer, trust_proxy=settings.trust_proxy)
         admission = store.admit_run(
-            address,
+            address_of(request),
             now(),
             settings.runs_per_minute,
             settings.daily_budget_usd,
@@ -417,9 +463,17 @@ def create_app(
     app.state.run_guard = run_guard
     Guarded = Annotated[None, Depends(run_guard)]
 
-    def new_run(source: Literal["seed", "paste", "replay"], title: str) -> RunRow:
+    def new_run(
+        source: Literal["seed", "paste", "replay"], title: str, recipe: str | None = None
+    ) -> RunRow:
+        # In demo mode a run is a replay of recordings, so its id can say how to make it
+        # again ("s--<seed>" or "<parent>--r-<stage>"). On the host every instance has its
+        # own scratch database, and that is what lets any of them answer for the run.
+        run_id = uuid.uuid4().hex[:12]
+        if settings.mode == "demo" and recipe and len(recipe) <= MAX_RECIPE_CHARS:
+            run_id = f"{recipe}--{uuid.uuid4().hex[:8]}"
         return RunRow(
-            id=uuid.uuid4().hex[:12],
+            id=run_id,
             created_at=now(),
             mode=settings.mode,
             source=source,
@@ -437,14 +491,99 @@ def create_app(
             chosen = seed(body.seed_id or "")
         except KeyError:
             raise SeedNotFound from None
-        run = new_run("seed", chosen.title)
+        run = new_run("seed", chosen.title, recipe=f"s--{chosen.id}")
         run.seed_id = chosen.id
         return Prepared(run=run, text=chosen.text(), title=chosen.title)
 
-    def prepare_replay(
-        run_id: str, body: ReplayRequest, _ready: Ready, _guard: Guarded
+    def address_of(request: Request) -> str:
+        peer = request.client.host if request.client else "unknown"
+        return client_address(request.headers, peer, trust_proxy=settings.trust_proxy)
+
+    async def find_run(run_id: str, address: str, depth: int = 0) -> StoredRun | None:
+        """A stored run, or in demo mode one made again from what its id says.
+
+        Only in demo mode, where making it again costs nothing and gives the same article:
+        every call is a recording. The id is matched against two exact shapes before
+        anything is done with it, and a chain of re-runs is followed a few steps at most.
+        """
+        stored = await asyncio.to_thread(store.get_run, run_id)
+        if stored is not None or settings.mode != "demo" or depth > MAX_RECIPE_DEPTH:
+            return stored
+        recipe = read_recipe(run_id)
+        if recipe is None:
+            return None
+        kind, subject, stage = recipe
+        if depth == 0:
+            # Making a run again is work, and anyone can ask for it. It counts against the
+            # asker's allowance like starting a run does; reading a stored run stays free.
+            admitted = await asyncio.to_thread(
+                store.admit_run,
+                address,
+                now(),
+                settings.runs_per_minute,
+                settings.daily_budget_usd,
+                reserve_usd=0.0,
+            )
+            if admitted != "ok":
+                raise RateLimited
+        # The parent is found (or made) first, outside the lock: the lock is not re-entrant.
+        parent = await find_run(subject, address, depth + 1) if kind == "replay" else None
+        replay = FixtureModelClient()
+        async with rebuilding:
+            stored = await asyncio.to_thread(store.get_run, run_id)
+            if stored is not None:
+                return stored
+            if kind == "seed":
+                try:
+                    chosen = seed(subject)
+                except KeyError:
+                    return None
+                run = RunRow(
+                    id=run_id,
+                    created_at=now(),
+                    mode=settings.mode,
+                    source="seed",
+                    title=chosen.title,
+                    seed_id=chosen.id,
+                    status="running",
+                )
+                text, title, resume = chosen.text(), chosen.title, None
+            else:
+                record = (
+                    next((r for r in parent.stages if r.name == "ingest"), None) if parent else None
+                )
+                if parent is None or parent.run.seed_id is None or not record or not record.input:
+                    return None
+                run = RunRow(
+                    id=run_id,
+                    created_at=now(),
+                    mode=settings.mode,
+                    source="replay",
+                    title=parent.run.title,
+                    seed_id=parent.run.seed_id,
+                    parent_run_id=parent.run.id,
+                    replay_from_stage=stage,
+                    status="running",
+                )
+                text = str(record.input.get("transcript", ""))
+                title = str(record.input.get("title", parent.run.title))
+                resume = Resume(
+                    from_stage=cast(RunnableStage, stage),
+                    parent_run_id=parent.run.id,
+                    parent_stages=parent.stages,
+                )
+            await asyncio.to_thread(store.create_run, run)
+            state = RunState(run_id=run_id)
+            async for _ in run_pipeline(text, title, replay, state, now=now, resume=resume):
+                pass
+            await asyncio.to_thread(store.save_state, state, now())
+            await asyncio.to_thread(store.prune_runs, settings.max_stored_runs)
+            return await asyncio.to_thread(store.get_run, run_id)
+
+    async def prepare_replay(
+        run_id: str, body: ReplayRequest, request: Request, _ready: Ready, _guard: Guarded
     ) -> Prepared:
-        parent = store.get_run(run_id)
+        parent = await find_run(run_id, address_of(request))
         if parent is None:
             raise RunNotFound
         if settings.mode == "demo" and parent.run.seed_id is None:
@@ -454,7 +593,7 @@ def create_app(
         ingest_record = next((r for r in parent.stages if r.name == "ingest"), None)
         if ingest_record is None or not ingest_record.input:
             raise RunNotFound
-        run = new_run("replay", parent.run.title)
+        run = new_run("replay", parent.run.title, recipe=f"{parent.run.id}--r-{body.from_stage}")
         run.parent_run_id = parent.run.id
         run.replay_from_stage = body.from_stage
         run.seed_id = parent.run.seed_id
@@ -486,7 +625,7 @@ def create_app(
         return ConfigResponse(
             mode=settings.mode,
             paste_enabled=settings.mode == "live",
-            seeds=[SeedSummary(id=s.id, title=s.title) for s in SEEDS],
+            seeds=[SeedSummary(id=s.id, title=s.title, note=s.note) for s in SEEDS],
             limits=Limits(
                 min_turns=MIN_TURNS,
                 min_words=MIN_WORDS,
@@ -532,8 +671,8 @@ def create_app(
         return RunsResponse(runs=store.list_runs())
 
     @app.get("/api/runs/{run_id}")
-    def get_run(run_id: str, _ready: Ready) -> RunDetail:
-        stored = store.get_run(run_id)
+    async def get_run(run_id: str, request: Request, _ready: Ready) -> RunDetail:
+        stored = await find_run(run_id, address_of(request))
         if stored is None:
             raise RunNotFound
         return _detail(stored)

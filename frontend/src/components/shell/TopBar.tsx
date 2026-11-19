@@ -9,6 +9,7 @@ interface TopBarProps {
 export function TopBar({ runId }: TopBarProps) {
   return (
     <header
+      className="topbar"
       style={{
         height: 56,
         padding: "0 20px",
@@ -53,11 +54,13 @@ export function TopBar({ runId }: TopBarProps) {
           A
         </div>
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", whiteSpace: "nowrap" }}>
             Article Agent
           </span>
           <span
+            className="topbar-tagline"
             style={{
+              whiteSpace: "nowrap",
               fontSize: 10,
               fontWeight: 600,
               fontFamily: "var(--font-mono), monospace",
@@ -66,7 +69,7 @@ export function TopBar({ runId }: TopBarProps) {
               color: "var(--text3)",
             }}
           >
-            Grounded articles
+            Checked against the transcript
           </span>
         </div>
       </Link>
