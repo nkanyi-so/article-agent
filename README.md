@@ -10,6 +10,14 @@ It does not say the model adds nothing. Code can only see what is missing from t
 
 **What is real and what is not.** This is a rebuild of a client pattern on synthetic data. Every transcript, person and company in it is invented. The model calls were real when they were recorded; the demo replays them. One of the four demo runs has a draft altered by hand, and says so, to show the code removing something false.
 
+![A finished run: the scores, the article with two sentences flagged by the judge, and the transcript line behind the chosen sentence with the judge's reason](docs/screens/05-sentence-flagged-light-desktop.png)
+
+*A sentence the judge flagged, chosen: the one transcript line it cites, and the judge's reason. It stays in the article, marked.*
+
+<img src="docs/screens/04-sentence-with-question-dark-phone.png" alt="On a phone: a chosen sentence, the line it cites, and beneath it the question that line answered, marked as added by code and not evidence" width="320">
+
+*On a phone: the cited line, and beneath it the question that line answered, marked as added by code.*
+
 Screenshots of every state, light and dark, desktop and phone: [docs/screens/](docs/screens/).
 
 ## 1. Run it

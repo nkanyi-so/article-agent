@@ -2,7 +2,7 @@
 
 This file is the single record of progress. Each phase lands as its own branch and pull request; the description links to the phase log here. A gate is ticked only when its evidence (the commands run and their real output) is written in the phase log. Never start a phase before the previous gate is ticked. **After every merge to `main`, both production deployments are checked before the next phase starts** (each is ready at the merged commit and answers correctly), and the result is written in the phase log: the owner's rule from 2026-11-18.
 
-**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 was merged on 2026-11-19 (pull request #7) and both production sites deployed. Phase 7 was merged on 2026-11-19 (pull request #8) and both production sites deployed. Phase 8 was merged on 2026-11-19 (pull request #9), both production sites deployed, and the browser check passed all 16 steps on the public address. Phase 9 (release) is done on `phase-9-release` up to, and not including, making the repository public: it waits for the owner's read of the README, the go-ahead to go public, and the walkthrough video.
+**Status:** blueprint approved by the owner on 2026-11-18 and committed as the base for the phase pull requests. Phase 0 was merged on 2026-11-18 (pull request #1). Phase 1 was merged on 2026-11-18 (pull request #2), and the owner decided the three points it raised (the unit is the sentence; the name rule stays strict; the model's headline is checked against the kept body), so Phase 3 is no longer blocked. Phase 2 was merged on 2026-11-18 (pull request #3) and both production sites deployed from GitHub. Phase 3 was merged on 2026-11-18 (pull request #4) and both production sites deployed. Phase 4 was merged on 2026-11-19 (pull request #5) and both production sites deployed. Phase 5 was merged on 2026-11-19 (pull request #6) and both production sites deployed. **First working draft: a seeded transcript in, a cited article out, over the API, with no key.** Phase 6 was merged on 2026-11-19 (pull request #7) and both production sites deployed. Phase 7 was merged on 2026-11-19 (pull request #8) and both production sites deployed. Phase 8 was merged on 2026-11-19 (pull request #9), both production sites deployed, and the browser check passed all 16 steps on the public address. Phase 9 was merged on 2026-11-19 (pull request #10). **The repository is public, `main` is protected, and the project is finished except for the walkthrough video, which the owner records** (`docs/VIDEO.md` is its shot list).
 
 **Owner's decisions at approval (2026-11-18).** Hosting: Vercel Hobby for both projects, Fly.io as the fallback if Phase 2 shows the stream buffering (`decisions/0009`). Branch protection: do not pay; if GitHub refuses on the private repository, the item is carried to Phase 9. The separate Anthropic workspace recommended below is skipped: the owner reuses an existing API key and adds it to `.env` personally, so the spend stops in each paid step are the only guard. After the Phase 1 spike, the real cost per run and per eval run, and the cheapest model setup that does not weaken the eval, are reported before any larger paid step. All other intake calls and assumptions are accepted.
 
@@ -1351,10 +1351,10 @@ Not exercised by the verifier: the deployed screen in a browser (I did that, abo
 
 - [x] README with the seven profile sections; every claim traced to code or to a result file. **The eval table shows both judged scores side by side** (cited lines alone, and cited lines with the question shown), per case with mean and spread, and says plainly that the second was introduced after the first two runs failed, and why (the owner's instruction, 2026-11-19; the table is in `decisions/0014`).
 - [x] Reviewer in security mode over the whole repository; fix every blocking finding.
-- [ ] History check against the synthetic-data rule and a full-history secret scan. Known already: a depot in the second spike transcript carried a name that is also a real software company's, in commits `74f3425` and `1cee60f` on `main` (replaced in `0effa8c`). Before the repository is made public, either `main` is rewritten to remove it or the owner explicitly accepts it as a depot's name.
+- [x] History check against the synthetic-data rule and a full-history secret scan. Known already: a depot in the second spike transcript carried a name that is also a real software company's, in commits `74f3425` and `1cee60f` on `main` (replaced in `0effa8c`). Before the repository is made public, either `main` is rewritten to remove it or the owner explicitly accepts it as a depot's name. *(Scanned on 2026-11-19, clean. The owner decided not to rewrite history: the old depot name stays in those two commits.)*
 - [x] Delete the old paused Vercel project `article-agent` (asks first; it cannot be undone). *(Deleted on 2026-11-19 with the owner's approval; the project list now holds only `article-agent-api` and `article-agent-web`.)*
-- [ ] Ask the owner, then make the repository public. Turn on branch protection on `main` (no force-push, the `check` and `secrets` jobs must pass) and show it is on: carried from Phase 0, where GitHub refused it on the private repository.
-- [ ] Walkthrough video (owner).
+- [x] Ask the owner, then make the repository public. Turn on branch protection on `main` (no force-push, the `check` and `secrets` jobs must pass) and show it is on: carried from Phase 0, where GitHub refused it on the private repository. *(Public and protected on 2026-11-19: below.)*
+- [ ] Walkthrough video (owner). *(The owner's, to record later. Shot list: `docs/VIDEO.md`.)*
 
 **Gate:** the spec's "Done when", item by item, each with its evidence.
 
@@ -1402,5 +1402,28 @@ Not exercised by the verifier: the deployed screen in a browser (I did that, abo
 
 Not exercised by the verifier: the public site (I ran the 16-step check on it, above; the new ninth step reaches it only after this is merged), the screenshots' content, `make setup`.
 
-**Gate: not passed, by design.** The spec's "Done when" still lacks three things, all the owner's: the read of the README, the repository made public (with branch protection after it), and the walkthrough video. CI on `main` is green; the hosted page loads with no key and passed the 16-step browser check; the eval table is in the README with its date, one real failure and its fix; `make check` exits 0.
+### 2026-11-19, the wrap-up: public
+
+- **The claim's second sentence was changed by the owner** to "Code removes any sentence in which a number, date, name or quotation it can read is not in those lines or their speaker labels." Applied in the README, the spec, `CLAUDE.md`, decisions `0003` and `0015` and the site's first page; the tests that pin the wording pass.
+- **Pull request #10 merged by squash at the owner's instruction (`094ddf8`). Both production deployments are ready at it; CI on `main` succeeded.**
+- **The browser check on the public address: 18 of 18,** nine steps at 1440px and nine at 390px, including the runs list (the sidebar the same on four loads) and the new claim wording on the first page.
+- **The pass before going public, all clean.**
+
+  ```
+  secret scan, full history:        scanned ~16.49 MB, no leaks found
+  tracked env or settings files:    .env.example and frontend/.env.local.example only (templates)
+  ever tracked in history:          no .env, no settings.local, no key or credentials file
+  key-shaped strings in any commit: none
+  email addresses in tracked files: none
+  private paths in tracked files:   none
+  well-known company names in the transcripts, eval files, frontend and README: none
+  commit authors:                   the owner's GitHub address and the owner's public contact address
+  ```
+
+  The ten invented organisations and 36 speakers were listed and read. None is a company or a public figure I know of; the six organisations added in Phase 6 were searched for when written. One note, not a hit: "Fennimore", in the invented "Fennimore Print", is also the name of a real town.
+- **The repository is public:** https://github.com/nkanyi-so/article-agent. Without a token: the page answers 200, the API reports `public`, the README is served.
+- **`main` is protected:** required checks `check`, `secrets` and `types-live`; force pushes off; deletion off; enforced for administrators too. (GitHub refused the first attempt for a few seconds while it changed the visibility.) This closes the item carried from Phase 0.
+- **The README shows two screenshots** inline, and a test-free check that they render for an anonymous visitor is in the last entry of this log.
+
+**Gate: passed on 2026-11-19, except the walkthrough video, which is the owner's.** The owner read the README and changed one sentence of the claim; the repository is public and `main` is protected. CI on `main` is green; the hosted page loads with no key and passed the 16-step browser check; the eval table is in the README with its date, one real failure and its fix; `make check` exits 0.
 
