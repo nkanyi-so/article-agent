@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Article Agent — Grounded articles from real sources",
+  title: "Article Agent: an article you can check against the transcript",
   description:
-    "Enter a person's name. Article Agent researches, writes, and fact-checks a grounded article — every claim traced to a real source.",
+    "Turns a meeting transcript into a short article. Every sentence points at the transcript lines behind it; code removes what those lines do not back; a judge model flags the rest.",
 };
 
 export default function RootLayout({

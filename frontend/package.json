@@ -11,7 +11,9 @@
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "types": "openapi-typescript ../backend/openapi.json -o src/lib/api.gen.ts",
+    "types:check": "openapi-typescript ../backend/openapi.json -o src/lib/api.gen.ts --check"
   },
   "dependencies": {
     "next": "16.4.6",
@@ -25,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "openapi-typescript": "7.13.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.1.1"

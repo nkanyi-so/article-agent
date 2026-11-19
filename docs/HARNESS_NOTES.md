@@ -80,3 +80,10 @@ Friction with the harness on this project, logged as it happens. One line each: 
 - 2026-11-19. The reviewer, asked to get a wrong result reported as a pass, found the spend stop checking a measured figure where it should check the worst case, and a threshold applied to a pooled mean where the spec said every pass. Both were in code written after the owner's decisions, in a hurry to run. A guard on spend and a threshold are the two places to slow down.
 - 2026-11-19. Running a paid tool with the `live` dependency group leaves the SDK in the local environment, so "the import fails" stops being true on the developer's machine. The verifier noticed. `make setup` or `make check` could sync the environment back.
 
+## Phase 7, harness 0.3.0
+
+- 2026-11-19. Looking at screenshots found four real faults that type-check, lint, tests and a build had all passed: sentences that did not wrap, a clipped phone layout, progress shown off-screen, and two lists in no shot. For a phase whose product is a screen, "take the screenshots and look at them" belongs in the working loop, not only in the hand-over.
+- 2026-11-19. A stale server cost an hour: a process named differently from the command that started it survived a kill, and served a build that had been replaced under it. The symptom (pages that never left "Loading") looked like an application bug. Before debugging a page, check which process is serving it and when it started.
+- 2026-11-19. The demo's recordings had no flagged sentence, so the state the owner most wanted shown did not exist in the demo's data. The plan's Phase 7 list did not ask "does the seeded data exercise every state the screen has". It should.
+- 2026-11-19. The reviewer found that a link could start a paid run on a live server: the guard read a property of the stored run where it needed the server's mode. Two phases running, the reviewer's adversarial brief has found a spend path.
+

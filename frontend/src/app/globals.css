@@ -181,3 +181,180 @@ body {
   text-transform: uppercase;
   color: var(--text3);
 }
+
+/* ─── The run screen ──────────────────────────────────────────────────────── */
+.micro {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 96px;
+  width: 100%;
+}
+.run-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.evidence {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+}
+.evidence-close {
+  display: none;
+}
+.score-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.seed-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* A sentence of the article is a button: it can be chosen with the keyboard. */
+.sentence {
+  display: inline;
+  padding: 1px 2px;
+  margin: 0 -2px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.sentence:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.sentence:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.sentence[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+/* Flagged by the judge: kept in the article, marked. Amber, never the red of "removed". */
+.sentence.flagged {
+  text-decoration: underline wavy var(--err);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.sentence.flagged[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--err) 20%, transparent);
+}
+.flag-mark {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 600;
+  vertical-align: 1px;
+  color: var(--err);
+  background: color-mix(in srgb, var(--err) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--err) 30%, transparent);
+}
+.line {
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  border-radius: 0 6px 6px 0;
+  padding: 8px 10px;
+}
+/* Added by code, not cited by the model: dashed, and a different colour from a citation. */
+.line.question {
+  border-left: 3px dashed var(--text3);
+  background: var(--inset);
+}
+.note-flag {
+  border: 1px solid color-mix(in srgb, var(--err) 30%, transparent);
+  background: color-mix(in srgb, var(--err) 9%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.note-removed {
+  border: 1px solid color-mix(in srgb, var(--fail) 28%, transparent);
+  background: color-mix(in srgb, var(--fail) 7%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.note-ok {
+  border: 1px solid color-mix(in srgb, var(--pass) 28%, transparent);
+  background: color-mix(in srgb, var(--pass) 8%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.demo-line {
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text2);
+}
+.link {
+  color: var(--accent);
+  text-decoration: none;
+}
+.link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none !important;
+  }
+  .page {
+    padding: 20px 16px 96px;
+  }
+  .run-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .score-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .seed-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* On a phone the lines behind a sentence come up from the bottom, over the article. */
+  .evidence.open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 20;
+    max-height: 62vh;
+    border-radius: 14px 14px 0 0;
+    border-bottom: 0;
+    box-shadow: 0 -12px 32px -8px rgba(0, 0, 0, 0.45);
+  }
+  .evidence.open .evidence-close {
+    display: inline-flex;
+  }
+  .evidence.idle {
+    position: static;
+    max-height: none;
+  }
+}

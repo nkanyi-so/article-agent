@@ -773,3 +773,81 @@ async def test_the_live_spend_stop_is_checked_before_every_request(tmp_path: Any
     with pytest.raises(SystemExit, match="STOP"):
         await guarded.complete(asked_of_judge)
     assert inner.judge_requests == []
+
+
+# ------------------------------------------------------------------ wrong speaker: not yet a rule
+
+
+def lines(*indexes: int, case_id: str = "marrowbeck-ferries") -> list[Segment]:
+    segments = segments_of(case_id)
+    return [segments[i] for i in indexes]
+
+
+def test_real_a_statement_given_to_the_speaker_whose_line_is_cited_is_not_misattributed() -> None:
+    from app.pipeline.ground import misattributed
+
+    for text, cited in PERFECT:
+        assert misattributed(text, lines(*cited), SEGMENTS) == []
+
+
+def test_altered_a_statement_given_to_someone_whose_lines_are_not_cited_is_found() -> None:
+    from app.pipeline.ground import misattributed
+
+    # Farraday said it (22). Given to Oxley, with the same citation.
+    assert misattributed("Oxley said weather was the main cause.", lines(22), SEGMENTS) == ["Oxley"]
+    full = "Bram Oxley, the harbour master, said weather was the main cause."
+    assert misattributed(full, lines(22), SEGMENTS) == ["Bram Oxley"]
+    assert misattributed("According to Oxley, weather was to blame.", lines(22), SEGMENTS) == [
+        "Oxley"
+    ]
+
+
+def test_real_the_two_recorded_sentences_that_gave_the_hosts_words_to_the_guest_are_found() -> None:
+    # From the third eval run, both flagged by the judge: the interviewer said it (line 0).
+    from app.pipeline.ground import misattributed
+
+    museum = segments_of("calderwick-museum")
+    text = (
+        "Aurelio Banks, director of the Calderwick Museum, said in an interview with "
+        "Imogen Vasey that the museum reopens next month."
+    )
+    assert misattributed(text, [museum[0]], museum) == ["Aurelio Banks"]
+
+
+def test_a_person_who_is_spoken_to_or_about_is_not_being_given_a_statement() -> None:
+    from app.pipeline.ground import misattributed
+
+    couriers = segments_of("wrenlow-couriers")
+    asked = "Kovac asked Pryce for the number of days lost to breakdowns and Olsen for a quote."
+    assert misattributed(asked, [couriers[32], couriers[33]], couriers) == []
+    # Both speakers named, each with a line cited.
+    both = "Farraday said weather was the main cause, while Oxley said crew was."
+    assert misattributed(both, lines(22, 24), SEGMENTS) == []
+
+
+def test_a_surname_two_speakers_share_is_left_alone() -> None:
+    from app.pipeline.ground import misattributed
+
+    shared = [
+        Segment(index=0, turn=0, speaker="Ana Ruiz", line=1, text="We open in May."),
+        Segment(index=1, turn=1, speaker="Leo Ruiz", line=2, text="I doubt it."),
+    ]
+
+    assert misattributed("Ruiz said the shop opens in May.", [shared[1]], shared) == []
+    assert misattributed("Leo Ruiz said the shop opens in May.", [shared[0]], shared) == [
+        "Leo Ruiz"
+    ]
+
+
+def test_reported_speech_is_flagged_and_a_blank_speaker_label_does_not_crash() -> None:
+    # Known cost, stated in the decision record: true hearsay is treated as misattributed.
+    from app.pipeline.ground import misattributed
+
+    lines_ = [
+        Segment(index=0, turn=0, speaker="Jonah Pryce", line=1, text="Kovac proposed we close it."),
+        Segment(index=1, turn=1, speaker="Bettina Kovac", line=2, text="I did."),
+        Segment(index=2, turn=2, speaker=" ", line=3, text="Noise."),
+    ]
+
+    assert misattributed("Kovac proposed closing the depot.", [lines_[0]], lines_) == ["Kovac"]
+    assert misattributed("Kovac proposed closing the depot.", lines_[:2], lines_) == []

@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { api } from "@/lib/api";
-import type { Run } from "@/lib/run-types";
+import type { RunRow } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [runs, setRuns] = useState<Run[]>([]);
+  const [runs, setRuns] = useState<RunRow[]>([]);
   // The path the list was last loaded for. While it differs from the current
   // path a reload is in flight, so "loading" needs no state of its own.
   const [loadedFor, setLoadedFor] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export function Sidebar() {
               new Date(a.created_at).getTime()
           )
       )
-      .catch((): Run[] => [])
+      .catch((): RunRow[] => [])
       .then((sorted) => {
         if (stale) return;
         setRuns(sorted);
@@ -41,6 +41,8 @@ export function Sidebar() {
 
   return (
     <nav
+      className="sidebar"
+      aria-label="Runs"
       style={{
         width: 240,
         flexShrink: 0,
@@ -50,7 +52,7 @@ export function Sidebar() {
         flexDirection: "column",
       }}
     >
-      {/* New article */}
+      {/* Back to the transcripts */}
       <div style={{ padding: "12px 12px 8px", flexShrink: 0 }}>
         <Link
           href="/"
@@ -73,7 +75,7 @@ export function Sidebar() {
           <span style={{ fontSize: 15, lineHeight: 1, color: "var(--accent)" }}>
             +
           </span>
-          New article
+          Transcripts
         </Link>
       </div>
 
@@ -149,15 +151,8 @@ export function Sidebar() {
             runs.map((run) => {
               const href = `/runs/${run.id}`;
               const active = pathname === href;
-              // The backend now lists runs in its new shape (a title on the run itself).
-              // This component still has the old lookup shape until Phase 7 rewrites it,
-              // so read both and never assume `input` exists.
-              const label =
-                (run as { title?: string }).title ??
-                run.article?.title ??
-                run.input?.name ??
-                run.input?.linkedin_url ??
-                run.id.slice(0, 8);
+              // The part of the title before the colon is the organisation: short enough to scan.
+              const label = `${run.title.split(":")[0]}${run.pinned ? "" : run.source === "replay" ? " · re-run" : " · run"}`;
               const statusColor =
                 run.status === "completed"
                   ? "var(--pass)"
