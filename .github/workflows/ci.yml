@@ -66,6 +66,15 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: make setup
+      - name: DEBUG chrome
+        run: |
+          google-chrome --version
+          google-chrome --headless=new --disable-gpu --no-first-run --remote-debugging-port=9333 --user-data-dir="$RUNNER_TEMP/chrome-debug" about:blank > chrome.log 2>&1 &
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do curl -s localhost:9333/json && echo "up after $i" && break; sleep 1; done
+          curl -s -6 "http://[::1]:9333/json" | head -5 || true
+          curl -s "http://127.0.0.1:9333/json" | head -5 || true
+          cat chrome.log
+          pkill chrome || true
       - name: Start the app in demo mode and drive Chrome through it
         run: |
           make dev > dev.log 2>&1 &
