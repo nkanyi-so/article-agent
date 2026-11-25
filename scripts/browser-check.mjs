@@ -1,5 +1,5 @@
 // Drives a real Chrome through what a stranger does, at desktop and phone width, and
-// prints a table. No key, nothing installed but Chrome and Node.
+// prints a table. No key, nothing installed but Chrome and Node 22 or later.
 //
 //   node scripts/browser-check.mjs                          # the public address
 //   BASE=http://localhost:3000 node scripts/browser-check.mjs
@@ -19,10 +19,25 @@ const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/M
 const PORT = 9333;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// The script talks to Chrome over the WebSocket that Node itself provides, from Node 22 on.
+// Without it the connection fails in a way that reads as "Chrome did not start".
+if (typeof globalThis.WebSocket !== "function") {
+  console.error(`browser-check needs Node 22 or later (it uses Node's own WebSocket). This is Node ${process.versions.node}. The project's version is in frontend/.nvmrc.`);
+  process.exit(2);
+}
+
 const chrome = spawn(CHROME, [
   "--headless=new", "--disable-gpu", "--no-first-run", `--remote-debugging-port=${PORT}`,
   `--user-data-dir=${mkdtempSync(join(tmpdir(), "browser-check-"))}`, "about:blank",
 ], { stdio: "ignore" });
+// The Chrome started here never outlives the script: not when a step throws, not when
+// Chrome cannot be reached, not when the script is interrupted.
+const stopChrome = () => { if (chrome.exitCode === null && !chrome.killed) chrome.kill(); };
+process.on("exit", stopChrome);
+for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(signal, () => process.exit(1));
+process.on("uncaughtException", (error) => { console.error(error); process.exit(1); });
+process.on("unhandledRejection", (error) => { console.error(error); process.exit(1); });
+chrome.on("error", (error) => { console.error(`Chrome could not be started (${CHROME}): ${error.message}`); process.exit(1); });
 
 async function connect() {
   for (let attempt = 0; attempt < 50; attempt++) {
@@ -240,7 +255,7 @@ try {
   await journey("desktop", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await journey("phone", { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
 } finally {
-  chrome.kill();
+  stopChrome();
 }
 console.log(`Checked ${BASE} in Chrome\n`);
 for (const [width, name, result, detail, ms] of rows) {

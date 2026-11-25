@@ -12,6 +12,9 @@ import { applyEvent, startLiveRun, type LiveRun } from "@/lib/live";
 import { myRuns, rememberRun, type MyRun } from "@/lib/my-runs";
 import type { ConfigResponse } from "@/lib/types";
 
+// While the transcripts load, as many empty panels as the demo has transcripts hold their place.
+const SEED_PLACEHOLDERS = ["a", "b", "c", "d"] as const;
+
 type Loaded = { state: "loading" } | { state: "ready"; config: ConfigResponse } | { state: "error"; code: string };
 
 export default function EntryPage() {
@@ -21,7 +24,8 @@ export default function EntryPage() {
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState("");
   const [title, setTitle] = useState("");
-  const [mine, setMine] = useState<MyRun[]>([]);
+  // null until the browser's storage has been read.
+  const [mine, setMine] = useState<MyRun[] | null>(null);
 
   // Read after the page is in the browser: the list lives in the browser's own storage.
   useEffect(() => {
@@ -104,6 +108,10 @@ export default function EntryPage() {
 
   const config = loaded.state === "ready" ? loaded.config : null;
   const pasteEnabled = config?.paste_enabled ?? false;
+  // What sits under the transcripts is held back until the transcripts are in and the
+  // browser's own runs are read. Shown earlier, it moved down the page as they arrived,
+  // and a link that moves under a finger opens something else.
+  const settled = loaded.state !== "loading" && mine !== null;
 
   return (
     <div className="page" style={{ maxWidth: 920, display: "grid", gap: 22 }}>
@@ -153,11 +161,21 @@ export default function EntryPage() {
               </div>
             </div>
           ))}
-          {loaded.state === "loading" && <div style={{ color: "var(--text3)" }}>Loading the transcripts…</div>}
+          {loaded.state === "loading" && (
+            <>
+              <span className="sr-only" role="status">Loading the transcripts…</span>
+              {SEED_PLACEHOLDERS.map((placeholder) => (
+                <div key={placeholder} className="panel seed-placeholder" aria-hidden="true">
+                  <div style={{ width: "70%" }} />
+                  <div style={{ width: 232, maxWidth: "100%", height: 34 }} />
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </section>
 
-      {mine.length > 0 && (
+      {settled && mine.length > 0 && (
         <section aria-label="Runs you started">
           <h2 className="micro" style={{ margin: "0 0 10px" }}>Runs you started in this browser</h2>
           <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
@@ -172,40 +190,42 @@ export default function EntryPage() {
         </section>
       )}
 
-      <section className="panel">
-        <h2 className="micro" style={{ margin: "0 0 10px" }}>Or paste a transcript</h2>
-        <p style={{ margin: "0 0 10px", color: "var(--text2)", fontSize: 13, lineHeight: 1.6 }}>
-          {pasteEnabled
-            ? "One turn per line, each starting with the speaker's name and a colon. This calls the models and costs a few cents."
-            : "Not available here: this demo replays recordings and has no key, so it cannot write about a new transcript. Running the project locally with your own key enables this box."}
-        </p>
-        <input
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          disabled={!pasteEnabled}
-          placeholder="Title, for example: Harbour committee, March meeting"
-          aria-label="Title"
-          style={{ width: "100%", padding: "8px 10px", marginBottom: 8, borderRadius: 6, border: "1px solid var(--border2)", background: "var(--inset)", color: "var(--text)" }}
-        />
-        <textarea
-          value={transcript}
-          onChange={(event) => setTranscript(event.target.value)}
-          disabled={!pasteEnabled}
-          rows={5}
-          placeholder={"Ana Ruiz: We open the second depot in May.\nLeo Brandt: The budget for it was approved last week."}
-          aria-label="Transcript"
-          style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border2)", background: "var(--inset)", color: "var(--text)", fontFamily: "var(--font-mono), monospace", fontSize: 12.5, opacity: pasteEnabled ? 1 : 0.6 }}
-        />
-        <div style={{ marginTop: 10 }}>
-          <Button
-            variant="primary"
-            disabled={!pasteEnabled || !transcript.trim() || !title.trim()}
-            onClick={() => follow(title, (onEvent) => api.startPaste(transcript, title, onEvent))}
-          >
-            Write the article
-          </Button>
-        </div>
-      </section>
+      {settled && (
+        <section className="panel">
+          <h2 className="micro" style={{ margin: "0 0 10px" }}>Or paste a transcript</h2>
+          <p style={{ margin: "0 0 10px", color: "var(--text2)", fontSize: 13, lineHeight: 1.6 }}>
+            {pasteEnabled
+              ? "One turn per line, each starting with the speaker's name and a colon. This calls the models and costs a few cents."
+              : "Not available here: this demo replays recordings and has no key, so it cannot write about a new transcript. Running the project locally with your own key enables this box."}
+          </p>
+          <input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            disabled={!pasteEnabled}
+            placeholder="Title, for example: Harbour committee, March meeting"
+            aria-label="Title"
+            style={{ width: "100%", padding: "8px 10px", marginBottom: 8, borderRadius: 6, border: "1px solid var(--border2)", background: "var(--inset)", color: "var(--text)" }}
+          />
+          <textarea
+            value={transcript}
+            onChange={(event) => setTranscript(event.target.value)}
+            disabled={!pasteEnabled}
+            rows={5}
+            placeholder={"Ana Ruiz: We open the second depot in May.\nLeo Brandt: The budget for it was approved last week."}
+            aria-label="Transcript"
+            style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border2)", background: "var(--inset)", color: "var(--text)", fontFamily: "var(--font-mono), monospace", fontSize: 12.5, opacity: pasteEnabled ? 1 : 0.6 }}
+          />
+          <div style={{ marginTop: 10 }}>
+            <Button
+              variant="primary"
+              disabled={!pasteEnabled || !transcript.trim() || !title.trim()}
+              onClick={() => follow(title, (onEvent) => api.startPaste(transcript, title, onEvent))}
+            >
+              Write the article
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
