@@ -48,6 +48,34 @@ jobs:
         working-directory: backend
         run: uv run --locked --group live pytest -q -k live_mode_without_a_key
 
+  # The existing browser check (scripts/browser-check.mjs) against a local `make dev`, which
+  # forces demo mode: recordings are replayed, there is no key and no model call.
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.9"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: make setup
+      - name: Start the app in demo mode and drive Chrome through it
+        run: |
+          make dev > dev.log 2>&1 &
+          for attempt in $(seq 1 120); do
+            curl -fsS -o /dev/null localhost:8000/health && curl -fsS -o /dev/null localhost:3000/ && break
+            sleep 1
+          done
+          BASE=http://localhost:3000 CHROME="$(command -v google-chrome)" node scripts/browser-check.mjs \
+            || { tail -n 40 dev.log; exit 1; }
+
   secrets:
     runs-on: ubuntu-latest
     env:
