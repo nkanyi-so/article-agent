@@ -3,7 +3,7 @@
 //
 //   node scripts/browser-check.mjs                          # the public address
 //   BASE=http://localhost:3000 node scripts/browser-check.mjs
-//   SHOTS=docs/screens/hosted node scripts/browser-check.mjs  # also save screenshots
+//   SHOTS=/tmp/shots node scripts/browser-check.mjs         # also save screenshots
 //
 // It clicks with real mouse events at the element's position, through the DevTools
 // protocol. It starts two runs per width (one run, one re-run) and reads everything else.

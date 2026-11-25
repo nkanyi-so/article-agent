@@ -64,8 +64,8 @@ AS_RECORDED = [seed for seed in SEEDS if seed.note is None]
 
 @pytest.mark.parametrize("seed", AS_RECORDED, ids=[seed.id for seed in AS_RECORDED])
 async def test_a_seeds_article_keeps_its_lead_and_its_own_headline(seed: Seed) -> None:
-    # What the Phase 4 prompt change was for: on the recorded runs the first sentence of the
-    # body survives the ground check and the model's headline is accepted.
+    # What the draft prompt change (docs/decisions/0013) was for: on the recorded runs the
+    # first sentence of the body survives the ground check and the model's headline is accepted.
     state = await run_seed(seed)
     assert state.result is not None
     result = state.result

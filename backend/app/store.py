@@ -346,7 +346,7 @@ class Store:
         """Deletes all but the newest `keep` runs that are not seeded, with their records.
 
         The cost rows of live calls are kept: the daily budget reads them, and live mode
-        runs on the owner's machine, where disk is not the concern.
+        runs on a developer's machine, where disk is not the concern.
         """
         with self._connect() as db:
             old = [

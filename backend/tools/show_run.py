@@ -1,6 +1,6 @@
 """Prints a stored run from the local API in a form a person can read.
 
-For trying the API by hand before the screen for it exists (Phase 7). It only reads,
+For trying the API by hand, without the frontend. It only reads,
 and only from the local server that `make dev` starts.
 
     cd backend && uv run --locked python -m tools.show_run                 # list the runs

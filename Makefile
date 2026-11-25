@@ -1,4 +1,4 @@
-# The one entry point for setup, running and the gate. See CLAUDE.md.
+# The one entry point for setup, running and the checks.
 SHELL := /bin/bash
 .DEFAULT_GOAL := check
 .PHONY: setup dev check check-backend check-frontend format openapi
@@ -39,7 +39,7 @@ check-frontend:
 openapi:
 	cd backend && uv run --locked python -m tools.write_openapi
 
-# Formats one file. Called by the edit hook. Python only: the frontend has no
+# Formats one file. Python only: the frontend has no
 # formatter, so other files are left as written and eslint covers them in `check`.
 format:
 	@test -n "$(FILE)" || { echo "usage: make format FILE=<path>" >&2; exit 2; }

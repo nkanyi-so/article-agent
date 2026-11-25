@@ -273,7 +273,7 @@ def test_live_mode_without_a_key_fails_at_start_with_a_typed_error() -> None:
         create_app(Settings(mode="live", anthropic_api_key=None))
 
 
-# ------------------------------------------------------------------ found by the reviewer
+# ------------------------------------------------------------------ found in review
 
 
 @pytest.mark.parametrize("stop_reason", [None, "pause_turn", "tool_use", "something_new"])

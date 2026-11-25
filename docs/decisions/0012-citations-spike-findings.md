@@ -1,10 +1,10 @@
 # 0012: what the citations spike found
 
-**Status:** findings recorded 2026-11-18; **the owner decided its three proposals the same day** (see "The owner's decisions" at the end), and `0003` and the spec now carry them. It proposed no change to `0002` or `0005`. Corrected the same day after the reviewer found a bug in the analysis and several overstated figures (see the Phase 1 log).
+**Status:** findings recorded 2026-11-18; **its three proposals were decided the same day** (see "Decisions" at the end), and `0003` and the spec now carry them. It proposed no change to `0002` or `0005`. Corrected the same day after a review found a bug in the analysis and several overstated figures.
 
-**Context.** Phase 1 ran the draft call for real before the design depended on it. Code: `spikes/citations_spike.py`. Every raw request and response: `spikes/results/`. The numbers below come from `python3 spikes/analyze.py`, which reads those files and needs no key (`spikes/results/summary.json`).
+**Context.** The citations spike ran the draft call for real before the design depended on it. Code: [`spikes/citations_spike.py`](https://github.com/nkanyi-so/article-agent/blob/build-log/spikes/citations_spike.py). Every raw request and response: [`spikes/results/`](https://github.com/nkanyi-so/article-agent/tree/build-log/spikes/results). The numbers below come from [`spikes/analyze.py`](https://github.com/nkanyi-so/article-agent/blob/build-log/spikes/analyze.py), which reads those files and needs no key ([`spikes/results/summary.json`](https://github.com/nkanyi-so/article-agent/blob/build-log/spikes/results/summary.json)). All of it is kept under the `build-log` tag.
 
-**What was run.** 18 billed calls and one unbilled, on 2026-11-18, SDK `anthropic` 2.10.0. Afterwards a depot's name in transcript 2 was changed to an invented one at the owner's request (the original was also a real company's name), and the seven calls that used transcript 2 were run again; their first results were deleted. All transcript 2 figures below are from the second run. 25 billed calls in total:
+**What was run.** 18 billed calls and one unbilled, on 2026-11-18, SDK `anthropic` 2.10.0. Afterwards a depot's name in transcript 2 was changed to an invented one (the original was also a real company's name), and the seven calls that used transcript 2 were run again; their first results were deleted. All transcript 2 figures below are from the second run. 25 billed calls in total:
 
 - 15 draft calls with citations on: `claude-sonnet-5-5` and `claude-opus-5-5`, effort `low` and `medium`, one block per sentence and one per turn, both transcripts, the main variant (Sonnet, medium, per sentence, transcript 1) three times, and one Sonnet call with thinking switched off.
 - 2 extract calls (Sonnet, `low`, structured output) and 1 judge call (Opus, `medium`, structured output), added so that the cost of a whole run is measured and not estimated. That is two more billed calls than the "about 16" in the plan.
@@ -12,7 +12,7 @@
 
 **Spend, from the API's usage figures: $0.55** against an estimate of about $1 and a stop at $3: $0.44 for the first run and $0.12 for the seven re-run calls. The saved results sum to $0.43, because the replaced results ($0.13) are no longer in the tree. Every call ended with `end_turn` and was served by the model requested. No refusal occurred, so what a refusal looks like is still unobserved.
 
-**Limits of this evidence.** Two transcripts, one prompt, at most three repeats. Differences of one or two sentences between variants are noise. The name check used here is a rough stand-in (a capitalised word, with a short list of ordinary sentence-opening words excused), not the Phase 3 rule.
+**Limits of this evidence.** Two transcripts, one prompt, at most three repeats. Differences of one or two sentences between variants are noise. The name check used here is a rough stand-in (a capitalised word, with a short list of ordinary sentence-opening words excused), not the rule later built into the ground check.
 
 ## What citations did
 
@@ -82,7 +82,7 @@ The judge saw the same thing. Asked whether each of the 22 cited claims in one S
 | The speaker's name at the start of each block lets the model attribute | **Confirmed.** Attributions named the right speaker, and the name is inside `cited_text`, so the "speaker of a cited segment" part of rule 2 needs no lookup. |
 | Per sentence gives spans tight enough for the number and name check | **Confirmed for numbers** (0 or 1 failure per draft). **Changed for names and dates:** the span is so tight that the referent is often outside it. See the proposal below. |
 | "If the uncited share is high enough that articles are gutted, this record is rewritten" | **Not triggered**, provided the unit is the sentence. With the block as the unit it would be: 5% to 33% of Sonnet's words and about half of Opus's are in uncited blocks. |
-| The transcript goes in as one block per sentence (the owner's answer to Q3), because per turn "a cited span can be a paragraph long, too loose" | **The decision stands as the owner's answer; its stated reason was not borne out here.** With turns this short, spans were as tight per turn as per sentence, and Sonnet kept a similar share of words either way (87% and 85% per turn, 80% to 92% per sentence). The reason would bite on a transcript with long turns, which was not tried. Untested, not disproved. |
+| The transcript goes in as one block per sentence, because per turn "a cited span can be a paragraph long, too loose" | **The decision stands; its stated reason was not borne out here.** With turns this short, spans were as tight per turn as per sentence, and Sonnet kept a similar share of words either way (87% and 85% per turn, 80% to 92% per sentence). The reason would bite on a transcript with long turns, which was not tried. Untested, not disproved. |
 | `cited_text` does not count toward output tokens | **Not contradicted, but the overhead is real:** output tokens were about two and a half times what the prose needs (finding 10). |
 | Stages that need a schema are separate calls with no citable document | **Confirmed:** extract and the judge returned valid structured output with no document block; the combination returns a 400. |
 | No stated limit on the number of blocks | **Confirmed up to 100 blocks.** |
@@ -91,11 +91,11 @@ The judge saw the same thing. Asked whether each of the 22 cited claims in one S
 
 | Assumption | Verdict |
 |---|---|
-| What counts as a unit "is settled by Phase 1" | **Settled: the sentence**, assembled from the response's text blocks. A sentence is kept if at least one of its blocks is cited and the whole sentence passes rules 2 to 4 against the union of its cited text. A block cannot be the unit: it is a fragment, and removing uncited blocks would delete every "Vance said". |
+| What counts as a unit "is settled by the citations spike" | **Settled: the sentence**, assembled from the response's text blocks. A sentence is kept if at least one of its blocks is cited and the whole sentence passes rules 2 to 4 against the union of its cited text. A block cannot be the unit: it is a fragment, and removing uncited blocks would delete every "Vance said". |
 | Rule 1, at least one citation | **Confirmed** with the sentence as unit. Bridge sentences ("The two differ on yield.") are removed, as designed. |
 | Rule 2 is a heuristic that "will sometimes remove a true sentence" | **Confirmed, and more often than "sometimes":** two or three true sentences per article on transcript 1, usually including the one that names the company. |
 | Rule 3, quotations verbatim | **Confirmed** as checkable: 10 of 10 were exact. |
-| Rule 4, not resting only on a corrected segment | **Not exercised by a real response; needs a hand-altered fixture in Phase 3.** In the saved transcript 2 drafts no sentence rests on the superseded segment alone: the old figure appears in an uncited lead-in ("He had first given a figure of 4,800, but") inside a sentence whose cited clause is the correction. That is one more reason the unit is the sentence: per block, that lead-in is just uncited text. |
+| Rule 4, not resting only on a corrected segment | **Not exercised by a real response; needs a hand-altered fixture when the ground check is built.** In the saved transcript 2 drafts no sentence rests on the superseded segment alone: the old figure appears in an uncited lead-in ("He had first given a figure of 4,800, but") inside a sentence whose cited clause is the correction. That is one more reason the unit is the sentence: per block, that lead-in is just uncited text. |
 | Rule 4 "depends on extract naming corrections correctly" | **Confirmed twice on one transcript:** in both runs extract named segment 4 as superseded by segment 16. |
 | "Revisit if the removal rate leaves articles unreadable: the fix is then a better draft prompt, not a looser rule" | **Not triggered:** nothing here is unreadable. It bears on proposal 2 below, where option (b) is a looser rule. |
 | "The same rules apply to the headline; a failed headline is replaced by the transcript's own title and recorded" | **Changed.** No headline was cited in 15 drafts, so as designed every run would fall back to the title and record a headline failure. See the proposal below. |
@@ -106,14 +106,14 @@ The judge saw the same thing. Asked whether each of the 22 cited claims in one S
 | Assumption | Verdict |
 |---|---|
 | Writer `claude-sonnet-5-5` | **Confirmed.** At `medium` Opus cost 2.5 to 3.2 times as much and took two to two and a half times as long; at `low`, 1.8 to 1.9 times as much and 10% to 25% longer. Opus cited fragments, leaving more for the ground check to remove: across its six drafts it kept 53% to 90% of words, against 80% to 92% across Sonnet's nine. |
-| Draft effort `medium`; "Phase 1 measures the difference" | **Confirmed, with no measured difference in cost:** `low` and `medium` cost the same ($0.021) and kept the same share at sentence level. `medium` put fewer words in uncited blocks. Nothing is saved by going lower. |
+| Draft effort `medium`; "The citations spike measures the difference" | **Confirmed, with no measured difference in cost:** `low` and `medium` cost the same ($0.021) and kept the same share at sentence level. `medium` put fewer words in uncited blocks. Nothing is saved by going lower. |
 | Extract effort `low` | **Confirmed** as workable: valid structured output both times, the correction and the disagreement both named. |
 | Judge `claude-opus-5-5` at `medium` | **Confirmed** as workable: one valid structured verdict per claim, and it caught real gaps. |
 | Thinking is on for these models | **Confirmed for Opus at `medium` only.** Opus at `low` and Sonnet at both levels accepted the setting and used none. |
 | No sampling parameters | **Confirmed** by consequence: three identical requests, three articles. |
 | Timeout 60 seconds per call, 240 seconds per run | **Confirmed with room:** the slowest call took 12.9 s; extract, draft and judge on transcript 1 total about 27 s. |
-| A refusal, a `max_tokens` stop and a model mismatch are typed errors; no fallback model | **Neither confirmed nor changed: unverified.** None occurred in 25 calls, so the spike has nothing to say. Carried to Phase 4, which builds those errors and must test them against hand-built responses. |
-| Cost per run "is measured in Phase 1" | **Measured**, below. |
+| A refusal, a `max_tokens` stop and a model mismatch are typed errors; no fallback model | **Neither confirmed nor changed: unverified.** None occurred in 25 calls, so the spike has nothing to say. Carried to the model seam work, which builds those errors and must test them against hand-built responses. |
+| Cost per run "is measured in the citations spike" | **Measured**, below. |
 
 ## Cost
 
@@ -133,29 +133,29 @@ Per call, from usage. Prices: Sonnet $2 and $10, Opus $4 and $20 per million inp
 
 **The cheapest setup that does not weaken the eval** is the one already proposed: Sonnet writes (extract at `low`, draft at `medium`), Opus judges at `medium`. A cheaper writer setting buys nothing, because `low` costs the same. The only real saving left is the judge. The judge has to be a different model from the writer, so the candidates are Opus at `low` (saves the thinking, roughly a cent a run) or `claude-haiku-5-5` (well under a cent). Neither is known to be as good a judge, and a weaker judge is exactly what would weaken the eval. The calibration set (J2) is the test for that: either may replace Opus `medium` only after passing it. At $0.60 an eval run, the saving on offer is about 25 cents.
 
-## Proposed changes, for the owner
+## Proposed changes
 
 1. **`0003` and the spec: the unit is the sentence.** Stated above. This fills a gap the record left open; it changes no rule.
 2. **`0003` rule 2: decide what a name or date may be checked against.** As written, cited text and cited speakers only. Options:
    - (a) Leave it. Two or three true sentences are removed per article, typically the lead. Strictest, and the removed list shows real removals on every run.
    - (b) Also accept names that appear in the transcript's title, which is input the pipeline was given, not something the model wrote. On these drafts that keeps the company-name sentences (Sonnet, transcript 2: 9 of 10 kept becomes 10 of 10). It does not help "Farrow Bank" or "October 2025". **This is a looser rule, and `0003` says the fix for a high removal rate is a better prompt, not a looser rule.** Choosing it is a knowing departure from that sentence.
-   - (c) Ask the model, in the draft prompt, to cite every sentence it drew on, including the one that names the subject. Untested; a prompt change and a few cents to try in Phase 4. This is the fix `0003` itself points to.
-   - Recommended: (a) now and (c) in Phase 4, measured before it is relied on; (b) only if the owner wants it after seeing (c)'s numbers. Not recommended at all: letting a name pass because it appears anywhere in the transcript, which would stop the check from failing.
+   - (c) Ask the model, in the draft prompt, to cite every sentence it drew on, including the one that names the subject. Untested; a prompt change and a few cents to try in the prompt trial. This is the fix `0003` itself points to.
+   - Recommended: (a) now and (c) in the prompt trial, measured before it is relied on; (b) only if it is still wanted after seeing (c)'s numbers. Not recommended at all: letting a name pass because it appears anywhere in the transcript, which would stop the check from failing.
 3. **`0003` and the spec: the headline.** Options:
    - (a) Keep the design. Every run records a headline failure and shows the transcript's title.
    - (b) Do not ask for a headline. The article always carries the transcript's own title, and the spec's sentence about the headline goes. Simplest and honest.
    - (c) Ask for the headline as an ordinary first sentence that must be cited. Untested.
    - Recommended: (b). The claim is about grounding, not headlines, and a failure recorded on every run teaches the reader to ignore the removed list.
-4. **The judged threshold (J1) is not changed.** The 0.82 above is on a draft before the ground check and is one call. It is recorded here because it is the likeliest first real failure in Phase 6, which the plan wants.
-5. **The plan's estimates** for Phases 4 and 6 can come down to about $0.20 and about $0.60 a run. The stops stay where they are.
+4. **The judged threshold (J1) is not changed.** The 0.82 above is on a draft before the ground check and is one call. It is recorded here because it is the likeliest first real failure in the judged eval runs, which the plan wants.
+5. **The plan's estimates** for the model seam work and the eval runs can come down to about $0.20 and about $0.60 a run. The stops stay where they are.
 
-**Consequence.** `0002` and `0005` stand as written, with two caveats recorded above: the reason given for one block per sentence was not borne out on transcripts with short turns, and the three typed model errors are unverified. `0003` needed the unit stated and two decisions (names, headline) before Phase 3 builds the ground check; all three have since been decided (below). The saved responses in `spikes/results/draft/` become Phase 3's first fixtures: they already contain an uncited sentence, a name outside its cited text, a date outside its cited text, and a sentence that mentions a superseded figure correctly inside a sentence citing its correction.
+**Consequence.** `0002` and `0005` stand as written, with two caveats recorded above: the reason given for one block per sentence was not borne out on transcripts with short turns, and the three typed model errors are unverified. `0003` needed the unit stated and two decisions (names, headline) before the ground check is built; all three have since been decided (below). The saved responses in [`spikes/results/draft/`](https://github.com/nkanyi-so/article-agent/tree/build-log/spikes/results/draft) become the ground check's first fixtures: they already contain an uncited sentence, a name outside its cited text, a date outside its cited text, and a sentence that mentions a superseded figure correctly inside a sentence citing its correction.
 
-## The owner's decisions, 2026-11-18
+## Decisions, 2026-11-18
 
 1. **The unit is the sentence.** Accepted. Written into `0003` and the spec.
-2. **The name rule stays strict** (option a). The prompt change (option c: ask the model to cite every sentence it drew on) is tried and measured in Phase 4. Accepting names from the title (option b) is not adopted.
-3. **The headline: not the record's recommendation.** The owner does not want the transcript's title as the article's headline. Decided instead: the model writes a headline, which is checked against the article body that has already passed the ground check; if it fails, the article takes the transcript's title and the failure is recorded in the trace. What that check can and cannot show is set out in `0003`.
-4. **The gate's wording:** "unverified, carried to Phase 4" is accepted for the three typed model errors.
+2. **The name rule stays strict** (option a). The prompt change (option c: ask the model to cite every sentence it drew on) is tried and measured in the prompt trial. Accepting names from the title (option b) is not adopted.
+3. **The headline: not the record's recommendation.** I do not want the transcript's title as the article's headline. Decided instead: the model writes a headline, which is checked against the article body that has already passed the ground check; if it fails, the article takes the transcript's title and the failure is recorded in the trace. What that check can and cannot show is set out in `0003`.
+4. **The three typed model errors** are accepted as unverified, carried to the model seam work.
 5. **The depot's name in transcript 2** was changed and its calls re-run, as recorded at the top.
 

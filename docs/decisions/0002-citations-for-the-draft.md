@@ -1,6 +1,6 @@
 # 0002: the draft uses the Citations API, one citable block per sentence
 
-**Status:** accepted by the owner on 2026-11-18. Phase 1 confirmed it, with caveats recorded in `0012`.
+**Status:** accepted on 2026-11-18. The citations spike confirmed it, with caveats recorded in `0012`.
 
 **Context.** The old project asked the model to write source ids, then stripped the invalid ones. The claim here needs a pointer that cannot be invented. Checked on 2026-11-18 against https://platform.claude.com/docs/en/build-with-claude/citations, read in full:
 
@@ -21,6 +21,6 @@
 - Speaker and line are kept in code beside each segment, and the speaker's name is also the start of each block's text so the model can attribute.
 - Stages that need a schema (extract, the judge) are separate calls with no citable document.
 
-**Why per sentence (the owner's answer to Q3).** A citation cannot point inside a block. Per turn, a cited span can be a paragraph long, too loose to check a number or a name against. Per sentence, the span is tight enough for the entity check in `0003`.
+**Why per sentence.** A citation cannot point inside a block. Per turn, a cited span can be a paragraph long, too loose to check a number or a name against. Per sentence, the span is tight enough for the entity check in `0003`.
 
-**Consequence.** A pointer is always a real range of the transcript, by the API's own guarantee. What is not guaranteed, that each sentence is cited and that the span supports it, is the job of the ground check and the judge. Not known until Phase 1: how often text comes back uncited, how many sentences share one cited block, whether a headline is cited, and what a run costs. If the uncited share is high enough that articles are gutted, this record is rewritten before anything is built on it.
+**Consequence.** A pointer is always a real range of the transcript, by the API's own guarantee. What is not guaranteed, that each sentence is cited and that the span supports it, is the job of the ground check and the judge. Not known until the citations spike: how often text comes back uncited, how many sentences share one cited block, whether a headline is cited, and what a run costs. If the uncited share is high enough that articles are gutted, this record is rewritten before anything is built on it.

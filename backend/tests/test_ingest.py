@@ -250,7 +250,7 @@ def test_a_refusal_message_never_repeats_the_transcript() -> None:
     assert "secret-looking-content" not in str(refusal.value)
 
 
-# ------------------------------------------------------------------ found by the reviewer
+# ------------------------------------------------------------------ found in review
 
 
 @pytest.mark.parametrize(

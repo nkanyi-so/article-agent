@@ -5,8 +5,8 @@ By default it replays recordings: free, no key, no network. This is what `make c
     cd backend && uv run --locked python -m tools.run_evals
 
 `--live` is PAID (about $2.20 for the whole set three times: every case through the writer
-and the judge). Nothing is sent without `--yes-spend`; the Phase 6 ledger stops it before
-the owner's limit; every response is saved as a recording, so the free mode can replay the
+and the judge). Nothing is sent without `--yes-spend`; the eval ledger stops it before
+its limit; every response is saved as a recording, so the free mode can replay the
 same run; and the result is written to a dated file under `backend/evals/results/`.
 
     cd backend && uv run --locked --group live python -m tools.run_evals \
@@ -31,7 +31,7 @@ from app.model.payload import request_key
 from app.model.types import ModelClient, ModelRequest, ModelResponse
 from app.pipeline.config import JUDGE_MODEL
 from tools import spend
-from tools.prompt_trial import load_key
+from tools.key import load_key
 
 RESULTS_DIR = EVALS_DIR / "results"
 
@@ -65,9 +65,9 @@ def live_client(repeat: int) -> ModelClient:
         # counted at the worst case rather than at nothing.
         worst = spend.WORST_JUDGE_CALL_USD
         what = f"evals/run-{repeat}/{request.model}/{request_key(request)[:12]}"
-        spend.PHASE6.record(what, worst if cost is None else cost)
+        spend.EVALS.record(what, worst if cost is None else cost)
 
-    return Guarded(LiveModelClient(load_key(), on_raw=keep, on_billed=billed), spend.PHASE6)
+    return Guarded(LiveModelClient(load_key(), on_raw=keep, on_billed=billed), spend.EVALS)
 
 
 def fixture_client(repeat: int) -> ModelClient:
@@ -155,8 +155,8 @@ def main() -> None:
         if not args.yes_spend or not args.label:
             print(
                 f"Would run {len(load_cases())} cases and the judge calibration live, "
-                f"{thresholds.REPEATS} times, about $2.20. Spent in Phase 6 so far: "
-                f"${spend.PHASE6.spent():.4f} of ${spend.PHASE6.limit_usd:.2f}. "
+                f"{thresholds.REPEATS} times, about $2.20. Spent on eval runs so far: "
+                f"${spend.EVALS.spent():.4f} of ${spend.EVALS.limit_usd:.2f}. "
                 "Pass --label and --yes-spend."
             )
             # Not success: nothing was done. A script must not take this for a completed run.
@@ -171,7 +171,7 @@ def main() -> None:
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
         path = RESULTS_DIR / f"{result.ran_at[:10]}-{args.label}.json"
         path.write_text(written)
-        print(f"\nWritten to {path}. Phase 6 spend so far: ${spend.PHASE6.spent():.4f}")
+        print(f"\nWritten to {path}. Eval spend so far: ${spend.EVALS.spent():.4f}")
     if args.out:
         args.out.write_text(written)
     if result.plumbing_failures:

@@ -1,7 +1,7 @@
 """Every number that decides whether an eval passes. One file, so a change is one diff.
 
 A threshold is changed only by a decision record with the run that justifies it
-(docs/decisions/0010), never to make a gate pass.
+(docs/decisions/0010), never to make a failing run pass.
 """
 
 # How many times every case is run. One run of a case moves by up to 0.2 with no cause

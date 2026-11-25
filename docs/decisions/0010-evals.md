@@ -2,9 +2,9 @@
 
 **Status:** proposed, 2026-11-18
 
-**Context.** The old project had no real eval result: the committed run used no judge, the harness had no thresholds and exited 0 when every row failed, the default mode was paid, and the judge was the writer's own model. What was sound was the shape: code checks wrapped around a model judge, so the judge could not lift a claim that failed a code check. The owner asked to keep the earlier draft's thresholds as a starting point and to make the set harder if the first live run passes everything.
+**Context.** The old project had no real eval result: the committed run used no judge, the harness had no thresholds and exited 0 when every row failed, the default mode was paid, and the judge was the writer's own model. What was sound was the shape: code checks wrapped around a model judge, so the judge could not lift a claim that failed a code check. I decided to keep the earlier draft's thresholds as a starting point and to make the set harder if the first live run passes everything.
 
-**Decision.** The plan in `docs/SPEC.md`, "How we know it works". The parts that are choices:
+**Decision.** The eval plan, set out in full in [`docs/EVALS.md`](../EVALS.md). The parts that are choices:
 
 - **Kept from the earlier draft:** structural validity 1.00; 100% of stored claims cite an existing segment; 100% of numbers, dates and names appear in the cited text; judged groundedness mean at least 0.90 with no case under 0.80; the corrected-number, contradiction, injection-with-canary and must-refuse cases.
 - **Added, because without them the set can be passed by doing nothing:**
@@ -20,4 +20,4 @@
 
 **What the numbers can and cannot show.** Twelve cases and one run is a small sample: a pass-rate difference smaller than roughly one case in four is noise. The table in the README is evidence that the checks can fail and were made to pass honestly, not a benchmark. If a change needs finer resolution, add cases or repeats first.
 
-**Consequence.** The thresholds marked untested in the spec (coverage 0.70, the judged pair) may prove wrong in either direction. They are changed only by a new decision record with the run that justifies it, never to make a gate pass. If the first live run passes everything, harder cases are added until something fails; that failure and its fix are the "one real failure" the README needs.
+**Consequence.** The untested thresholds (coverage 0.70, the judged pair) may prove wrong in either direction. They are changed only by a new decision record with the run that justifies it, never to make a check pass. If the first live run passes everything, harder cases are added until something fails; that failure and its fix are the "one real failure" the README needs.
