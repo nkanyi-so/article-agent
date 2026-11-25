@@ -136,6 +136,8 @@ Phase by phase, each on its own branch and pull request, each with a gate that h
 | 6. The eval set, the judge, three judged runs | [#7](https://github.com/nkanyi-so/article-agent/pull/7) |
 | 7. The screen | [#8](https://github.com/nkanyi-so/article-agent/pull/8) |
 | 8. The hosted demo | [#9](https://github.com/nkanyi-so/article-agent/pull/9) |
+| 9. The README and a reliable runs list, up to going public | [#10](https://github.com/nkanyi-so/article-agent/pull/10) |
+| Wrap-up: README screenshots, the video shot list, the wrap-up log | [#11](https://github.com/nkanyi-so/article-agent/pull/11) |
 
 **What the reviewer caught** that the tests had passed:
 

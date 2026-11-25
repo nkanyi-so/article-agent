@@ -13,9 +13,11 @@
   --border2: #2e323c;
   --text: #ededf0;
   --text2: #a3a8b3;
-  --text3: #686d77;
+  /* The quietest text still has to be readable: at least 4.5:1 on every surface above. */
+  --text3: #828791;
   --accent: #5685ff;
-  --accentText: #ffffff;
+  /* Dark on the accent: white on this blue is 3.4:1, this is 5.8:1. */
+  --accentText: #0b0c0e;
   --run: #5b9dff;
   --pass: #2bd49f;
   --fail: #ff6464;
@@ -35,7 +37,7 @@
   --border2: #d7dae0;
   --text: #15171c;
   --text2: #565b64;
-  --text3: #888e98;
+  --text3: #696e78;
   --accent: #345ff0;
   --accentText: #ffffff;
   --run: #2f6fe0;
@@ -227,6 +229,19 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+/* A transcript's panel before its transcript has loaded: about the same size, and empty. */
+.seed-placeholder {
+  display: grid;
+  gap: 12px;
+  align-content: space-between;
+  min-height: 132px;
+}
+.seed-placeholder > div {
+  height: 18px;
+  border-radius: 6px;
+  background: var(--surface2);
 }
 
 /* A sentence of the article is a button: it can be chosen with the keyboard. */
