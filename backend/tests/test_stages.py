@@ -164,7 +164,7 @@ def test_a_correction_is_passed_to_the_draft_as_the_two_sentences_it_concerns() 
     assert f'Corrected: "{old}" was replaced by "{new}".' in instruction
 
 
-# ------------------------------------------------------------------ found by the reviewer
+# ------------------------------------------------------------------ found in review
 
 
 def test_a_title_cannot_place_text_outside_the_data_tags() -> None:

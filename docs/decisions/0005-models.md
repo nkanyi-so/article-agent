@@ -1,6 +1,6 @@
 # 0005: writer and judge models, effort, and what is not set
 
-**Status:** accepted by the owner on 2026-11-18. Phase 1 confirmed the writer, the judge and the effort levels (`0012`); the three typed model errors are unverified until Phase 4. The first eval run can still change it.
+**Status:** accepted on 2026-11-18. The citations spike confirmed the writer, the judge and the effort levels (`0012`); the three typed model errors are unverified until the model seam is built. The first eval run can still change it.
 
 **Context.** Checked on 2026-11-18 against the models overview, pricing, deprecations, thinking and effort pages under https://platform.claude.com/docs/en/ and https://pypi.org/project/anthropic/:
 
@@ -20,8 +20,8 @@
 
 **Decision.**
 
-- Writer (extract and draft): `claude-sonnet-5-5`. Judge: `claude-opus-5-5`. This is the brief's starting proposal; the owner named it.
-- Effort is set explicitly on every call, never left to a default that differs by model. Starting values: `low` for extract, `medium` for draft, `medium` for the judge. Phase 1 measures the difference.
+- Writer (extract and draft): `claude-sonnet-5-5`. Judge: `claude-opus-5-5`. This is the original brief's starting proposal; I named it.
+- Effort is set explicitly on every call, never left to a default that differs by model. Starting values: `low` for extract, `medium` for draft, `medium` for the judge. The citations spike measures the difference.
 - No sampling parameters anywhere.
 - Timeout 60 seconds and one retry, set explicitly; a 240 second ceiling on the whole run.
 - A refusal, a `max_tokens` stop, and a response whose `model` is not the one requested are each a typed stage error. No server-side fallback to another model: a run whose writer silently changed would make the eval table untrue.
@@ -29,4 +29,4 @@
 
 **Why different models.** It reduces self-grading; it does not make the judge independent, since both are Claude models. The stronger protection is structural: code checks the judge cannot override, and a calibration set with known negatives (J2).
 
-**Consequence.** About three calls per run; the cost per run is measured in Phase 1. Revisit the writer if the removal rate or coverage is poor at `medium` effort: try higher effort before a larger model, and record what the eval shows.
+**Consequence.** About three calls per run; the cost per run is measured in the citations spike. Revisit the writer if the removal rate or coverage is poor at `medium` effort: try higher effort before a larger model, and record what the eval shows.

@@ -253,7 +253,7 @@ async def test_a_consumer_that_goes_away_leaves_the_run_closed_as_failed_not_run
     assert state.stages[-1].status == "failed"
 
 
-# ------------------------------------------------------------------ found by the reviewer
+# ------------------------------------------------------------------ found in review
 
 
 class SlowClient(FakeClient):

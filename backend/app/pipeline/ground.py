@@ -313,8 +313,8 @@ def misattributed(text: str, cited: list[Segment], segments: list[Segment]) -> l
     """Speakers a sentence gives a statement to ("Banks said...") although none of the lines
     it cites was spoken by them. Returns the names as written; empty when there are none.
 
-    Rule 5 of the ground check (docs/decisions/0003, "Wrong speaker"), switched on by the
-    owner on 2026-11-19. It is narrow on purpose: the name must be a speaker's full label or
+    Rule 5 of the ground check (docs/decisions/0003, "Wrong speaker"), switched on
+    on 2026-11-19. It is narrow on purpose: the name must be a speaker's full label or
     surname, it must stand directly before a verb of saying (or after "according to"),
     and a surname two speakers share is left alone. "Kovac asked Pryce for the figures"
     gives nothing to Pryce and is not touched. Its known cost: it removed no true sentence

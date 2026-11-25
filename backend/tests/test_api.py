@@ -753,7 +753,7 @@ def test_the_committed_openapi_file_is_what_the_code_writes() -> None:
     )
 
 
-# ------------------------------------------------------------------ found by the reviewer
+# ------------------------------------------------------------------ found in review
 
 
 async def test_replaying_from_a_stage_that_does_not_exist_is_refused_before_the_stream(

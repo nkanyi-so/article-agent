@@ -693,7 +693,7 @@ def test_the_corrected_label_is_recorded_with_its_reason() -> None:
     assert any(c["pair"] == "t-cost" and "wrong" in c["reason"] for c in raw["changes"])
 
 
-# ------------------------------------------------------------------ found by the reviewer
+# ------------------------------------------------------------------ found in review
 
 
 def calibration_with(wrong: int) -> Calibration:

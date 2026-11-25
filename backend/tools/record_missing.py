@@ -3,7 +3,7 @@ requests (a new ground rule, a new seed).
 
 PAID, a few cents a call. It replays every recording there is and calls a model only on
 a miss, saving the answer as a recording. Nothing is sent without `--yes-spend`; the
-Phase 8 ledger stops it before the owner's limit, checked before every call at the most
+re-recording ledger stops it before its limit, checked before every call at the most
 that call could cost. This is a tool: demo mode, the tests and `make check` never fall
 back to a live call.
 
@@ -27,7 +27,7 @@ from app.pipeline.config import JUDGE_MODEL
 from app.pipeline.runner import RunState, run_pipeline
 from app.seeds import SEEDS
 from tools import spend
-from tools.prompt_trial import load_key
+from tools.key import load_key
 
 
 class RecordOnMiss:
@@ -49,7 +49,7 @@ class RecordOnMiss:
             if self.live is None:
                 raise
             is_judge = request.model == JUDGE_MODEL
-            spend.PHASE8.check_room(
+            spend.RERECORD.check_room(
                 spend.WORST_JUDGE_CALL_USD if is_judge else spend.WORST_CALL_USD
             )
             return await self.live.complete(request)
@@ -72,7 +72,7 @@ async def run(spend_money: bool) -> None:
 
                 def billed(q: ModelRequest, cost: float | None) -> None:
                     worst = spend.WORST_JUDGE_CALL_USD
-                    spend.PHASE8.record(
+                    spend.RERECORD.record(
                         f"record-missing/{q.model}", worst if cost is None else cost
                     )
 
@@ -88,7 +88,7 @@ async def run(spend_money: bool) -> None:
         print(f"seed {seed.id}: {state.status} {state.error or ''}")
     missed = [f"pass {n}: {m}" for n, c in clients.items() for m in c.missed]
     print(f"{len(missed)} calls had no recording:", *missed, sep="\n  ")
-    print(f"Phase 8 spend: ${spend.PHASE8.spent():.4f} of ${spend.PHASE8.limit_usd:.2f}")
+    print(f"Re-recording spend: ${spend.RERECORD.spent():.4f} of ${spend.RERECORD.limit_usd:.2f}")
 
 
 def main() -> None:

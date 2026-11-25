@@ -1,6 +1,6 @@
-# Architecture: article-agent
+# Architecture
 
-Written by the intake on 2026-11-18. Status: proposed. Nothing here is built yet; `frontend/` is ported code from the old project. (`reference/`, the old eval code kept to read, was deleted in Phase 6 when the new evals replaced it.)
+The system as it is. The reasons for each choice are in [decisions/](decisions/), and the eval detail is in [EVALS.md](EVALS.md).
 
 ## Shape
 
@@ -101,15 +101,15 @@ Runs other than the seeded ones are pruned to the newest `APP_MAX_STORED_RUNS` (
 | Frontend types generated from the OpenAPI schema | `decisions/0008-generated-types.md` |
 | Hosting on Vercel Hobby, demo mode | `decisions/0009-hosting.md` |
 | Eval plan and starting thresholds | `decisions/0010-evals.md` |
-| Keep the Next.js shell, cut the showcase page, add a test runner | `decisions/0011-frontend.md` |
+| What the first judged runs changed | `decisions/0014-first-judged-runs.md` |
+| The wording of the claim | `decisions/0015-the-claim.md` |
+| The Next.js frontend and its test runner | `decisions/0011-frontend.md` |
 | Each runtime dependency, one line of reason | `decisions/dependencies.md` |
 
 ## Security
 
-The reviewer's checklist in security mode.
-
-- **Auth and exposure.** There are no accounts. Nothing stored is personal: demo runs come only from seeded fictional transcripts. Pasted transcripts exist only in live mode on the owner's machine. CORS allows the frontend's origin only.
-- **Spend.** The hosted deployment cannot spend: demo mode, no key, the `anthropic` package not installed. Check the deployed dependency set, not just the setting. In live mode every route that can start a model call depends on the rate limit and the daily budget; a test fails if a new run-starting route lacks them.
+- **Auth and exposure.** There are no accounts. Nothing stored is personal: demo runs come only from seeded fictional transcripts. Pasted transcripts exist only in live mode, which runs locally. CORS allows the frontend's origin only.
+- **Spend.** The hosted deployment cannot spend: demo mode, no key, the `anthropic` package not installed. In live mode every route that can start a model call depends on the rate limit and the daily budget; a test fails if a new run-starting route lacks them.
 - **Secrets.** No key in the repository, the history, logs, error bodies or recordings. Recordings are scanned by the secret scan like any file. `.env` is never read by tests.
 - **Untrusted input.** Transcript text reaches a model only inside the citable document or delimited data tags, never spliced into instructions. Size limits are enforced before any model call. Model output is parsed and validated before use; segment indexes from the model are range-checked. The injection case with its canary is in the eval set.
 - **Model output in the browser.** Article text and transcript text are rendered as text, never as HTML.
@@ -120,7 +120,7 @@ The reviewer's checklist in security mode.
 
 ## Testing
 
-- `make check` is the one gate: backend format, lint, types, tests and fixture-mode evals; frontend lint, types, tests, build and the generated-types freshness check.
+- `make check` is the one check: backend format, lint, types, tests and fixture-mode evals; frontend lint, types, tests, build and the generated-types freshness check.
 - Tests run with env-file loading off and sockets blocked. A test that needs a key or the network is wrong.
 - Core logic is written test-first: the sentence splitter, the ground check, the fixture key, the refusal rules, the runner's terminal-event guarantee, the guards.
 - The ground check is tested against real recorded responses and against hand-altered ones (a wrong number, an uncited sentence, a misquote), so it is shown to fail.
@@ -129,9 +129,6 @@ The reviewer's checklist in security mode.
 
 ## Deployment
 
-Proposed, and proven in Phase 2 before anything depends on it (`decisions/0009`).
-
 - Two Vercel projects on the Hobby plan from one repository: `frontend/` (Next.js) and `backend/` (FastAPI on the Python runtime), demo mode.
 - The backend installs only the base dependency set. Its database is a scratch file created at start and seeded by running the pipeline; runs a visitor starts live as long as that instance does, and the UI says so. Seeded runs always resolve.
-- **A merge to `main` deploys both projects once they are connected.** Every deploy, and every change to GitHub or Vercel settings, asks the owner first.
-- Fallback if Phase 2 shows the stream is buffered or the runtime does not fit: a small always-on container with a disk on Fly.io, about $2.35 a month, decided by a new record before any switch.
+- A merge to `main` deploys both projects. The host runs several instances, each with its own scratch database, so a demo run's address says how to make it again from the recordings and any instance can answer for it (`decisions/0009`).

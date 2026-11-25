@@ -1,15 +1,15 @@
 #!/bin/bash
-# Blocks any commit unless the project gate passes. Enabled with: git config core.hooksPath .githooks
+# Blocks any commit unless `make check` passes. Enabled with: git config core.hooksPath .githooks
 # Needs bash and make. gitleaks is optional but its absence is reported on every commit.
 
-# Files that must never be committed: real env files and unmerged harness copies.
+# Files that must never be committed: real env files.
 bad=$(git diff --cached --name-only --diff-filter=ACMR \
-  | grep -E '(^|/)\.env(\.[^/]*)?$|\.harness-new$' \
+  | grep -E '(^|/)\.env(\.[^/]*)?$' \
   | grep -vE '\.example$')
 if [ -n "$bad" ]; then
   echo "pre-commit: refusing to commit these files:" >&2
   printf '  %s\n' $bad >&2
-  echo "pre-commit: .env files belong in .gitignore; .harness-new files are merged by hand and deleted." >&2
+  echo "pre-commit: .env files belong in .gitignore." >&2
   exit 1
 fi
 
@@ -27,5 +27,5 @@ fi
 if [ -f Makefile ]; then
   make check || { echo "pre-commit: make check failed. Fix the cause before committing." >&2; exit 1; }
 else
-  echo "pre-commit: WARNING no Makefile, so the gate (make check) did NOT run. Phase 0 creates it." >&2
+  echo "pre-commit: WARNING no Makefile, so make check did NOT run." >&2
 fi

@@ -2,7 +2,7 @@
 
 **Status:** proposed, 2026-11-18
 
-**Context.** Versions checked on 2026-11-18 on PyPI and the projects' own pages. They will move; principle 6 applies at the start of each phase.
+**Context.** Versions checked on 2026-11-18 on PyPI and the projects' own pages. They will move.
 
 **Decision.**
 
@@ -25,4 +25,4 @@
 - pytest-socket's per-test block can be bypassed by session-scoped fixtures that open sockets first. There are none; keep it that way.
 - FastAPI releases almost daily. The lockfile pins it; upgrades are deliberate.
 
-**Consequence.** Nothing exotic, all current. Quart, the owner's usual backend framework, was not chosen because FastAPI's typed event stream and schema output are what make generated frontend types possible.
+**Consequence.** Nothing exotic, all current. Quart, my usual backend framework, was not chosen because FastAPI's typed event stream and schema output are what make generated frontend types possible.

@@ -1,8 +1,8 @@
 # 0014: what the first judged runs showed, the removal ceiling, and what the judge should be shown
 
-**Status:** accepted by the owner on 2026-11-19. Part 1 (the removal ceiling) was set from the first run. In part 2 the owner approved options 1 and 2, asked for every case to be run three times with the gate judged on the means, for both scores to be shown side by side, and for the wrong calibration label to be corrected. All of that is built; the third run is at the end of this record.
+**Status:** accepted on 2026-11-19. Part 1 (the removal ceiling) was set from the first run. In part 2 I approved options 1 and 2, and decided that every case is run three times with the thresholds judged on the means, that both scores are shown side by side, and that the wrong calibration label is corrected. All of that is built; the third run is at the end of this record.
 
-**Context.** Phase 6 ran the eval set live twice on 2026-11-19: ten transcripts through the writer and the judge, five inputs that must be refused, and 25 hand-labelled pairs for the judge. Result files: `backend/evals/results/2026-11-19-first.json` and `2026-11-19-second.json`. Every code check (E1 to E8) passed in both runs. The judge's calibration (J2) passed in both. Judged groundedness (J1) failed in both.
+**Context.** The eval set was run live twice on 2026-11-19: ten transcripts through the writer and the judge, five inputs that must be refused, and 25 hand-labelled pairs for the judge. Result files: `backend/evals/results/2026-11-19-first.json` and `2026-11-19-second.json`. Every code check (E1 to E8) passed in both runs. The judge's calibration (J2) passed in both. Judged groundedness (J1) failed in both.
 
 | | First run | Second run | Needs |
 |---|---|---|---|
@@ -19,7 +19,7 @@
 
 **Decision.** `REMOVAL_RATE_MAX = 0.10`: an eval run fails if the ground check removes more than one drafted sentence in ten.
 
-**Why 10%.** The first run removed 9 of 174 (5.2%); Phase 4 measured 5.6% on 252. With 174 sentences, a true rate of 5% produces a single run anywhere from about 2% to 8%. A ceiling inside that range would fail on chance; 10% fails only on a real change. The ceiling was set from the first run and before the second, which was held to it (2.0%).
+**Why 10%.** The first run removed 9 of 174 (5.2%); the prompt trial measured 5.6% on 252. With 174 sentences, a true rate of 5% produces a single run anywhere from about 2% to 8%. A ceiling inside that range would fail on chance; 10% fails only on a real change. The ceiling was set from the first run and before the second, which was held to it (2.0%).
 
 **On transcripts the prompt had never seen:** 3 of 93 (3.2%) in the first run, which is the only run where "never seen" is true: the prompt was edited after reading that run. Two of the three removals were correct catches, not costs. The model wrote "Chair Morag Sewell" and "Chair Bettina Kovac"; nobody in either transcript calls anyone the chair, and the ground check removed both sentences. The third was true: it named the company, which appears only in the title.
 
@@ -36,13 +36,13 @@ And six headlines, for a different reason: see below.
 
 **The fix that was tried.** Two rules added to the draft prompt (6 and 7 in `backend/app/pipeline/draft.py`): cite the question as well as a short answer; do not join statements with a cause the speaker did not give. No threshold was touched.
 
-**It did not work.** In the second run the bare-answer class went from 4 to 7, not down. The writer does not reliably cite a question because it is told to. Case scores moved by more between the two runs (Quillmoor 1.00 to 0.76, Fennimore 0.81 to 1.00) than any effect of the prompt: with about 15 sentences a case, one run per case is too noisy to show a small improvement. This is the same lesson as Phase 4: a habit of the writer is not dependably changed by a sentence in the prompt.
+**It did not work.** In the second run the bare-answer class went from 4 to 7, not down. The writer does not reliably cite a question because it is told to. Case scores moved by more between the two runs (Quillmoor 1.00 to 0.76, Fennimore 0.81 to 1.00) than any effect of the prompt: with about 15 sentences a case, one run per case is too noisy to show a small improvement. This is the same lesson as the prompt trial: a habit of the writer is not dependably changed by a sentence in the prompt.
 
 **The headlines are a fault in the measure, not in the headlines.** The judge is given, for a headline, the cited lines of its "supporting sentences". The ground check picks those as the kept sentences that share a name or a figure with the headline, which is right for its own job (checking the headline's names and figures) and wrong for this one. "Korvath Greenhouses sensor irrigation cuts tomato water use by about a third" was judged against the one sentence that contains "Korvath Greenhouses", and the judge correctly said those lines mention no water. The sentences about water were in the article and were not shown.
 
 ## The options
 
-A trial put the second run's articles to the judge again under two changes (`backend/tools/judge_trial.py`, saved in `trials/phase6/judge-trial.json`, $0.38). It changed nothing in the product.
+A trial put the second run's articles to the judge again under two changes ([`backend/tools/judge_trial.py`](https://github.com/nkanyi-so/article-agent/blob/build-log/backend/tools/judge_trial.py), saved in [`trials/phase6/judge-trial.json`](https://github.com/nkanyi-so/article-agent/blob/build-log/trials/phase6/judge-trial.json), both kept under the `build-log` tag, $0.38). It changed nothing in the product.
 
 | What the judge is shown | J1 mean | J1 lowest case | Passes |
 |---|---|---|---|
@@ -60,23 +60,23 @@ The judge's calibration under the trial prompt: 25 of 25, all 11 known negatives
 
 **Option 2: judge the headline against the whole kept article.** The spec already does this for a headline with no name or figure in it; this makes it the rule for every headline.
 - *For:* a headline sums up the article, so the fair question is whether the kept article supports it.
-- *Against:* it changes the wording of J1 in the spec. On its own it does not pass the gate.
+- *Against:* it changes the wording of J1 in the spec. On its own it does not pass the threshold.
 
-**Option 3: change nothing and try the prompt again.** Rejected as a recommendation: the first attempt moved the wrong way, the measure is too noisy to tune against at this size, and Phase 4 already decided against tuning the prompt on the transcripts it is tested with.
+**Option 3: change nothing and try the prompt again.** Rejected as a recommendation: the first attempt moved the wrong way, the measure is too noisy to tune against at this size, and the prompt trial already decided against tuning the prompt on the transcripts it is tested with.
 
 **Option 4: a new ground rule that removes a sentence citing a bare answer without its question.** Stricter, and in keeping with "the doubt goes against the sentence". But code cannot tell which answers need their question ("Two days." does; "We cancelled 14 sailings in October." does not), so it would be a guess by length, and it would remove true sentences. Not recommended.
 
 **Recommended:** options 1 and 2, then one more full run (about $0.65, total about $2.35 of the $3.00 limit) to produce the result file that shows the fix. The two prompt rules stay: they did no harm (removals 2.0%) but there is no evidence they helped, and the write-up will say so.
 
-**What stays true whichever is chosen.** No threshold has been changed. Both result files are kept as they came out. `make check` runs the eval set from the second run's recordings and exits non-zero on J1, so nothing in this phase has been committed.
+**What stays true whichever is chosen.** No threshold has been changed. Both result files are kept as they came out. `make check` runs the eval set from the second run's recordings and exits non-zero on J1, so none of this work has been committed.
 
 
-## What the owner decided, and the third run
+## What was decided, and the third run
 
 **Decided on 2026-11-19.**
 
 1. Options 1 and 2, both. The question must reach the reader exactly as the judge sees it, marked as added by code: it is the claim's `question_segments`, printed by `tools/show_run` and served by the API, and a test holds that the line in the judge's request is the line on the stored claim.
-2. Every case is run three times and the gate is judged on each case's mean. No number was changed. As restated: E1 to E7 must pass in every run; E8, J1 and J1-alone take each case as its mean over its three runs; E9 pools the runs; J2 must hold in every run.
+2. Every case is run three times and the thresholds are judged on each case's mean. No number was changed. As restated: E1 to E7 must pass in every run; E8, J1 and J1-alone take each case as its mean over its three runs; E9 pools the runs; J2 must hold in every run.
 3. The measure changing is stated wherever the score is. Every result carries both scores: J1 (each cited answer read with its question) and J1-alone (the cited lines entirely alone, which is what J1 was for the first two runs, except that the headline is now judged against the whole article in both). The README table must show both, and say that the first was introduced after the first two runs failed.
 4. The calibration label the judge proved wrong is corrected, with the change and its reason recorded in `backend/evals/calibration.json`. Four pairs were added for the question: two supported only with it, two where only the question says what the sentence says, which must fail.
 

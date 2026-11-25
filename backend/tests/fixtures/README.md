@@ -1,8 +1,8 @@
 # Test fixtures
 
-Real model responses, saved by the Phase 1 spike (`spikes/`, `docs/decisions/0012`) and copied here so the tests do not depend on throwaway code. Nothing in this folder is written by hand, and nothing here is read from the network.
+Real model responses, saved while the citations API was first measured (`docs/decisions/0012`) and kept here so the tests run on real output. Nothing in this folder is written by hand, and nothing here is read from the network.
 
-- `transcripts/`: the two fictional transcripts the spike used.
+- `transcripts/`: the two fictional transcripts those calls used.
 - `draft/`: eleven draft responses with citations, one citable block per sentence (seven on transcript 1, four on transcript 2). Each file holds the raw request and the raw response of one call.
 - `extract/`: the extract call's structured output for each transcript. Transcript 2's names the correction (segment 4 superseded by segment 16).
 

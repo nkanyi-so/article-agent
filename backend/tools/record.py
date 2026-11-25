@@ -2,7 +2,7 @@
 model and saves every request and response under `backend/recordings/`.
 
 PAID (about 4 cents a transcript). Nothing is sent without `--yes-spend`, and the shared
-ledger in `tools/spend.py` stops it before the owner's limit. After this, demo mode,
+ledger in `tools/spend.py` stops it before its limit. After this, demo mode,
 the tests and CI replay these files and never call a model.
 
     cd backend && uv run --locked --group live python -m tools.record --yes-spend
@@ -18,7 +18,7 @@ from app.model.types import ModelRequest, ModelResponse
 from app.pipeline.runner import RunState, run_pipeline
 from app.seeds import SEEDS
 from tools import spend
-from tools.prompt_trial import load_key
+from tools.key import load_key
 
 
 async def record_all(only: str | None) -> None:
@@ -30,7 +30,7 @@ async def record_all(only: str | None) -> None:
     def billed(request: ModelRequest, cost: float | None) -> None:
         # Called for every response that arrives, usable or not. An unreadable cost is
         # counted at the worst case rather than at nothing.
-        spend.record(
+        spend.SEEDS.record(
             f"record/{request_key(request)[:12]}", spend.WORST_CALL_USD if cost is None else cost
         )
 
@@ -38,11 +38,11 @@ async def record_all(only: str | None) -> None:
     for seed in SEEDS:
         if only and seed.id != only:
             continue
-        spend.check_room()
+        spend.SEEDS.check_room()
         state = RunState(run_id=f"record-{seed.id}")
         async for event in run_pipeline(seed.text(), seed.title, client, state):
             if event.type == "stage_started":
-                spend.check_room()
+                spend.SEEDS.check_room()
         result = state.result
         summary = (
             f"{len(result.claims)} kept, {len(result.removed)} removed, headline from "
@@ -51,7 +51,7 @@ async def record_all(only: str | None) -> None:
             else f"FAILED: {state.error}"
         )
         print(f"{seed.id}: {state.status}, {summary}, ${state.cost_usd():.4f}")
-    print(f"Spent in Phase 4 so far: ${spend.spent():.4f} of ${spend.LIMIT_USD:.2f}")
+    print(f"Spent on seeds so far: ${spend.SEEDS.spent():.4f} of ${spend.SEEDS.limit_usd:.2f}")
 
 
 def main() -> None:
@@ -63,7 +63,7 @@ def main() -> None:
     args = parser.parse_args()
     if not args.yes_spend:
         print(
-            f"Would record {len(SEEDS)} seeds, two calls each. Spent so far: ${spend.spent():.4f}."
+            f"Would record {len(SEEDS)} seeds, two calls each. Spent: ${spend.SEEDS.spent():.4f}."
         )
         # Not success: nothing was done. A script must not take this for a completed run.
         raise SystemExit(2)

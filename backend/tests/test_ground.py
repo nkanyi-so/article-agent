@@ -14,7 +14,7 @@ from app.errors import TooFewGroundedClaims
 from app.pipeline.ground import ground
 from app.pipeline.ingest import ingest
 from app.schemas import Citation, Correction, DraftBlock, GroundResult, NameResolution, RemovedUnit
-from tests.support import DRAFTS, Recorded, recorded, recorded_phase4
+from tests.support import DRAFTS, Recorded, recorded, recorded_sallowfield
 
 T1 = "t1-sentence-sonnet-medium-a"
 T2 = "t2-sentence-sonnet-medium"
@@ -186,7 +186,7 @@ def test_rule_2_altered_a_statement_put_in_the_wrong_speakers_mouth_is_removed()
 
 def test_rule_2_real_a_true_sentence_whose_subject_is_named_in_another_block_is_removed() -> None:
     # The cost of the strict rule, on a real response: the company is named in the title and
-    # in a neighbouring sentence the model did not cite. Kept strict by the owner's decision.
+    # in a neighbouring sentence the model did not cite. Kept strict by decision.
     unit = removed(run(recorded(T1)), "Korvath Greenhouses began an irrigation pilot")
 
     assert (unit.reason, unit.detail) == ("unsupported_name", ["Korvath", "Greenhouses"])
@@ -427,7 +427,7 @@ def test_a_draft_with_no_headline_line_takes_the_title() -> None:
     assert len(result.claims) + len(result.removed) == 22
 
 
-# ------------------------------------------------------------------ no model in this phase
+# ------------------------------------------------------------------ no model in the ground check
 
 
 def test_ingest_and_ground_import_nothing_from_the_model_seam() -> None:
@@ -444,7 +444,7 @@ def test_ingest_and_ground_import_nothing_from_the_model_seam() -> None:
         assert not {m for m in modules if m.startswith(("app.model", "anthropic", "httpx"))}
 
 
-# ------------------------------------------------------------------ found by the reviewer
+# ------------------------------------------------------------------ found in review
 #
 # Each of these got a made-up sentence through the first version of the check.
 
@@ -672,7 +672,7 @@ def test_an_empty_or_one_line_draft_fails_cleanly(blocks: list[DraftBlock]) -> N
 
 # ------------------------------------------------------------------ a first name and its speaker
 #
-# Decided by the owner on 2026-11-19: a first name in the cited text that matches exactly
+# Decided on 2026-11-19 (docs/decisions/0013): a first name in the cited text that matches exactly
 # one speaker label supports that speaker's surname. Nothing else is loosened.
 
 BOTH_RUN = "Mirela Stanek said both approaches would run for a month, with Olund running the calls"
@@ -681,7 +681,7 @@ BOTH_RUN = "Mirela Stanek said both approaches would run for a month, with Olund
 def test_real_a_surname_is_supported_by_its_speakers_first_name_in_the_cited_text() -> None:
     # The cited text is the chair saying "Hana, run the calls in November. Tobias, get
     # reception asking for mobile numbers." Hana Olund and Tobias Ferrant are speakers.
-    result = run(recorded_phase4())
+    result = run(recorded_sallowfield())
 
     (claim,) = [c for c in result.claims if c.text.startswith(BOTH_RUN)]
     assert claim.name_resolutions == [
@@ -691,14 +691,14 @@ def test_real_a_surname_is_supported_by_its_speakers_first_name_in_the_cited_tex
 
 
 def test_a_sentence_kept_without_this_rule_records_nothing() -> None:
-    result = run(recorded_phase4())
+    result = run(recorded_sallowfield())
 
     others = [c for c in result.claims if not c.text.startswith(BOTH_RUN)]
     assert others and all(c.name_resolutions == [] for c in others)
 
 
 def test_altered_without_the_first_names_in_the_cited_text_the_surnames_are_not_supported() -> None:
-    rec = recorded_phase4()
+    rec = recorded_sallowfield()
     citation = rec.find(BOTH_RUN)["citations"][0]
     citation["end_block_index"] = 35  # now cites only "We can do both for a month..."
 
@@ -709,7 +709,7 @@ def test_altered_without_the_first_names_in_the_cited_text_the_surnames_are_not_
 
 
 def test_altered_a_wrong_surname_is_not_rescued_by_a_first_name() -> None:
-    rec = recorded_phase4()
+    rec = recorded_sallowfield()
     block = rec.find(BOTH_RUN)
     block["text"] = block["text"].replace("Olund running", "Olsen running")
 
@@ -721,7 +721,7 @@ def test_altered_a_wrong_surname_is_not_rescued_by_a_first_name() -> None:
 def test_altered_a_surname_from_a_different_person_is_not_rescued() -> None:
     # The cited text says "Hana, put the sum in the notes." Ferrant's first name is Tobias,
     # and Tobias is not in what this sentence cites.
-    rec = recorded_phase4()
+    rec = recorded_sallowfield()
     block = rec.find("Stanek asked her to put the sum in the notes")
     block["text"] = "Stanek asked Ferrant to put the sum in the notes."
     block["citations"][0]["start_block_index"] = 56
@@ -733,7 +733,7 @@ def test_altered_a_surname_from_a_different_person_is_not_rescued() -> None:
 
 
 def test_the_same_sentence_with_the_right_surname_is_kept_and_the_reason_recorded() -> None:
-    rec = recorded_phase4()
+    rec = recorded_sallowfield()
     block = rec.find("Stanek asked her to put the sum in the notes")
     block["text"] = "Stanek asked Olund to put the sum in the notes."
     block["citations"][0]["start_block_index"] = 56
@@ -816,7 +816,7 @@ def one_sentence(text: str, *speakers: str, said: str) -> GroundResult:
 @pytest.mark.parametrize(
     ("speaker", "said", "claim", "surname"),
     [
-        # The reviewer's cases: an ordinary word, or a month, that is also a first name.
+        # Cases found in review: an ordinary word, or a month, that is also a first name.
         (
             "Will Barker",
             "We will run the calls in November.",
