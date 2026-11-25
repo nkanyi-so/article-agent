@@ -50,7 +50,7 @@ make dev       # backend on :8000 in demo mode, frontend on :3000. No key.
 make check     # format, lint, types, tests, the eval set replayed from recordings, the build
 ```
 
-Then open http://localhost:3000. `node scripts/browser-check.mjs`, also a CI job, drives Chrome through a visitor's steps.
+Then open http://localhost:3000. `node scripts/browser-check.mjs`, also in CI, drives Chrome through a visitor's steps.
 
 Live mode, for a pasted transcript, costs a few cents a run. It needs `APP_MODE=live`, `ANTHROPIC_API_KEY` in `.env` and the `live` dependency group. No `make` target starts it.
 
