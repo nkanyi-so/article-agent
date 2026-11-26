@@ -40,7 +40,8 @@ process.on("unhandledRejection", (error) => { console.error(error); process.exit
 chrome.on("error", (error) => { console.error(`Chrome could not be started (${CHROME}): ${error.message}`); process.exit(1); });
 
 async function connect() {
-  for (let attempt = 0; attempt < 50; attempt++) {
+  // Up to 30 seconds: a cold Chrome on a CI runner takes about 6 to answer, sometimes more.
+  for (let attempt = 0; attempt < 150; attempt++) {
     try {
       const pages = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json();
       const page = pages.find((p) => p.type === "page");
