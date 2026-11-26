@@ -30,3 +30,6 @@ out/
 
 # Vercel
 .vercel
+
+# Written by `next dev` (Next.js agent rules). Generated, not ours.
+frontend/AGENTS.md
